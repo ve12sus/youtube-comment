@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="player"></div>
+	<div id="comment">first comment to appear at 00:24</div>
+
+    <script>
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '390',
+          width: '640',
+          videoId: 'HGfC4CFBAns', 
+          events: {
+            'onReady': onPlayerReady,
+			'onReady': setInterval(commentLoad, 1000)
+            //'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+	  	  
+	  function commentLoad(event) {
+		var time = player.getCurrentTime();
+		if (time >= 24)
+		  document.getElementById('comment').innerHTML = 'infiltration jump-in';  
+		  clearInterval(commentLoad);		
+	  }
+	  
+
+    </script>
+  </body>
+</html>
+
+
+
