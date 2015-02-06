@@ -2,8 +2,7 @@
 <html>
   <body>
     <div id="player"></div>
-	<div id="comment">first comment to appear at 00:24</div>
-
+	<div id="comment">comments to appear</div>
     <script>
       var tag = document.createElement('script');
 
@@ -28,12 +27,18 @@
       function onPlayerReady(event) {
         event.target.playVideo();
       }
+	  var a = [
+		[10, 'new comment'],
+		[24,'infiltration jump-in']
+	  ];
 	  	  
 	  function commentLoad(event) {
 		var time = player.getCurrentTime();
-		if (time >= 24)
-		  document.getElementById('comment').innerHTML = 'infiltration jump-in';  
-		  clearInterval(commentLoad);		
+		for (var i = 0; i < a.length; i++) {
+		  if (time >= a[i][0])
+		    document.getElementById('comment').innerHTML = a[i][1];
+	  	}
+		clearInterval(commentLoad);		
 	  }
 	  
 
