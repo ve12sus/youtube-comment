@@ -1,48 +1,13 @@
 <!DOCTYPE html>
 <html>
+  <head>
+	<script src="js/ytcscript.js"></script>
+  </head>		
   <body>
+
     <div id="player"></div>
 	<div id="comment">comments to appear</div>
-    <script>
-      var tag = document.createElement('script');
-
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-          height: '390',
-          width: '640',
-          videoId: 'HGfC4CFBAns', 
-          events: {
-            'onReady': onPlayerReady,
-			'onReady': setInterval(commentLoad, 1000)
-            //'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-
-      function onPlayerReady(event) {
-        event.target.playVideo();
-      }
-	  var a = [
-		[10, 'new comment'],
-		[24,'infiltration jump-in']
-	  ];
-	  	  
-	  function commentLoad(event) {
-		var time = player.getCurrentTime();
-		for (var i = 0; i < a.length; i++) {
-		  if (time >= a[i][0])
-		    document.getElementById('comment').innerHTML = a[i][1];
-	  	}
-		clearInterval(commentLoad);		
-	  }
-	  
-
-    </script>
+    
   </body>
 </html>
 
