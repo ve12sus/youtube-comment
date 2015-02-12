@@ -36,6 +36,14 @@ function commentLoad(event) {
   } 
   clearInterval(commentLoad);		
 }
+
+function enterComment() {
+	var newComment = document.getElementById('commenttext').value; 
+	var currentTime = player.getCurrentTime();
+	myArr.comments.push([3, 'haha']);
+	document.getElementById('inputdisplay').innerHTML = myArr.comments[2] + "Added!";
+
+}
 	  
 	
  
