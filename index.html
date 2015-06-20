@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-	<script src="js/ytcscript.js"></script>
-  </head>		
+	<script src="js/xhrtest.js"></script>
+  </head>
   <body>
-
-    <div id="player"></div>
-	<div id="comment">comments to appear</div>
+    <div id="ytplayer"></div>
+    <h2>Comment Display</h2>
+    <div id="currentComment"></div>
+	<h2>Comments List</h2>
+	<ol id="objView"></ol>
+    <script src="js/player.js"></script>
 	<form>
-		Enter new comment: <input type="text" id="commenttext">
-		<input type="button" value="Submit" onclick="enterComment()">
-	</form>    
-	<div id="inputdisplay"></div>
-    <div id="testing"></div>
-    <input type="button" value="Check myArr" onclick="checkObj()">
+	  <button type="button"
+	  onclick="newCommentSubmit()">
+	  add a new comment.</button>
+	</form>
+	<p id="demo2"></p>
+	<button type="button"
+	onclick="newDate()">
+	Click me to display Date and Time.</button>
+
+	<p id="demo1"></p>
   </body>
 </html>
-
-
-
