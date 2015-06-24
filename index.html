@@ -6,19 +6,20 @@
   <body>
     <div id="ytplayer"></div>
     <h2>Comment Display</h2>
-    <div id="currentComment"></div>
+    <h2 style="color:#466BB0" id="currentComment"></h2>
 	<h2>Comments List</h2>
 	<ol id="objView"></ol>
     <script src="js/player.js"></script>
 	<form>
+	  <input type="text" id="commentField" size="40" value="type new comment here" />
 	  <button type="button"
 	  onclick="newCommentSubmit()">
-	  add a new comment.</button>
+	  add comment.</button>
 	</form>
 	<p id="demo2"></p>
 	<button type="button"
-	onclick="newDate()">
-	Click me to display Date and Time.</button>
+	onclick="save()">
+	Save</button>
 
 	<p id="demo1"></p>
   </body>
