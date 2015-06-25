@@ -27,9 +27,7 @@ function onPlayerReady(event) {
 
 function commentLoad() {
   playerTime = Math.round(player.getCurrentTime());
-  console.log(playerTime);
   sortedComments = parsedData.comments.sort();
-  console.log(sortedComments);
   for (var i = 0; i < sortedComments.length; i ++) {
     if (playerTime >= sortedComments[i][0]) {
 	  document.getElementById('currentComment').innerHTML = sortedComments[i][1];

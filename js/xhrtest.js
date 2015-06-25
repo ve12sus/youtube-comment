@@ -16,11 +16,11 @@ function processData() {
 	  listItem.setAttribute("id", listItemId);
 	  console.log(typeof(listItem.id));
 	  listItem.onclick = function () { 
-	    this.parentElement.removeChild(this); 
+	    //this.parentElement.removeChild(this); 
+		player.seekTo(this.id);
 	  }
       var element = document.getElementById("objView");
       element.appendChild(listItem);
-	  //document.getElementById(listItemId).onclick = removeComment(listItemId);
     }
   }   
 }
@@ -51,14 +51,18 @@ function newCommentSubmit() {
   processData();
 } 
 
-function removeComment(id) {
-  var elementToRemove = document.getElementById(id);
-  elementToRemove.parentNode.removeChild(elementToRemove);
+function removeComment() {
+  //do something to remove comment from objView and parsedData
 }
 
-function newDate() {
-  document.getElementById('demo1').innerHTML = player.getCurrentTime();
-}  
+function saveTo() {
+  //create new XHR
+  //specify location of .php
+  //get the parsedData variable somehow to php
+  //XHR.open("POST", url, true);
+  //XHR.onreadystatechange = function() { if readystate == 4 && etc, show file saved }
+  //XHR.send(variables)
+}
 
 function secondsToHms(d) {
   d = Number(d);
