@@ -6,4 +6,30 @@
 
 #currentComment {
 	color: #466BB0;
+	text-align: center;
+	position: relative;
+	top: -95px;
+	/*border: 1px solid black;*/
+	z-index: 10;
+}
+
+#commentPane {
+	margin: 0 auto;
+	/*border: 1px solid black;*/
+	max-width: 640px;
+}
+
+#main {
+	width: 750px;
+	/*border: 1px solid black;*/
+	margin: 0 auto;
+}
+
+#playerwrap {
+	margin: 0 auto;
+	text-align: center;
+}
+
+ul {
+	list-style-type: none;
 }

@@ -5,17 +5,22 @@
 	<script src="js/xhrtest.js"></script>
   </head>
   <body>
-    <div id="ytplayer"></div>
-    <h2>Comment Display</h2>
-    <h2 id="currentComment"></h2>
-	<h2>Comments List</h2>
-	<ol id="objView"></ol>
-    <script src="js/player.js"></script>
+	<div id="main">
+	  <div id="playerwrap">
+        <div id="ytplayer"></div>
+	  </div>
+      <h2 id="currentComment"></h2>
+	  <div id="commentPane">
+	    <h2>Comments</h2>
+	    <ul id="objView"></ul>
+	  </div>
+      <script src="js/player.js"></script>
 	<!--<form>
 	  <input type="text" id="commentField" size="40" value="type new comment here" />
 	  <button type="button"
 	  onclick="newCommentSubmit()">
 	  add comment.</button>
 	</form>-->
+	</div>
   </body>
 </html>
