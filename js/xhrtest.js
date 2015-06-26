@@ -1,28 +1,36 @@
 var parsedData = {};
 
 function processData() {
-  // taking care of data
-//  parsedData = JSON.parse(data);
   for (i = 0; i < parsedData.comments.length; i++) {
-	var listItemId = parsedData.comments[i][0].toString();
-	var commentExists = document.getElementById(listItemId);
-	if (typeof(commentExists) != 'undefined' && commentExists !=null){ 
-	  continue; 
-	} else {
-	  var listItem = document.createElement("li");
-      var node = document.createTextNode(
-      secondsToHms(parsedData.comments[i][0]) + " " + parsedData.comments[i][1]);
-      listItem.appendChild(node);
+    var listItemId = parsedData.comments[i][0].toString();
+    var commentExists = document.getElementById(listItemId);
+    if (typeof(commentExists) != 'undefined' && commentExists !=null){
+      continue;
+    } else {
+      var timeSpan = document.createElement("span");
+	  var timeNode = document.createTextNode(
+	    secondsToHms(parsedData.comments[i][0]));
+	  timeSpan.appendChild(timeNode);
+	  timeSpan.setAttribute("class", "time-link");
+	  //timeSpan.onclick = function() {
+	  //player.seekTo();
+	  
+
+	  var listItem = document.createElement("li")
+	  var commentNode = document.createTextNode(
+		" " + parsedData.comments[i][1]);
+
+	  listItem.appendChild(timeSpan);
+	  listItem.appendChild(commentNode);
 	  listItem.setAttribute("id", listItemId);
-	  console.log(typeof(listItem.id));
-	  listItem.onclick = function () { 
-	    //this.parentElement.removeChild(this); 
-		player.seekTo(this.id);
+
+	  var element = document.getElementById("objView");
+	  element.appendChild(listItem);
+	  timeSpan.onclick = function() {
+	    player.seekTo(this.parentNode.id);
 	  }
-      var element = document.getElementById("objView");
-      element.appendChild(listItem);
-    }
-  }   
+	}
+  }
 }
 
 function handler() {
@@ -55,14 +63,22 @@ function removeComment() {
   //do something to remove comment from objView and parsedData
 }
 
-function saveTo() {
+/*function saveTo() {
   //create new XHR
+  var saveXHR = new XMLHttpRequest();
   //specify location of .php
+  var url = "save.php";
   //get the parsedData variable somehow to php
+  saveXHR.onreadystatechange = function() {
+    if (saveXHR.readyState == 4 && saveXHR.status == 200) {
+	  document.getElementById("saveDisplay").innerHTML = "saved";
+	}
   //XHR.open("POST", url, true);
+  saveXHR.send(
   //XHR.onreadystatechange = function() { if readystate == 4 && etc, show file saved }
   //XHR.send(variables)
-}
+  }
+}*/
 
 function secondsToHms(d) {
   d = Number(d);

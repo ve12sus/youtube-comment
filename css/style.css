@@ -1,0 +1,9 @@
+.time-link {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#currentComment {
+	color: #466BB0;
+}
