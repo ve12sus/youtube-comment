@@ -6,11 +6,15 @@
 
 #currentComment {
 	color: #466BB0;
+	background-color: #000;
 	text-align: center;
+	margin: 0 auto;
 	position: relative;
-	top: -95px;
+	top: -65px;
+	width: 640px;
 	/*border: 1px solid black;*/
 	z-index: 10;
+	visibility: hidden;
 }
 
 #commentPane {

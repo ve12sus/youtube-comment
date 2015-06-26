@@ -30,6 +30,7 @@ function commentLoad() {
   sortedComments = parsedData.comments.sort();
   for (var i = 0; i < sortedComments.length; i ++) {
     if (playerTime >= sortedComments[i][0]) {
+  	  document.getElementById('currentComment').style.visibility = "visible";
 	  document.getElementById('currentComment').innerHTML = sortedComments[i][1];
     }
   }
