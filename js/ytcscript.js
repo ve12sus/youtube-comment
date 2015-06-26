@@ -62,8 +62,4 @@ function enterComment() {
 
 function checkObj() {
     document.getElementById('testing').innerHTML = myArr.comments;
-}
-
-	  
-	
- 
+} 
