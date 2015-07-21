@@ -1,0 +1,3 @@
+Youtube Commentor is a web application that takes youtube video ids, embed them
+and takes a corresponding json from the server.php api and outputs the video
+with subtitles.

@@ -1,15 +1,6 @@
 <?php
 class Server {
 
-	private $comments = array('1' => array('vidId' => 'HGfCFBAns', 
-												'url' => '/videos/1', 
-												'comments' => array(
-					'10' => 'new comment', 
-					'24' => 'Infiltration jump-in')),
-                              '2' => array('vidId' => 'qzhxsbDMGLM',
-											    'url'=> '/videos/2')
-					);
-	
     public function serve() {
 
 		$uri = $_SERVER['REQUEST_URI'];
@@ -24,7 +15,7 @@ class Server {
             $vid_id = array_shift($paths);
 	
             if (empty($vid_id)) {
-                $this->handle_base($method);
+                $this->handle_videos($method);
             } else {
                 $this->handle_id($method, $vid_id);
             }
@@ -35,7 +26,7 @@ class Server {
         }
 	}
 
-	private function handle_base($method) {
+	private function handle_videos($method) {
         switch($method) {
         case 'GET':
             $this->result();
@@ -50,15 +41,15 @@ class Server {
 	private function handle_id($method, $vid_id) {
         switch($method) {
         case 'PUT':
-            $this->create_contact($vid_id);
+            $this->create_video($vid_id);
             break;
 
         case 'DELETE':
-            $this->delete_contact($vid_id);
+            $this->delete_video($vid_id);
             break;
       
         case 'GET':
-            $this->display_comments($vid_id);
+            $this->get_video($vid_id);
             break;
 
         default:
@@ -68,29 +59,31 @@ class Server {
         }
     }
 
-	private function create_contact($vid_id){
-        if (isset($this->comments[$vid_id])) {
-            header('HTTP/1.1 409 Conflict');
-            return;
-        }
-        /* PUT requests need to be handled
-         * by reading from standard input.
-         */
-        $data = json_decode(file_get_contents('php://input'));
-        if (is_null($data)) {
-            header('HTTP/1.1 400 Bad Request');
-            $this->result();
-            return;
-        }
-        $this->comments[$vid_id] = $data; 
-        $this->result();
+	private function create_video($vid_id){
+		//get request body and respond with confirmation
     }
+	
+	private function delete_video($vid_id) {
+		//get request to the right video url and delete from mysql
+	}
 
-	private function display_comments($vid_id) {
+	private function get_video($vid_id) {
 		$sql = "SELECT * FROM videos WHERE id = $vid_id";
 		
-    	$this->mySQLconnect($sql); 
-         
+    	$new = $this->mySQLconnect($sql);
+        
+		$emparray = array();
+
+		while ($row = $new->fetch_assoc()) {
+			$emparray[] = $row;
+		}
+		if ($emparray == []) {
+		header('HTTP/1.1 404 Not Found');
+		echo "Video not found";
+		} else {
+		header('Content-type: application/json');
+		echo json_encode($emparray, JSON_PRETTY_PRINT); 
+		}
     }
 
 	private function paths($url) {
@@ -100,7 +93,20 @@ class Server {
 
 	private function result() {
 		$sql = "SELECT * FROM videos";
-		$this->mySQLconnect($sql);
+		$new = $this->mySQLconnect($sql);
+
+		$emparray = array();
+
+		while ($row = $new->fetch_assoc()) {
+			$emparray[] = $row;
+		}
+		if ($emparray == []) {
+		header('HTTP/1.1 404 Not Found');
+		echo "Record not found";
+		} else {
+		header('Content-type: application/json');
+		echo json_encode($emparray, JSON_PRETTY_PRINT);
+		}
     }
 
 	private function mySQLconnect($sql) {
@@ -114,18 +120,8 @@ class Server {
 			die("Unable to connect to database" . $connection->connect_error);
 		}
 		$result = $connection->query($sql);
-		$emparray = array();
-
-		while ($row = $result->fetch_assoc()) {
-			$emparray[] = $row; 
-		}
-		if ($emparray == []){
-		header('HTTP/1.1 404 Not Found');
-		echo "Record not found";
-		} else {
-		header('Content-type: application/json');
-		echo json_encode($emparray, JSON_PRETTY_PRINT);
-		}
+		return $result;
+		$result->free();
 		$connection->close();
 		
 	}	
