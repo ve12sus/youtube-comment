@@ -7,23 +7,23 @@ class Server {
 		$uri = $_SERVER['REQUEST_URI'];
 		$method = $_SERVER['REQUEST_METHOD'];
 		$paths = explode('/', $this->paths($uri));
-		array_shift($paths); //get rid of initials empty string
-		//get the right URL on my LAMP stack todo: remove
-		$resource = array_shift($paths);      
-		$resource = array_shift($paths);
-		$resource = array_shift($paths);
+		$collection = $paths[3];
+		$vid_id = $paths[4];
+		$subresource = $paths[5];
 
-		if ($resource == 'videos') {
-			$vid_id = array_shift($paths);
-
+		if ($collection == 'videos') {
+			
 			if (empty($vid_id)) {
 				$this->handle_videos($method);
 			} else {
-				$this->handle_id($method, $vid_id);
+				if (empty($subresource)) {
+					$this->handle_id($method, $vid_id);
+				} else {
+					$this->handle_sub($method, $vid_id, $subresource);
+				}
 			}
-          
 		} else {
-			// We only handle resources under 'videos'
+			//currently only handle 'videos' resource
 			header('HTTP/1.1 404 Not Found');
 		}
 	}
@@ -31,7 +31,7 @@ class Server {
 	private function handle_videos($method) {
 		switch($method) {
 		case 'GET':
-			$this->result();
+			$this->retrieve_videos();
 			break;
 		default:
 			header('HTTP/1.1 405 Method Not Allowed');
@@ -59,6 +59,10 @@ class Server {
 			header('Allow: GET, PUT, DELETE');
 			break;
 		}
+	}
+	
+	private function handle_sub($method, $vid_id, $subresource) {
+		echo $subresource;
 	}
 
 	private function create_video($vid_id){
@@ -91,20 +95,20 @@ class Server {
 		return $uri['path'];
 	}
 
-	private function result() {
+	private function retrieve_videos() {
 		$sql = "SELECT * FROM videos";
 		$new = $this->mySQLconnect($sql);
-		$emparray = array();
+		$videos = array();
 
 		while ($row = $new->fetch_assoc()) {
-			$emparray[] = $row;
+			$videos[] = $row;
 		}
-		if ($emparray == []) {
+		if ($videos == []) {
 			header('HTTP/1.1 404 Not Found');
 			echo "Record not found";
 		} else {
 			header('Content-type: application/json');
-			echo json_encode($emparray, JSON_PRETTY_PRINT);
+			echo json_encode($videos, JSON_PRETTY_PRINT);	
 		}
 	}
 
