@@ -33,17 +33,20 @@ class Server {
 		case 'GET':
 			$this->retrieve_videos();
 			break;
+		case 'POST':
+			$this->create_video();
+			break;
 		default:
 			header('HTTP/1.1 405 Method Not Allowed');
-			header('Allow: GET');
+			header('Allow: GET, POST');
 			break;
 		}
 	}
 
 	private function handle_id($method, $vid_id) {
 		switch($method) {
-		case 'PUT':
-			$this->create_video($vid_id);
+		case 'POST':
+			$this->add_comment($vid_id);
 			break;
 
 		case 'DELETE':
@@ -59,6 +62,9 @@ class Server {
 			header('Allow: GET, PUT, DELETE');
 			break;
 		}
+	}
+	
+	private function add_comment() {
 	}
 	
 	private function handle_sub($method, $vid_id, $subresource) {
