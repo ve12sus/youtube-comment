@@ -46,7 +46,7 @@ class Server {
 
 	private function handle_id($method, $vid_id) {
 		switch($method) {
-		case 'PUT':
+		case 'POST':
 			$this->update_video($vid_id);
 			break;
 
@@ -60,7 +60,7 @@ class Server {
 
 		default:
 			header('HTTP/1.1 405 Method Not Allowed');
-			header('Allow: GET, PUT, DELETE');
+			header('Allow: GET, POST, DELETE');
 			break;
 		}
 	}
@@ -113,7 +113,14 @@ class Server {
 	}
 
 	private function delete_video($vid_id) {
-		//get request to the right video url and delete from mysql
+		$sql = "DELETE FROM videos WHERE id=$vid_id";
+		$new = $this->mySQLconnect($sql);
+			if ($new->affected_rows == 0) {
+				header('HTTP/1.1 404 Not Found');
+				die('Invalid id or query');
+			} else {
+				header('HTTP/1.1 200 OK');
+			}			 
 	}
 
 	private function get_video($vid_id) {
