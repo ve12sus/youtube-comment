@@ -110,6 +110,29 @@ class Server {
 	}
 	
 	private function update_video($vid_id) {
+		$inputJSON = file_get_contents('php://input');
+		$input = json_decode($inputJSON, TRUE);
+		$title = $input['title'];
+		$youtubeId = $input['youtubeId'];
+		$sql = "";
+			if (count($input) == 2 ) {
+				$sql = "UPDATE videos SET title='$title', youtubeId='$youtubeId'
+						WHERE id=$vid_id";
+			} else {
+				if (in_array("title", $input)) {
+					$sql = "UPDATE videos SET title='$title' WHERE id=$vid_id";
+				} else {
+					$sql = "UPDATE videos SET youtubeId='$youtubeId' WHERE id =$vid_id";
+				}
+			}
+		$new = $this->mySQLconnect($sql);
+			if ($new->affected_rows == 0) {
+				header('HTTP/1.1 404 Not Found');
+				echo $new->affected_rows;
+				die('Invalid id');
+			} else {
+				header('HTTP/1.1 200 OK');
+			}
 	}
 
 	private function delete_video($vid_id) {
@@ -117,7 +140,7 @@ class Server {
 		$new = $this->mySQLconnect($sql);
 			if ($new->affected_rows == 0) {
 				header('HTTP/1.1 404 Not Found');
-				die('Invalid id or query');
+				die('Invalid id');
 			} else {
 				header('HTTP/1.1 200 OK');
 			}			 
