@@ -13,7 +13,7 @@ class Server {
 		$subresource = $paths[6];
 
 		if ($collection == 'videos') {
-			
+
 			if (empty($vid_id)) {
 				$this->handle_videos($method);
 			} else {
@@ -64,7 +64,7 @@ class Server {
 			break;
 		}
 	}
-	
+
 	private function add_comment() {
 	}
 
@@ -73,7 +73,7 @@ class Server {
 
 	private function delete_comment() {
 	}
-	
+
 	private function handle_sub($method, $vid_id, $subcollection, $subresource) {
 		switch($method) {
 		case 'GET':
@@ -87,7 +87,7 @@ class Server {
 		case 'DElETE':
 			$this->delete_comment($vid_id, $subcollection, $subresource);
 			break;
-		
+
 		default:
 			header('HTTP/1.1 405 Method Not Allowed');
 			header('Allow: GET, POST');
@@ -108,7 +108,7 @@ class Server {
 		header('HTTP/1.1 201 Created');
 		echo 'New video created';
 	}
-	
+
 	private function update_video($vid_id) {
 		$inputJSON = file_get_contents('php://input');
 		$input = json_decode($inputJSON, TRUE);
@@ -143,7 +143,7 @@ class Server {
 				die('Invalid id');
 			} else {
 				header('HTTP/1.1 200 OK');
-			}			 
+			}
 	}
 
 	private function get_video($vid_id) {
@@ -159,7 +159,8 @@ class Server {
 			echo "Video not found";
 		} else {
 			header('Content-type: application/json');
-			echo json_encode($emparray, JSON_PRETTY_PRINT); 
+
+			echo json_encode($emparray, JSON_PRETTY_PRINT);
 		}
     }
 
@@ -177,11 +178,12 @@ class Server {
 			$videos[] = $row;
 		}
 		if ($videos == []) {
+
 			header('HTTP/1.1 404 Not Found');
 			echo "Record not found";
 		} else {
 			header('Content-type: application/json');
-			echo json_encode($videos, JSON_PRETTY_PRINT);	
+			echo json_encode($videos, JSON_PRETTY_PRINT);
 		}
 	}
 
@@ -199,7 +201,7 @@ class Server {
 		return $result;
 		$result->free();
 		$connection->close();
-	}	
+	}
 }
 
 $server = new Server;
