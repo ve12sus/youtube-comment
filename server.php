@@ -9,17 +9,18 @@ class Server {
 		$paths = explode('/', $this->paths($uri));
 		$collection = $paths[3];
 		$vid_id = $paths[4];
-		$subresource = $paths[5];
+		$subcollection = $paths[5];
+		$subresource = $paths[6];
 
 		if ($collection == 'videos') {
 			
 			if (empty($vid_id)) {
 				$this->handle_videos($method);
 			} else {
-				if (empty($subresource)) {
+				if (empty($subcollection)) {
 					$this->handle_id($method, $vid_id);
 				} else {
-					$this->handle_sub($method, $vid_id, $subresource);
+					$this->handle_sub($method, $vid_id, $subcollection, $subresource);
 				}
 			}
 		} else {
@@ -45,8 +46,8 @@ class Server {
 
 	private function handle_id($method, $vid_id) {
 		switch($method) {
-		case 'POST':
-			$this->add_comment($vid_id);
+		case 'PUT':
+			$this->update_video($vid_id);
 			break;
 
 		case 'DELETE':
@@ -66,15 +67,51 @@ class Server {
 	
 	private function add_comment() {
 	}
+
+	private function get_comments() {
+	}
+
+	private function delete_comment() {
+	}
 	
-	private function handle_sub($method, $vid_id, $subresource) {
+	private function handle_sub($method, $vid_id, $subcollection, $subresource) {
+		switch($method) {
+		case 'GET':
+			$this->get_comments($vid_id);
+			break;
+
+		case 'POST':
+			$this->add_comment($vid_id);
+			break;
+
+		case 'DElETE':
+			$this->delete_comment($vid_id, $subcollection, $subresource);
+			break;
+		
+		default:
+			header('HTTP/1.1 405 Method Not Allowed');
+			header('Allow: GET, POST');
+			break;
+		}
+		echo $subcollection;
 		echo $subresource;
 	}
 
-	private function create_video($vid_id){
-		//get request body and respond with confirmation
+	private function create_video()	{
+		$inputJSON = file_get_contents('php://input');
+		$input = json_decode($inputJSON, TRUE);
+		$title = $input['title'];
+		$youtubeId = $input['youtubeId'];
+		$sql = "INSERT INTO videos (title, youtubeId)
+			    VALUES ('$title', '$youtubeId')";
+		$this->mySQLconnect($sql);
+		header('HTTP/1.1 201 Created');
+		echo 'New video created';
 	}
 	
+	private function update_video($vid_id) {
+	}
+
 	private function delete_video($vid_id) {
 		//get request to the right video url and delete from mysql
 	}
