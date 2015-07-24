@@ -104,9 +104,15 @@ class Server {
 		$youtubeId = $input['youtubeId'];
 		$sql = "INSERT INTO videos (title, youtubeId)
 			    VALUES ('$title', '$youtubeId')";
-		$this->mySQLconnect($sql);
-		header('HTTP/1.1 201 Created');
-		echo 'New video created';
+		$new = $this->mySQLconnect();
+		$new->query($sql);
+		if ($new->affected_rows < 1) {
+			header('HTTP/1.1 400 Bad Request');
+			die('Wrong Values');
+		} else {
+			header('HTTP/1.1 201 Created');
+			echo 'New video created';
+		}
 	}
 
 	private function update_video($vid_id) {
@@ -115,52 +121,49 @@ class Server {
 		$title = $input['title'];
 		$youtubeId = $input['youtubeId'];
 		$sql = "";
-			if (count($input) == 2 ) {
-				$sql = "UPDATE videos SET title='$title', youtubeId='$youtubeId'
-						WHERE id=$vid_id";
+		if (count($input) == 2 ) {
+			$sql = "UPDATE videos SET title='$title', youtubeId='$youtubeId'
+					WHERE id=$vid_id";
+		} else {
+			if (in_array("title", $input)) {
+				$sql = "UPDATE videos SET title='$title' WHERE id=$vid_id";
 			} else {
-				if (in_array("title", $input)) {
-					$sql = "UPDATE videos SET title='$title' WHERE id=$vid_id";
-				} else {
-					$sql = "UPDATE videos SET youtubeId='$youtubeId' WHERE id =$vid_id";
-				}
+				$sql = "UPDATE videos SET youtubeId='$youtubeId' WHERE id =$vid_id";
 			}
-		$new = $this->mySQLconnect($sql);
-			if ($new->affected_rows == 0) {
-				header('HTTP/1.1 404 Not Found');
-				echo $new->affected_rows;
-				die('Invalid id');
-			} else {
-				header('HTTP/1.1 200 OK');
-			}
+		}
+		$new = $this->mySQLconnect();
+		$new->query($sql);
+		if ($new->affected_rows < 1) {
+			header('HTTP/1.1 404 Not Found');
+			die('Invalid id');
+		} else {
+			header('HTTP/1.1 200 OK');
+		}
 	}
 
 	private function delete_video($vid_id) {
 		$sql = "DELETE FROM videos WHERE id=$vid_id";
-		$new = $this->mySQLconnect($sql);
-			if ($new->affected_rows == 0) {
-				header('HTTP/1.1 404 Not Found');
-				die('Invalid id');
-			} else {
-				header('HTTP/1.1 200 OK');
-			}
+		$new = $this->mySQLconnect();
+		$new->query($sql);
+		if ($new->affected_rows < 1) {
+			header('HTTP/1.1 404 Not Found');
+			die('Invalid id');
+		} else {
+			header('HTTP/1.1 200 OK');
+		}
 	}
 
 	private function get_video($vid_id) {
 		$sql = "SELECT * FROM videos WHERE id = $vid_id";
-		$new = $this->mySQLconnect($sql);
-        $emparray = array();
-
-		while ($row = $new->fetch_assoc()) {
-			$emparray[] = $row;
-		}
-		if ($emparray == []) {
+		$new = $this->mySQLconnect();
+		$result = $new->query($sql);
+		$row = $result->fetch_assoc();
+		if ($row == NULL) {
 			header('HTTP/1.1 404 Not Found');
 			echo "Video not found";
 		} else {
 			header('Content-type: application/json');
-
-			echo json_encode($emparray, JSON_PRETTY_PRINT);
+			echo json_encode($row, JSON_PRETTY_PRINT);
 		}
     }
 
@@ -171,10 +174,10 @@ class Server {
 
 	private function retrieve_videos() {
 		$sql = "SELECT * FROM videos";
-		$new = $this->mySQLconnect($sql);
 		$videos = array();
-
-		while ($row = $new->fetch_assoc()) {
+		$new = $this->mySQLconnect();
+		$result = $new->query($sql);
+		while ($row = $result->fetch_assoc()) {
 			$videos[] = $row;
 		}
 		if ($videos == []) {
@@ -187,7 +190,7 @@ class Server {
 		}
 	}
 
-	private function mySQLconnect($sql) {
+	private function mySQLconnect() {
 		$servername = "localhost";
 		$username = "root";
 		$password = "admin";
@@ -197,10 +200,7 @@ class Server {
 		if ($connection->connect_errno) {
 			die("Unable to connect to database" . $connection->connect_error);
 		}
-		$result = $connection->query($sql);
-		return $result;
-		$result->free();
-		$connection->close();
+		return $connection;
 	}
 }
 
