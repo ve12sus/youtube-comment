@@ -44,10 +44,10 @@ class Server {
 		}
 	}
 
-	private function handle_id($method, $vid_id) {
+	private function handle_id($method, $vid_id, $subresource) {
 		switch($method) {
 		case 'POST':
-			$this->update_video($vid_id);
+			$this->update_video($vid_id, $subresource);
 			break;
 
 		case 'DELETE':
@@ -115,21 +115,21 @@ class Server {
 		}
 	}
 
-	private function update_video($vid_id) {
-		$inputJSON = file_get_contents('php://input');
+	private function update_video($vid_id, $subresource) {
+		$textinput = file_get_contents('php://input');
 		$input = json_decode($inputJSON, TRUE);
-		$title = $input['title'];
-		$youtubeId = $input['youtubeId'];
 		$sql = "";
-		if (count($input) == 2 ) {
-			$sql = "UPDATE videos SET title='$title', youtubeId='$youtubeId'
-					WHERE id=$vid_id";
-		} else {
-			if (in_array("title", $input)) {
-				$sql = "UPDATE videos SET title='$title' WHERE id=$vid_id";
-			} else {
-				$sql = "UPDATE videos SET youtubeId='$youtubeId' WHERE id =$vid_id";
-			}
+		switch($subresource) {
+		case 'title':
+			$this->sql = "UPDATE videos SET title=$input WHERE id=$vid_id";
+			break;
+		case 'youtubeId':
+			$this->sql = "UPDATE videos SET youtubeId='$textinput' WHERE id=$vid_id";
+			break;
+		default:
+			header('HTTP/1.1 404 Not Found');
+			header('title, youtubeId allowed');
+			break;
 		}
 		$new = $this->mySQLconnect();
 		$new->query($sql);
