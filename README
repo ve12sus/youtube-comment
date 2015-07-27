@@ -1,3 +1,20 @@
 Youtube Commentor is a web application that takes youtube video ids, embed them
 and takes a corresponding json from the server.php api and outputs the video
 with subtitles.
+
+server.php api
+GET api/videos - lists all videos
+POST api/videos - create new video
+
+GET api/videos/id - list video
+DELETE api/videos/id - delete video
+
+GET api/videos/id/subresource - show subresource
+POST api/videos/id/subresource - update subresource
+DELETE api/videos/id/subresource - delete subresource(comments only)
+
+request header is Content-Type application/json
+request body (video) is {"title":"video title", "youtubeId": "some youtube id"}
+request body (comments) is {"id":"video id", "time":"some timestamp", "comments": "comments to video", "style": "styling of comments"}
+
+
