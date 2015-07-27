@@ -46,10 +46,6 @@ class Server {
 
 	private function handle_id($method, $vid_id, $subresource) {
 		switch($method) {
-		case 'POST':
-			$this->update_video($vid_id, $subresource);
-			break;
-
 		case 'DELETE':
 			$this->delete_video($vid_id);
 			break;
@@ -60,7 +56,7 @@ class Server {
 
 		default:
 			header('HTTP/1.1 405 Method Not Allowed');
-			header('Allow: GET, POST, DELETE');
+			header('Allow: GET, DELETE');
 			break;
 		}
 	}
@@ -93,8 +89,6 @@ class Server {
 			header('Allow: GET, POST');
 			break;
 		}
-		echo $subcollection;
-		echo $subresource;
 	}
 
 	private function create_video()	{
@@ -115,29 +109,21 @@ class Server {
 		}
 	}
 
-	private function update_video($vid_id, $subresource) {
-		$textinput = file_get_contents('php://input');
-		$input = json_decode($inputJSON, TRUE);
-		$sql = "";
-		switch($subresource) {
-		case 'title':
-			$this->sql = "UPDATE videos SET title=$input WHERE id=$vid_id";
-			break;
-		case 'youtubeId':
-			$this->sql = "UPDATE videos SET youtubeId='$textinput' WHERE id=$vid_id";
-			break;
-		default:
-			header('HTTP/1.1 404 Not Found');
-			header('title, youtubeId allowed');
-			break;
-		}
+	private function retrieve_videos() {
+		$sql = "SELECT * FROM videos";
+		$videos = array();
 		$new = $this->mySQLconnect();
-		$new->query($sql);
-		if ($new->affected_rows < 1) {
+		$result = $new->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$videos[] = $row;
+		}
+		if ($videos == []) {
+
 			header('HTTP/1.1 404 Not Found');
-			die('Invalid id');
+			echo "Record not found";
 		} else {
-			header('HTTP/1.1 200 OK');
+			header('Content-type: application/json');
+			echo json_encode($videos, JSON_PRETTY_PRINT);
 		}
 	}
 
@@ -170,24 +156,6 @@ class Server {
 	private function paths($url) {
 		$uri = parse_url($url);
 		return $uri['path'];
-	}
-
-	private function retrieve_videos() {
-		$sql = "SELECT * FROM videos";
-		$videos = array();
-		$new = $this->mySQLconnect();
-		$result = $new->query($sql);
-		while ($row = $result->fetch_assoc()) {
-			$videos[] = $row;
-		}
-		if ($videos == []) {
-
-			header('HTTP/1.1 404 Not Found');
-			echo "Record not found";
-		} else {
-			header('Content-type: application/json');
-			echo json_encode($videos, JSON_PRETTY_PRINT);
-		}
 	}
 
 	private function mySQLconnect() {
