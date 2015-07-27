@@ -71,8 +71,8 @@ class Server {
 			$this->update_sub($vid_id, $subresource, $resourceid);
 			break;
 
-		case 'DElETE':
-			$this->delete_comment($vid_id, $subcollection, $subresource);
+		case 'DELETE':
+			$this->delete_comment($vid_id, $subresource, $resourceid);
 			break;
 
 		default:
@@ -114,9 +114,43 @@ class Server {
 	}
 
 	private function get_sub($vid_id, $subresource) {
+		$sql = "";
+		$results = array();
+		if ($subresource == 'comments') {
+			$sql = "SELECT time, comments, style FROM comments WHERE id = $vid_id";
+		} else {
+			$sql = "SELECT $subresource FROM videos where id=$vid_id";
+		}
+		$new = $this->mySQLconnect();
+		$result = $new->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$results[] = $row;
+		}
+		if ($results == []) {
+			header('HTTP/1.1 404 Not Found');
+			echo "Record not found";
+		} else {
+			header('Content-type: application/json');
+			echo json_encode($results, JSON_PRETTY_PRINT);
+		}
 	}
 
-	private function delete_comment() {
+	private function delete_comment($vid_id, $subresource, $resourceid) {
+		$sql = "";
+		if ($subresource == 'comments') {
+			$sql = "DELETE FROM comments WHERE time=$resourceid and id=$vid_id";
+		} else {
+			header('HTTP://1.1 403 Forbidden');
+			echo 'You can only delete comments';
+		}
+		$new = $this->mySQLconnect();
+		$new->query($sql);
+		if ($new->affected_rows < 1) {
+			header('HTTP/1.1 404 Not Found');
+			die('Invalid');
+		} else {
+			header('HTTP/1.1 200 OK');
+		}
 	}
 
 	private function create_video()	{
