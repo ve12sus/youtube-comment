@@ -68,7 +68,7 @@ class Server {
 			break;
 
 		case 'POST':
-			$this->update_sub($vid_id, $subresource);
+			$this->update_sub($vid_id, $subresource, $resourceid);
 			break;
 
 		case 'DElETE':
@@ -82,15 +82,23 @@ class Server {
 		}
 	}
 
-	private function update_sub($vid_id, $subresource) {
+	private function update_sub($vid_id, $subresource, $resourceid) {
 		$inputJSON = file_get_contents('php://input');
 		$input = json_decode($inputJSON, TRUE);
 		$resource = $input[$subresource];
+		$time = $input['time'];
+		$comment = $input['comments'];
+		$style = $input['style'];
 		$sql ="";
 		if ($subresource == 'title' or $subresource == 'youtubeId') {
 			$sql = "UPDATE videos SET $subresource = '$resource' WHERE id=$vid_id";
 		} elseif ($subresource == 'comments') {
-			$sql = "";
+			if ($resourceid) {
+				$sql = "UPDATE comments SET $subresource = '$resource' WHERE time = $resourceid and id=$vid_id";
+			} else {
+				$sql = "INSERT INTO comments (id, time, comments, style)
+						values ($vid_id, $time, '$comment', '$style')";
+			}
 		} else {
 			header('HTTP/1.1 404 Not Found');
 		}
