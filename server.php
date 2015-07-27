@@ -9,18 +9,18 @@ class Server {
 		$paths = explode('/', $this->paths($uri));
 		$collection = $paths[3];
 		$vid_id = $paths[4];
-		$subcollection = $paths[5];
-		$subresource = $paths[6];
+		$subresource = $paths[5];
+		$resourceid = $paths[6];
 
 		if ($collection == 'videos') {
 
 			if (empty($vid_id)) {
 				$this->handle_videos($method);
 			} else {
-				if (empty($subcollection)) {
+				if (empty($subresource)) {
 					$this->handle_id($method, $vid_id);
 				} else {
-					$this->handle_sub($method, $vid_id, $subcollection, $subresource);
+					$this->handle_sub($method, $vid_id, $subresource, $resourceid);
 				}
 			}
 		} else {
@@ -44,7 +44,7 @@ class Server {
 		}
 	}
 
-	private function handle_id($method, $vid_id, $subresource) {
+	private function handle_id($method, $vid_id) {
 		switch($method) {
 		case 'DELETE':
 			$this->delete_video($vid_id);
@@ -61,23 +61,14 @@ class Server {
 		}
 	}
 
-	private function add_comment() {
-	}
-
-	private function get_comments() {
-	}
-
-	private function delete_comment() {
-	}
-
-	private function handle_sub($method, $vid_id, $subcollection, $subresource) {
+	private function handle_sub($method, $vid_id, $subresource, $resourceid) {
 		switch($method) {
 		case 'GET':
-			$this->get_comments($vid_id);
+			$this->get_sub($vid_id, $subresource);
 			break;
 
 		case 'POST':
-			$this->add_comment($vid_id);
+			$this->update_sub($vid_id, $subresource);
 			break;
 
 		case 'DElETE':
@@ -89,6 +80,35 @@ class Server {
 			header('Allow: GET, POST');
 			break;
 		}
+	}
+
+	private function update_sub($vid_id, $subresource) {
+		$inputJSON = file_get_contents('php://input');
+		$input = json_decode($inputJSON, TRUE);
+		$resource = $input[$subresource];
+		$sql ="";
+		if ($subresource == 'title' or $subresource == 'youtubeId') {
+			$sql = "UPDATE videos SET $subresource = '$resource' WHERE id=$vid_id";
+		} elseif ($subresource == 'comments') {
+			$sql = "";
+		} else {
+			header('HTTP/1.1 404 Not Found');
+		}
+		$new = $this->mySQLconnect();
+		$new->query($sql);
+		if ($new->affected_rows < 1) {
+			header('HTTP/1.1 400 Bad Request');
+			die('Wrong Values');
+		} else {
+			header('HTTP/1.1 200 OK');
+			echo 'Resource updated';
+		}
+	}
+
+	private function get_sub($vid_id, $subresource) {
+	}
+
+	private function delete_comment() {
 	}
 
 	private function create_video()	{
