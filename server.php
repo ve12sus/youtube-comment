@@ -1,8 +1,22 @@
 <?php
-$api = new RestUtils;
-$new_request = $api->processRequest();
-echo gettype($new_request);
+$utility_obj = new RestUtils;
+$new_request = $utility_obj->processRequest();
+$controller = new VidController;
+switch($new_request->getMethod()) {
 
+	case 'get':
+		if (resource == 'videos') {
+			$utility_obj->sendResponse($status = 200, $body = $controller->getVideos(),
+									   $content_type = 'application/json');
+		}
+		if (resource == 'id') {
+			//get $id with router
+			$utility_obj->sendResponse($status = 200, $body = $controller->getVideo($id),
+									   $content_type = 'application/json');
+		}
+		break;
+
+}
 class RestUtils {
 	public function processRequest() {
 		$request_method = strtolower($_SERVER['REQUEST_METHOD']);
@@ -33,9 +47,19 @@ class RestUtils {
 	public function getStatusCodeMsg($status) {
 		$codes = array(
 				 100 => 'Continue',
-				 200 => 'OK'
+				 200 => 'OK',
+				 201 => 'Created',
+				 400 => 'Bad Request',
+				 403 => 'Forbidden',
+				 404 => 'Not Found',
+				 500 => 'Internal Server Error',
 				 );
-		return $codes[$status];
+		return (isset($codes[$status])) ? $codes[$status] : '';
+	}
+
+	public function getResource($url) {
+		$uri = parse_url($url);
+		return $uri['path'];
 	}
 }
 
@@ -46,7 +70,7 @@ class clientRequest {
 
 	public function __construct() {
 		$this->method 		= 'get';
-		$this->uri 			= array();
+		$this->uri		 	= '';
 		$this->request_body = array();
 	}
 
@@ -66,7 +90,7 @@ class clientRequest {
 	}
 
 	public function getURI() {
-		return $this->URI;
+		return $this->uri;
 	}
 
 	public function getRequestBody() {
@@ -74,10 +98,50 @@ class clientRequest {
 	}
 }
 
-class SendResponse {
+class VideoController {
+	private $video_obj = array();
+	private $comments  = array();
+
+	public function getVideos() {
+		$new_video = new video;
+		$sql = "SELECT * FROM videos";
+		$new_db_connection = new dbConnect();
+		$result = $new_db_connection->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$video_obj[] = $row;
+		}
+		return $video_obj;
+	}
+
+	public function getVideo($id) {
+		$sql = "SELECT * from videos WHERE id = $id";
+		$new_db_conn = new dbConnect();
+		$result = $new_db_conn->query($sql);
+		$video_obj = $result->fetch_assoc();
+		$sql = "SELECT * from comments where id = $id";
+		$result = $new_db_conn->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$comments[] = $row;
+		}
+		$this->video_obj['comments'][] =  $comments;
+		return $video_obj;
+	}
+
+	public function dbConnect() {
+		$servername = "localhost";
+		$username 	= "root";
+		$password 	= "admin";
+		$dbname 	= "ytc";
+
+		$connection = new mysqli($servername, $username, $password, $dbname);
+		if ($connection->connect_errno) {
+			die("Unable to connect to database" . $connection->connect_error);
+		}
+		return $connection;
+	}
 }
 
-class video {
+class Video {
 	private $video_obj = array();
 	private $comments  = array();
 
@@ -105,19 +169,7 @@ class video {
 
 }
 
-class DatabaseUtils {
-
-	private function dbConnect() {
-		$servername = "localhost";
-		$username 	= "root";
-		$password 	= "admin";
-		$dbname 	= "ytc";
-
-		//$connection =
-	}
-}
-
-$new = new video();
+$new = new Video();
 $new->set_video(1, 'new video', 'new id');
 $new->set_comment(10, "new comment", "no style");
 $new->set_comment(20, "2nd comment", "second ytid");
