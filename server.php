@@ -11,10 +11,33 @@ class Controller
         $request = new Request;
         $request->setMethod($request_method);
         $request->setResources($rest_url);
+		$request->setData(json_decode(file_get_contents('php://input'), TRUE));
 
         return $request;
     }
 
+	public function sendResponse($response)
+	{
+		$status_header = 'HTTP/1.1 ' . $response->getStatus() . ' ' .
+							$this->getStatusMsg($response->getStatus());
+		header($status_header);
+		header('Content-Type: application/json');
+		echo json_encode($response->getBody(), JSON_PRETTY_PRINT);
+	}
+
+	public function getStatusMsg($status)
+	{
+		$codes = array(
+				 100 => 'Continue',
+				 200 => 'OK',
+				 201 => 'Created',
+				 400 => 'Bad Request',
+				 403 => 'Forbidden',
+				 404 => 'Not Found',
+				 500 => 'Internal Server Error',
+				 );
+		return (isset($codes[$status])) ? $codes[$status] : '';
+	}
 }
 
 class Request
@@ -22,6 +45,7 @@ class Request
     private $method;
     private $resource;
     private $id;
+	private $data;
 
     public function setMethod($method)
     {
@@ -48,6 +72,42 @@ class Request
     {
         return $this->id;
     }
+
+	public function setData($data)
+	{
+		$this->data = $data;
+	}
+
+	public function getData($data)
+	{
+		return $this->data;
+	}
+}
+
+class Response
+{
+	private $status;
+	private $body;
+
+	public function setStatus($status)
+	{
+		$this->status = $status;
+	}
+
+	public function setBody($body)
+	{
+		$this->body = $body;
+	}
+
+	public function getStatus()
+	{
+		return $this->status;
+	}
+
+	public function getBody()
+	{
+		return $this->body;
+	}
 }
 
 class Database
@@ -69,6 +129,20 @@ class Database
         $this->connection =  $connection;
     }
 
+	public function getVideos() {
+		$sql 	= "SELECT * FROM videos";
+		$result = $this->connection->query($sql);
+		$videos = array();
+
+		while ($row = $result->fetch_assoc())
+		{
+			$videos[] = $row;
+		}
+		$video = new Video;
+		$video->setVidObj($videos);
+		return $video;
+	}
+
     public function getVideo($id)
     {
         $sql    = "SELECT * FROM videos WHERE id = $id";
@@ -76,7 +150,7 @@ class Database
         $row    = $result->fetch_assoc();
 
         $video  = new Video;
-        $video->setTitle($row);
+        $video->setVidObj($row);
         return $video;
     }
 
@@ -94,46 +168,96 @@ class Database
         return $this->getVideo($last_id);
     }
 
+	public function updateVideo($id, $data)
+	{
+		$title		= $data['title'];
+		$youtubeId	= $data['youtubeId'];
+		$sql		= "UPDATE videos SET
+						title = '$title',
+						youtubeId = '$youtubeId'
+						WHERE id = $id";
+		$result = $this->connection->query($sql);
+		return $this->getVideo($id);
+	}
+
     public function deleteVideo($id)
     {
-        $video  = getVideo($id);
+
+        $video = $this->getVideo($id);
         $sql    = "DELETE FROM videos WHERE id = $id";
         $result = $this->connection->query($sql);
-        if ($this->connection->affected_rows < 1)
-        {
-            $video->setStatus = 404;
-        } else
-            {
-            $video->setStatus = 200;
-            }
-        return $video;
+		return $video;
     }
 }
 
 class Video
 {
-    private $title;
-    private $youtubeId;
-    private $comments;
+    private $vid_obj;
 
-    public function setTitle($title)
+    public function setVidObj($vid_obj)
     {
-        $this->title = $title;
+        $this->vid_obj = $vid_obj;
     }
 
-    public function getTitle($title)
+    public function getVidObj()
     {
-        return $this->title;
+        return $this->vid_obj;
     }
 }
 
 $controller = new Controller;
+$database   = new Database;
+$response	= new Response;
+
 $request    = $controller->processRequest();
-echo $request->getResource();
-echo $request->getId();
-echo $request->getMethod();
-/*public function
-switch($request->getResource())
+
+if ($request->getResource() == 'videos' and !$request->getId())
 {
-	case 'video';*/
+	switch($request->getMethod())
+	{
+		case 'GET':
+			$video = $database->getVideos();
+			$response->setStatus(200);
+			$response->setBody($video->getVidObj());
+			$controller->sendResponse($response);
+			break;
+		case 'POST':
+			$video = $database->createVideo($request->getData());
+			$response->setStatus(201);
+			$response->setBody($video->getVidObj());
+			$controller->sendResponse($response);
+			break;
+		default:
+			echo 'hello world';
+			break;
+	}
+}
+if ($request->getResource() == 'videos' and $request->getId())
+{
+	switch($request->getMethod())
+	{
+		case 'GET':
+			$video = $database->getVideo($request->getId());
+			$response->setStatus(200);
+			$response->setBody($video->getVidObj());
+			$controller->sendResponse($response);
+			break;
+		case 'DELETE':
+			$video = $database->deleteVideo($request->getId());
+			$response->setStatus(200);
+			$response->setBody($video->getVidObj());
+			$controller->sendResponse($response);
+			break;
+		case 'PUT':
+			$video = $database->updateVideo($request->getId(),
+											$request->getData());
+			$response->setStatus(200);
+			$response->setBody($video->getVidObj());
+			$controller->sendResponse($response);
+			break;
+		default:
+			echo 'hello world';
+			break;
+	}
+}
 ?>
