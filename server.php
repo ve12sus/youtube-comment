@@ -78,7 +78,7 @@ class Request {
         return $this->id;
     }
 
-	public function getResrouce()
+	public function getResource()
 	{
 		return $this->resource;
 	}
@@ -154,8 +154,9 @@ class Database
 		return $video;
 	}
 
-    public function getVideo($id)
+    public function getVideo($request)
     {
+		$id 	= $request->getId();
         $sql    = "SELECT * FROM videos WHERE id = $id";
         $result = $this->connection->query($sql);
         $video_obj = $result->fetch_assoc();
@@ -250,7 +251,7 @@ $database   = new Database;
 $router		= new Router;
 
 $request    = $controller->processRequest();
-$router->route($request);
+$video		= $router->route($request);
 //$controller->sendResponse($video, $request);
 
 class Router
@@ -258,45 +259,43 @@ class Router
 
 	public function route($request)
 	{
-		$collection = $resquest->getCollection();
-		$id = $request->getId();
-		$resource = $request->getResource();
+		$collection = $request->getCollection();
+		$id			= $request->getId();
+		$resource	= $request->getResource();
 
-		echo var_dump($id);
-		/*if ($collection == 'videos')
+		if ($collection == 'videos')
 		{
-			echo 'hello world';
-		}
-		/*	if (!$id)
+			if (!$id)
 			{
-				echo 'hello world';
+				$this->handle_videos($request);
 			}
-				if(!$resource)
+			else
+			{
+				if (!$resource)
 				{
 					$this->handle_id($request);
 				}
-				else if ($resource == 'comments')
+				else
 				{
-					$this->handle_comments();
+					$this->handle_comments($request);
 				}
+			}
 		}
-		else
-		{
-			//send Error response
-		}*/
 	}
+
 
 	public function handle_videos($request)
 	{
 		switch($request->getMethod())
 		{
 			case 'GET':
-				$this->getVideos($id);
+				$this->getVideos($request);
 				break;
 			case 'POST':
 				$this->createVideo($request);
+				break;
 			default:
-				echo 'hello world';
+				echo 'error';
 				break;
 		}
 	}
@@ -306,15 +305,35 @@ class Router
 		switch($request->getMethod())
 		{
 			case 'GET':
-				$this->getVideo($request->getId());
+				$this->getVideo($request);
+				break;
+			case 'PUT':
+				$this-updateVideo($request);
+				break;
+			case 'DELETE':
+				$this->deleteVideo($request);
+				break;
+			default:
+				echo 'error';
 				break;
 		}
 	}
 
-	public function getVideo($id)
+	public function handle_comments($request)
 	{
-		$video = $database->getVideo($id);
+		echo 'get comments';
+	}
+
+	public function getVideos($request)
+	{
+		echo 'get videos';
+	}
+
+	public function getVideo($request)
+	{
+		$video = $database->getVideo($request);
 		return $video;
 	}
+
 }
 ?>
