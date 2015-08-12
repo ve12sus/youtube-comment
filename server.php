@@ -16,16 +16,111 @@ class Controller
         return $request;
     }
 
-	public function sendResponse($response)
+	public function route($request)
 	{
-		$status_header = 'HTTP/1.1 ' . $response->getStatus() . ' ' .
-			$this->getStatusMsg($response->getStatus()); header($status_header);
+		$collection = $request->getCollection();
+		$id			= $request->getId();
+		$resource	= $request->getResource();
+
+		if ($collection == 'videos')
+		{
+			if (!$id)
+			{
+				$this->handle_videos($request);
+			}
+			else
+			{
+				if (!$resource)
+				{
+					$this->handle_id($request);
+				}
+				else
+				{
+					$this->handle_comments($request);
+				}
+			}
+		}
+	}
+
+
+	public function handle_videos($request)
+	{
+		switch($request->getMethod())
+		{
+			case 'GET':
+				$this->getVideos($request);
+				break;
+			case 'POST':
+				$this->createVideo($request);
+				break;
+			default:
+				echo 'error';
+				break;
+		}
+	}
+
+	public function handle_id($request)
+	{
+		switch($request->getMethod())
+		{
+			case 'GET':
+				$this->getVideo($request);
+				break;
+			case 'PUT':
+				$this-updateVideo($request);
+				break;
+			case 'DELETE':
+				$this->deleteVideo($request);
+				break;
+			default:
+				echo 'error';
+				break;
+		}
+	}
+
+	public function handle_comments($request)
+	{
+		echo 'get comments';
+	}
+
+	public function getVideos($request)
+	{
+		$database = New Database;
+		$video = $database->getVideos();
+		$this->sendResponse($video);
+	}
+
+	public function createVideo($request)
+	{
+		$database = New Database;
+		$video = $database->createVideo($request);
+		$this->sendResponse($video);
+	}
+
+	public function getVideo($request)
+	{
+		$database = New Database;
+		$video = $database->getVideo($request);
+		$this->sendResponse($video);
+	}
+
+	public function deleteVideo($request)
+	{
+		$database = New Database;
+		$database->deleteVideo($request);
+		$this->sendResponse();
+	}
+
+	public function sendResponse($video)
+	{
+		/*$status_header = 'HTTP/1.1 ' . $response->getStatus() . ' ' .
+			$this->getStatusMsg($response->getStatus());
+		header($status_header);*/
 		header('Content-Type: application/json');
 
-		$response->setBody($video->getVidObj());
-		if ($response->getBody())
+		if ($video->getVidObj())
 		{
-			echo json_encode($response->getBody(), JSON_PRETTY_PRINT);
+			echo json_encode($video->getVidObj(), JSON_PRETTY_PRINT);
 		}
 	}
 
@@ -176,10 +271,10 @@ class Database
         return $video;
     }
 
-    public function createVideo($data)
+    public function createVideo($request)
     {
-        $title      = $data['title'];
-        $youtubeId  = $data['youtubeId'];
+        $title      = $request->getData()['title'];
+        $youtubeId  = $request->getData()['youtubeId'];
         $sql        = "INSERT INTO videos (title, youtubeId)
                         VALUES ('$title', '$youtubeId')";
         $result     =$this->connection->query($sql);
@@ -190,10 +285,11 @@ class Database
         return $this->getVideo($last_id);
     }
 
-	public function updateVideo($id, $data)
+	public function updateVideo($request)
 	{
-		$title		= $data['title'];
-		$youtubeId	= $data['youtubeId'];
+		$id			= $request->getId();
+		$title		= $request->getData()['title'];
+		$youtubeId	= $request->getData()['youtubeId'];
 		$sql		= "UPDATE videos SET
 						title = '$title',
 						youtubeId = '$youtubeId'
@@ -202,31 +298,32 @@ class Database
 		return $this->getVideo($id);
 	}
 
-    public function deleteVideo($id)
+    public function deleteVideo($request)
     {
-
+		$id = $request->getId();
         $video = $this->getVideo($id);
         $sql    = "DELETE FROM videos WHERE id = $id";
         $result = $this->connection->query($sql);
 		return $video;
     }
 
-	public function createComment($id, $data)
+	public function createComment($request)
 	{
-		$time = $data['time'];
-		$comment = $data['comment'];
-		$style = $data['style'];
+		$id = $request->getId();
+		$time = $request->getData()['time'];
+		$comment = $request->getData()['comment'];
+		$style = $request->getData()['style'];
 		$sql = "INSERT INTO comments (id, time, comments, style)
 				VALUES ($id, $time, '$comment', '$style')";
 		$result = $this->connection->query($sql);
 		return $this->getVideo($id);
 	}
 
-	public function updateComment($id, $data)
+	public function updateComment($request)
 	{
 	}
 
-	public function deleteComment($id, $data)
+	public function deleteComment($request)
 	{
 	}
 }
@@ -247,93 +344,7 @@ class Video
 }
 
 $controller = new Controller;
-$database   = new Database;
-$router		= new Router;
 
 $request    = $controller->processRequest();
-$video		= $router->route($request);
-//$controller->sendResponse($video, $request);
-
-class Router
-{
-
-	public function route($request)
-	{
-		$collection = $request->getCollection();
-		$id			= $request->getId();
-		$resource	= $request->getResource();
-
-		if ($collection == 'videos')
-		{
-			if (!$id)
-			{
-				$this->handle_videos($request);
-			}
-			else
-			{
-				if (!$resource)
-				{
-					$this->handle_id($request);
-				}
-				else
-				{
-					$this->handle_comments($request);
-				}
-			}
-		}
-	}
-
-
-	public function handle_videos($request)
-	{
-		switch($request->getMethod())
-		{
-			case 'GET':
-				$this->getVideos($request);
-				break;
-			case 'POST':
-				$this->createVideo($request);
-				break;
-			default:
-				echo 'error';
-				break;
-		}
-	}
-
-	public function handle_id($request)
-	{
-		switch($request->getMethod())
-		{
-			case 'GET':
-				$this->getVideo($request);
-				break;
-			case 'PUT':
-				$this-updateVideo($request);
-				break;
-			case 'DELETE':
-				$this->deleteVideo($request);
-				break;
-			default:
-				echo 'error';
-				break;
-		}
-	}
-
-	public function handle_comments($request)
-	{
-		echo 'get comments';
-	}
-
-	public function getVideos($request)
-	{
-		echo 'get videos';
-	}
-
-	public function getVideo($request)
-	{
-		$video = $database->getVideo($request);
-		return $video;
-	}
-
-}
+$controller->route($request);
 ?>
