@@ -67,7 +67,7 @@ class Controller
 				$this->getVideo($request);
 				break;
 			case 'PUT':
-				$this-updateVideo($request);
+				$this->updateVideo($request);
 				break;
 			case 'DELETE':
 				$this->deleteVideo($request);
@@ -80,47 +80,102 @@ class Controller
 
 	public function handle_comments($request)
 	{
-		echo 'get comments';
+		echo 'comments switch';
 	}
 
 	public function getVideos($request)
 	{
-		$database = New Database;
-		$video = $database->getVideos();
-		$this->sendResponse($video);
+		echo 'get videos function';
 	}
 
 	public function createVideo($request)
 	{
-		$database = New Database;
-		$video = $database->createVideo($request);
-		$this->sendResponse($video);
+		echo 'create video function';
 	}
 
 	public function getVideo($request)
 	{
-		$database = New Database;
-		$video = $database->getVideo($request);
-		$this->sendResponse($video);
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->getVideo($request);
+			$response = new Response(200, $video->getVidObj());
+		}
+		catch (Exception $e) {
+			$response = new Response(404, $e->getMessage());
+		}
+		$this->sendResponse($response);
+	}
+
+	public function updateVideo($request)
+	{
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->updateVideo($request);
+			$response = new Response(200, $video->getVidObj());
+		}
+		catch (Exception $e) {
+			$response = new Response(404, $e->getMessage());
+		}
+		$this->sendResponse($response);
 	}
 
 	public function deleteVideo($request)
 	{
-		$database = New Database;
-		$database->deleteVideo($request);
-		$this->sendResponse();
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->deleteVideo($request);
+			$response = new Response(200, $video->getVidObj());
+		}
+		catch (Exception $e) {
+			$response = new Response(404, $e->getMessage());
+		}
+		$this->sendResponse($response);
+
 	}
 
-	public function sendResponse($video)
+	public function sendResponse($response)
 	{
-		/*$status_header = 'HTTP/1.1 ' . $response->getStatus() . ' ' .
-			$this->getStatusMsg($response->getStatus());
-		header($status_header);*/
-		header('Content-Type: application/json');
+		$status = $response->getStatus();
+		$body = $response->getBody();
 
-		if ($video->getVidObj())
+		$status_header = 'HTTP/1.1 ' . $status . ' ' .
+			$this->getStatusMsg($status);
+		header($status_header);
+		header('Content-Type: application/json');
+		if (gettype($body) == 'array')
 		{
-			echo json_encode($video->getVidObj(), JSON_PRETTY_PRINT);
+			echo json_encode($body, JSON_PRETTY_PRINT);
+		}
+		else
+		{
+			echo $body;
 		}
 	}
 
@@ -194,13 +249,9 @@ class Response
 	private $status;
 	private $body;
 
-	public function setStatus($status)
+	public function __construct($status, $body)
 	{
 		$this->status = $status;
-	}
-
-	public function setBody($body)
-	{
 		$this->body = $body;
 	}
 
@@ -254,20 +305,19 @@ class Database
 		$id 	= $request->getId();
         $sql    = "SELECT * FROM videos WHERE id = $id";
         $result = $this->connection->query($sql);
-        $video_obj = $result->fetch_assoc();
+        $video_row = $result->fetch_assoc();
 
-		$sql	= "SELECT time, comments, style FROM comments WHERE id = $id";
-		$result = $this->connection->query($sql);
-		while ($row = $result->fetch_assoc())
-		{
-			$comments[] = $row;
-		}
-		if ($video_obj)
-		{
-			$video_obj['comments'] = $comments;
-		}
-        $video  = new Video;
-        $video->setVidObj($video_obj);
+		//$sql	= "SELECT time, comments, style FROM comments WHERE id = $id";
+		//$result = $this->connection->query($sql);
+		//while ($row = $result->fetch_assoc())
+		//{
+		//	$comments[] = $row;
+		//}
+		//if ($video_obj)
+		//{
+		//	$video_obj['comments'] = $comments;
+		//}
+        $video  = new Video($video_row);
         return $video;
     }
 
@@ -295,13 +345,13 @@ class Database
 						youtubeId = '$youtubeId'
 						WHERE id = $id";
 		$result = $this->connection->query($sql);
-		return $this->getVideo($id);
+		return $this->getVideo($request);
 	}
 
     public function deleteVideo($request)
     {
 		$id = $request->getId();
-        $video = $this->getVideo($id);
+		$video = $this->getVideo($request);
         $sql    = "DELETE FROM videos WHERE id = $id";
         $result = $this->connection->query($sql);
 		return $video;
@@ -309,14 +359,6 @@ class Database
 
 	public function createComment($request)
 	{
-		$id = $request->getId();
-		$time = $request->getData()['time'];
-		$comment = $request->getData()['comment'];
-		$style = $request->getData()['style'];
-		$sql = "INSERT INTO comments (id, time, comments, style)
-				VALUES ($id, $time, '$comment', '$style')";
-		$result = $this->connection->query($sql);
-		return $this->getVideo($id);
 	}
 
 	public function updateComment($request)
@@ -330,16 +372,24 @@ class Database
 
 class Video
 {
-    private $vid_obj;
+    private $id;
+	private $title;
+	private $youtubeId;
 
-    public function setVidObj($vid_obj)
-    {
-        $this->vid_obj = $vid_obj;
-    }
+	public function __construct($video_row)
+	{
+		$this->id = $video_row['id'];
+		$this->title = $video_row['title'];
+		$this->youtubeId = $video_row['youtubeId'];
+	}
 
     public function getVidObj()
     {
-        return $this->vid_obj;
+		$video['id'] = $this->id;
+		$video['title'] = $this->title;
+		$video['youtubeId'] = $this->youtubeId;
+
+		return $video;
     }
 }
 
