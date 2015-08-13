@@ -203,30 +203,30 @@ class Request {
 	private $resource;
 	private $data;
 
-    public function setMethod($method)
-    {
-        $this->method = $method;
-    }
+	public function setMethod($method)
+	{
+		$this->method = $method;
+	}
 
-    public function getMethod()
-    {
-        return $this->method;
-    }
+	public function getMethod()
+	{
+		return $this->method;
+	}
 
-    public function setResources($url)
-    {
-        $this->collection = reset($url);
+	public function setResources($url)
+	{
+		$this->collection = reset($url);
 		$this->id = next($url);
 		$this->resource = next($url);
-    }
+	}
 
-    public function getCollection()
-    {
-        return $this->collection;
-    }
+	public function getCollection()
+	{
+		return $this->collection;
+	}
 
-    public function getId()
-    {
+	public function getId()
+	{
 		return $this->id;
 	}
 
