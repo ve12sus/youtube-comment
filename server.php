@@ -107,7 +107,7 @@ class Controller
 		}
 		try {
 			$video = $database->getVideo($request);
-			$response = new Response(200, $video->getVidObj());
+			$response = new Response(200, $video);
 		}
 		catch (Exception $e) {
 			$response = new Response(404, $e->getMessage());
@@ -129,7 +129,7 @@ class Controller
 		}
 		try {
 			$video = $database->updateVideo($request);
-			$response = new Response(200, $video->getVidObj());
+			$response = new Response(200, $video);
 		}
 		catch (Exception $e) {
 			$response = new Response(404, $e->getMessage());
@@ -151,7 +151,7 @@ class Controller
 		}
 		try {
 			$video = $database->deleteVideo($request);
-			$response = new Response(200, $video->getVidObj());
+			$response = new Response(200, $video);
 		}
 		catch (Exception $e) {
 			$response = new Response(404, $e->getMessage());
@@ -163,15 +163,16 @@ class Controller
 	public function sendResponse($response)
 	{
 		$status = $response->getStatus();
-		$body = $response->getBody();
+		$video = $response->getBody();
 
 		$status_header = 'HTTP/1.1 ' . $status . ' ' .
 			$this->getStatusMsg($status);
 		header($status_header);
 		header('Content-Type: application/json');
-		if (gettype($body) == 'array')
+		if (gettype($video) == 'object')
 		{
-			echo json_encode($body, JSON_PRETTY_PRINT);
+			$video_body = $video->getVidObj();
+			echo json_encode($video_body, JSON_PRETTY_PRINT);
 		}
 		else
 		{
@@ -195,9 +196,10 @@ class Controller
 }
 
 class Request {
+
 	private $method;
-    private $collection;
-    private $id;
+	private $collection;
+	private $id;
 	private $resource;
 	private $data;
 
@@ -214,8 +216,8 @@ class Request {
     public function setResources($url)
     {
         $this->collection = reset($url);
-        $this->id         = next($url);
-		$this->resource   = next($url);
+		$this->id = next($url);
+		$this->resource = next($url);
     }
 
     public function getCollection()
@@ -225,8 +227,8 @@ class Request {
 
     public function getId()
     {
-        return $this->id;
-    }
+		return $this->id;
+	}
 
 	public function getResource()
 	{
@@ -268,22 +270,22 @@ class Response
 
 class Database
 {
-    private $connection;
+	private $connection;
 
-    public function __construct()
-    {
-        $servername = "localhost";
-        $username   = "root";
-        $password   = "admin";
-        $dbname     = "ytc";
+	public function __construct()
+	{
+		$servername = "localhost";
+		$username   = "root";
+		$password   = "admin";
+		$dbname     = "ytc";
 
-        $connection = new mysqli($servername, $username, $password, $dbname);
-        if ($connection->connect_errno)
-        {
-            die("Unable to connect to database" . $connection->connect_error);
-        }
-        $this->connection =  $connection;
-    }
+		$connection = new mysqli($servername, $username, $password, $dbname);
+		if ($connection->connect_errno)
+		{
+			die("Unable to connect to database" . $connection->connect_error);
+		}
+		$this->connection =  $connection;
+	}
 
 	public function getVideos()
 	{
@@ -303,37 +305,26 @@ class Database
     public function getVideo($request)
     {
 		$id 	= $request->getId();
-        $sql    = "SELECT * FROM videos WHERE id = $id";
-        $result = $this->connection->query($sql);
-        $video_row = $result->fetch_assoc();
-
-		//$sql	= "SELECT time, comments, style FROM comments WHERE id = $id";
-		//$result = $this->connection->query($sql);
-		//while ($row = $result->fetch_assoc())
-		//{
-		//	$comments[] = $row;
-		//}
-		//if ($video_obj)
-		//{
-		//	$video_obj['comments'] = $comments;
-		//}
-        $video  = new Video($video_row);
-        return $video;
+		$sql    = "SELECT * FROM videos WHERE id = $id";
+		$result = $this->connection->query($sql);
+		$video_row = $result->fetch_assoc();
+		$video  = new Video($video_row);
+		return $video;
     }
 
     public function createVideo($request)
     {
-        $title      = $request->getData()['title'];
-        $youtubeId  = $request->getData()['youtubeId'];
-        $sql        = "INSERT INTO videos (title, youtubeId)
-                        VALUES ('$title', '$youtubeId')";
-        $result     =$this->connection->query($sql);
-        if ($result == TRUE)
-        {
-            $last_id = $this->connection->insert_id;
-        }
-        return $this->getVideo($last_id);
-    }
+		$title      = $request->getData()['title'];
+		$youtubeId  = $request->getData()['youtubeId'];
+		$sql        = "INSERT INTO videos (title, youtubeId)
+						VALUES ('$title', '$youtubeId')";
+		$result		= $this->connection->query($sql);
+		if ($result == TRUE)
+		{
+			$last_id = $this->connection->insert_id;
+		}
+		return $this->getVideo($last_id);
+	}
 
 	public function updateVideo($request)
 	{
@@ -348,14 +339,14 @@ class Database
 		return $this->getVideo($request);
 	}
 
-    public function deleteVideo($request)
-    {
+	public function deleteVideo($request)
+	{
 		$id = $request->getId();
 		$video = $this->getVideo($request);
-        $sql    = "DELETE FROM videos WHERE id = $id";
-        $result = $this->connection->query($sql);
+		$sql    = "DELETE FROM videos WHERE id = $id";
+		$result = $this->connection->query($sql);
 		return $video;
-    }
+	}
 
 	public function createComment($request)
 	{
@@ -372,7 +363,7 @@ class Database
 
 class Video
 {
-    private $id;
+	private $id;
 	private $title;
 	private $youtubeId;
 
@@ -383,14 +374,14 @@ class Video
 		$this->youtubeId = $video_row['youtubeId'];
 	}
 
-    public function getVidObj()
-    {
+	public function getVidObj()
+	{
 		$video['id'] = $this->id;
 		$video['title'] = $this->title;
 		$video['youtubeId'] = $this->youtubeId;
 
 		return $video;
-    }
+	}
 }
 
 $controller = new Controller;
