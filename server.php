@@ -34,9 +34,13 @@ class Controller
 				{
 					$this->handle_id($request);
 				}
-				else
+				else if ($resource == 'comments')
 				{
 					$this->handle_comments($request);
+				}
+				else
+				{
+					echo 'no such resource';
 				}
 			}
 		}
@@ -80,18 +84,76 @@ class Controller
 
 	public function handle_comments($request)
 	{
-		echo 'comments switch';
+		switch ($request->getMethod())
+		{
+			case 'GET':
+				$this->getVideo($request);
+				break;
+			case 'POST':
+				$this->createComment($request);
+				break;
+			case 'PUT':
+				$this->updateComment($request);
+				break;
+			case 'DELETE':
+				$this->deleteComment($request);
+				break;
+			default:
+				echo 'error';
+				break;
+		}
 	}
 
 	public function getVideos($request)
 	{
-		echo 'get videos function';
+		$response;
+		$database;
+		$videos;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$videos = $database->getVideos();
+			$response = new Response(200, $videos);
+		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(404, $videos);
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $videos);
+		}
+		$this->sendResponse($response);
 	}
 
 	public function createVideo($request)
 	{
-		echo 'create video function';
+		$response;
+		$database;
+		$videos;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->createVideo($request);
+			$response = new Response(201, $video);
+		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(400, $vnfe->errorMessage);
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		$this->sendResponse($response);
 	}
+
 
 	public function getVideo($request)
 	{
@@ -109,8 +171,11 @@ class Controller
 			$video = $database->getVideo($request);
 			$response = new Response(200, $video);
 		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(404, $vnfe->errorMessage());
+		}
 		catch (Exception $e) {
-			$response = new Response(404, $e->getMessage());
+			$response = new Response(500, $e->getMessage());
 		}
 		$this->sendResponse($response);
 	}
@@ -131,8 +196,11 @@ class Controller
 			$video = $database->updateVideo($request);
 			$response = new Response(200, $video);
 		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(404, $vnfe->errorMessage());
+		}
 		catch (Exception $e) {
-			$response = new Response(404, $e->getMessage());
+			$response = new Response(500, $e->getMessage());
 		}
 		$this->sendResponse($response);
 	}
@@ -153,11 +221,88 @@ class Controller
 			$video = $database->deleteVideo($request);
 			$response = new Response(200, $video);
 		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(404, $vnfe->errorMessage());
+		}
 		catch (Exception $e) {
-			$response = new Response(404, $e->getMessage());
+			$response = new Response(500, $e->getMessage());
 		}
 		$this->sendResponse($response);
+	}
 
+	public function createComment($request)
+	{
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->createComment($request);
+			$response = new Response(201, $video);
+		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(400, $vnfe->errorMessage());
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		$this->sendResponse($response);
+	}
+
+	public function updateComment($request)
+	{
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->updateComment($request);
+			$response = new Response(200, $video);
+		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(400, $vnfe->errorMessage());
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		$this->sendResponse($response);
+	}
+
+	public function deleteComment($request)
+	{
+		$response;
+		$database;
+		$video;
+
+		try {
+			$database = new Database;
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		try {
+			$video = $database->deleteComment($request);
+			$response = new Response(200, $video);
+		}
+		catch (VideoNotFoundException $vnfe) {
+			$response = new Response(400, $vnfe->errorMessage());
+		}
+		catch (Exception $e) {
+			$response = new Response(500, $e->getMessage());
+		}
+		$this->sendResponse($response);
 	}
 
 	public function sendResponse($response)
@@ -174,9 +319,13 @@ class Controller
 			$video_body = $video->getVidObj();
 			echo json_encode($video_body, JSON_PRETTY_PRINT);
 		}
+		else if (gettype($video) == 'array')
+		{
+			echo json_encode($video, JSON_PRETTY_PRINT);
+		}
 		else
 		{
-			echo $body;
+			echo $video;
 		}
 	}
 
@@ -228,6 +377,11 @@ class Request {
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	public function setId($id)
+	{
+		$this->id = $id;
 	}
 
 	public function getResource()
@@ -295,11 +449,10 @@ class Database
 
 		while ($row = $result->fetch_assoc())
 		{
-			$videos[] = $row;
+			$video = new Video($row);
+			$videos[] = $video->getVidObj();
 		}
-		$video = new Video;
-		$video->setVidObj($videos);
-		return $video;
+		return $videos;
 	}
 
     public function getVideo($request)
@@ -308,7 +461,13 @@ class Database
 		$sql    = "SELECT * FROM videos WHERE id = $id";
 		$result = $this->connection->query($sql);
 		$video_row = $result->fetch_assoc();
+		if ($video_row == null)
+		{
+			throw new VideoNotFoundException();
+		}
 		$video  = new Video($video_row);
+		$comments = $this->getComments($request);
+		$video->addComments($comments);
 		return $video;
     }
 
@@ -322,8 +481,9 @@ class Database
 		if ($result == TRUE)
 		{
 			$last_id = $this->connection->insert_id;
+			$request->setId($last_id);
 		}
-		return $this->getVideo($last_id);
+		return $this->getVideo($request);
 	}
 
 	public function updateVideo($request)
@@ -348,16 +508,56 @@ class Database
 		return $video;
 	}
 
+	public function getComments($request)
+	{
+		$id = $request->getId();
+		$sql = "SELECT time, comments, style FROM comments WHERE id = $id";
+		$result = $this->connection->query($sql);
+		$comments = array();
+		while ($row = $result->fetch_assoc())
+		{
+			$comments[] = $row;
+		}
+		return $comments;
+	}
+
 	public function createComment($request)
 	{
+		$data = $request->getData();
+		$id = $request->getId();
+		$time = $data['time'];
+		$comment = $data['comment'];
+		$style = $data['style'];
+
+		$sql = "INSERT INTO comments (id, time, comments, style)
+				VALUES ($id, $time, '$comment', '$style')";
+		$result = $this->connection->query($sql);
+		return $this->getVideo($request);
 	}
 
 	public function updateComment($request)
 	{
+		$data = $request->getData();
+		$id = $request->getId();
+		$time = $data['time'];
+		$comment = $data['comment'];
+		$style = $data['style'];
+
+		$sql = "UPDATE comments SET comments = '$comment', style = '$style'
+				WHERE time = $time and id = $id";
+		$result = $this->connection->query($sql);
+		return $this->getVideo($request);
 	}
 
 	public function deleteComment($request)
 	{
+		$data = $request->getData();
+		$id = $request->getId();
+		$time = $data['time'];
+
+		$sql = "DELETE FROM comments WHERE time = $time and id = $id";
+		$result = $this->connection->query($sql);
+		return $this->getVideo($request);
 	}
 }
 
@@ -366,6 +566,7 @@ class Video
 	private $id;
 	private $title;
 	private $youtubeId;
+	private $comments;
 
 	public function __construct($video_row)
 	{
@@ -374,13 +575,28 @@ class Video
 		$this->youtubeId = $video_row['youtubeId'];
 	}
 
+	public function addComments($comments)
+	{
+		$this->comments = $comments;
+	}
+
 	public function getVidObj()
 	{
 		$video['id'] = $this->id;
 		$video['title'] = $this->title;
 		$video['youtubeId'] = $this->youtubeId;
+		$video['comments'] = $this->comments;
 
 		return $video;
+	}
+}
+
+class VideoNotFoundException extends Exception
+{
+	public function errorMessage()
+	{
+		$error_msg = 'Video Not Found';
+		return $error_msg;
 	}
 }
 
