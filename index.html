@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
-	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<script src="js/xhrtest.js"></script>
-  </head>
-  <body>
-	<div id="main">
-	  <div id="playerwrap">
-        <div id="ytplayer"></div>
-	  </div>
-      <h2 id="currentComment">Subs appear here</h2>
-	  <div id="commentPane">
-	    <h2>Comments</h2>
-	    <ul id="objView"></ul>
-	  </div>
-      <script src="js/player.js"></script>
-	<!--<form>
-	  <input type="text" id="commentField" size="40" value="type new comment here" />
-	  <button type="button"
-	  onclick="newCommentSubmit()">
-	  add comment.</button>
-	</form>-->
-	</div>
-  </body>
+	<head>
+		<title>Youtube Commenter</title>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="js/player.js"></script>
+	</head>
+	<body>
+		<label for="videoUrl"><strong>Youtube Video ID</strong></label>
+		<input type="text" id="videoUrl" name=videoUrl" value="HGfC4CFBAns">
+		<button id="button">Load</button>
+		<div id="mydiv">
+			<iframe id="frame" src="" width="640" height="390"></iframe>
+		</div>
+	</body>
 </html>
