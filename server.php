@@ -458,9 +458,13 @@ class Database
     public function getVideo($request)
     {
 		$id 	= $request->getId();
-		$sql    = "SELECT * FROM videos WHERE id = $id";
-		$result = $this->connection->query($sql);
-		$video_row = $result->fetch_assoc();
+		$stmt = $this->connection->prepare("SELECT * FROM videos WHERE id = ?");
+		$stmt->bind_param('i', $id);
+		$stmt->execute();
+		$stmt->bind_result($vid_id, $title, $youtube_id, $created);
+		while ($stmt->fetch()) {
+			$video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id);
+		}
 		if ($video_row == null)
 		{
 			throw new VideoNotFoundException();
