@@ -443,13 +443,15 @@ class Database
 
 	public function getVideos()
 	{
-		$sql 	= "SELECT * FROM videos";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("SELECT * FROM videos");
+		$stmt->execute();
+		$stmt->bind_result($vid_id, $title, $youtube_id, $created);
 		$videos = array();
 
-		while ($row = $result->fetch_assoc())
+		while ($stmt->fetch())
 		{
-			$video = new Video($row);
+			$video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id);
+			$video = new Video($video_row);
 			$videos[] = $video->getVidObj();
 		}
 		return $videos;
@@ -515,12 +517,16 @@ class Database
 	public function getComments($request)
 	{
 		$id = $request->getId();
-		$sql = "SELECT time, comments, style FROM comments WHERE id = $id";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare(
+			"SELECT time, comments, style FROM comments WHERE id = ?");
+		$stmt->bind_param('i', $id);
+		$stmt->execute();
+		$stmt->bind_result($time, $comment, $style);
 		$comments = array();
-		while ($row = $result->fetch_assoc())
+		while ($stmt->fetch())
 		{
-			$comments[] = $row;
+			$comment_row = array("time"=>$time, "comment"=>$comment, "style"=>$style);
+			$comments[] = $comment_row;
 		}
 		return $comments;
 	}
