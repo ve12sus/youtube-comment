@@ -481,12 +481,12 @@ class Database
     {
 		$title      = $request->getData()['title'];
 		$youtubeId  = $request->getData()['youtubeId'];
-		$sql        = "INSERT INTO videos (title, youtubeId)
-						VALUES ('$title', '$youtubeId')";
-		$result		= $this->connection->query($sql);
-		if ($result == TRUE)
+		$stmt = $this->connection->prepare("INSERT INTO videos (title, youtubeId)
+			VALUES (?, ?)");
+		$stmt->bind_param('ss', $title, $youtubeId);
+		if ($stmt->execute());
 		{
-			$last_id = $this->connection->insert_id;
+			$last_id = $stmt->insert_id;
 			$request->setId($last_id);
 		}
 		return $this->getVideo($request);
@@ -497,11 +497,10 @@ class Database
 		$id			= $request->getId();
 		$title		= $request->getData()['title'];
 		$youtubeId	= $request->getData()['youtubeId'];
-		$sql		= "UPDATE videos SET
-						title = '$title',
-						youtubeId = '$youtubeId'
-						WHERE id = $id";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("UPDATE videos SET
+						title = ?, youtubeId = ? WHERE id = ?");
+		$stmt->bind_param('ssi', $title, $youtubeId, $id);
+		$stmt->execute();
 		return $this->getVideo($request);
 	}
 
@@ -509,8 +508,9 @@ class Database
 	{
 		$id = $request->getId();
 		$video = $this->getVideo($request);
-		$sql    = "DELETE FROM videos WHERE id = $id";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("DELETE FROM videos WHERE id = ?");
+		$stmt->bind_param('i', $id);
+		$stmt->execute();
 		return $video;
 	}
 
@@ -539,9 +539,11 @@ class Database
 		$comment = $data['comment'];
 		$style = $data['style'];
 
-		$sql = "INSERT INTO comments (id, time, comments, style)
-				VALUES ($id, $time, '$comment', '$style')";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("INSERT INTO comments
+			(id, time, comments, style)
+			VALUES (?, ?, ?, ?)");
+		$stmt->bind_param('iiss', $id, $time, $comment, $style);
+		$stmt->execute();
 		return $this->getVideo($request);
 	}
 
@@ -553,9 +555,10 @@ class Database
 		$comment = $data['comment'];
 		$style = $data['style'];
 
-		$sql = "UPDATE comments SET comments = '$comment', style = '$style'
-				WHERE time = $time and id = $id";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("UPDATE comments SET comments = ?, style = ?
+				WHERE time = ? and id = ?");
+		$stmt->bind_param('ssii', $comment, $style, $time, $id);
+		$stmt->execute();
 		return $this->getVideo($request);
 	}
 
@@ -565,8 +568,10 @@ class Database
 		$id = $request->getId();
 		$time = $data['time'];
 
-		$sql = "DELETE FROM comments WHERE time = $time and id = $id";
-		$result = $this->connection->query($sql);
+		$stmt = $this->connection->prepare("DELETE FROM comments WHERE time =
+			? and id = ?");
+		$stmt->bind_param('ii', $time, $id);
+		$stmt->execute();
 		return $this->getVideo($request);
 	}
 }
