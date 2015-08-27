@@ -15,7 +15,6 @@ function loadPlayer(json) {
       videoId: json.youtubeId,
       events: {
         'onReady': onPlayerReady,
-        //'onStateChange': onPlayerStateChange
       }
     });
   }
@@ -23,7 +22,13 @@ function loadPlayer(json) {
   // 4. The API will call this function when the video player is ready.
   function onPlayerReady(event) {
     event.target.playVideo();
+    showComments(json);
   }
+
+  function testing() {
+    showComments(json);
+  }
+
 }
 
 var clientRequest = (function () {
@@ -45,7 +50,10 @@ var clientRequest = (function () {
     },
 
     setSuccess: function() {
-      params.success = function(json) {loadPlayer(json);}
+      params.success = function(json) {
+        loadPlayer(json);
+        //showComments(json);
+      }
     },
 
     getParams: function() {
@@ -66,8 +74,24 @@ $.ajax(cr);
 function showComments(video) {
 
   for (i = 0; i < video.comments.length; i++) {
-    var listItemId = video.comments[i][0].toString();
+    var listItem = document.createElement("li");
+    var commentNode = document.createTextNode(video.comments[i].comment);
+
+    listItem.appendChild(commentNode);
+
+    var element = document.getElementById("comments");
+    element.appendChild(listItem);
   }
+}
+
+function secondsToHms(d) {
+
+  d = Number(d);
+  var h = Math.floor(d / 3600);
+  var m = Math.floor(d % 3600 / 60);
+  var s = Math.floor(d % 3600 % 60);
+  return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") +
+    s);
 }
 
 var videoModule = (function () {
