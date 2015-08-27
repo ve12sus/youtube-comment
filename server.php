@@ -81,52 +81,52 @@ class Controller
         }
     }
 
-	public function handle_comments($request)
-	{
-		switch ($request->getMethod())
-		{
-			case 'GET':
-				$this->getVideo($request);
-				break;
-			case 'POST':
-				$this->createComment($request);
-				break;
-			case 'PUT':
-				$this->updateComment($request);
-				break;
-			case 'DELETE':
-				$this->deleteComment($request);
-				break;
-			default:
-				echo 'error';
-				break;
-		}
-	}
+    public function handle_comments($request)
+    {
+        switch ($request->getMethod())
+        {
+            case 'GET':
+                $this->getVideo($request);
+                break;
+            case 'POST':
+                $this->createComment($request);
+                break;
+            case 'PUT':
+                $this->updateComment($request);
+                break;
+            case 'DELETE':
+                $this->deleteComment($request);
+                break;
+            default:
+                echo 'error';
+                break;
+        }
+    }
 
-	public function getVideos($request)
-	{
-		$response;
-		$database;
-		$videos;
+    public function getVideos($request)
+    {
+        $response;
+        $database;
+        $videos;
 
-		try {
-			$database = new Database;
-		}
-		catch (Exception $e) {
-			$response = new Response(500, $e->getMessage());
-		}
-		try {
-			$videos = $database->getVideos();
-			$response = new Response(200, $videos);
-		}
-		catch (VideoNotFoundException $vnfe) {
-			$response = new Response(404, $videos);
-		}
-		catch (Exception $e) {
-			$response = new Response(500, $videos);
-		}
-		$this->sendResponse($response);
-	}
+        try {
+            $database = new Database;
+        }
+        catch (Exception $e) {
+            $response = new Response(500, $e->getMessage());
+        }
+        try {
+            $videos = $database->getVideos();
+            $response = new Response(200, $videos);
+        }
+        catch (VideoNotFoundException $vnfe) {
+            $response = new Response(404, $videos);
+        }
+        catch (Exception $e) {
+            $response = new Response(500, $videos);
+        }
+        $this->sendResponse($response);
+    }
 
 	public function createVideo($request)
 	{
