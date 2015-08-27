@@ -281,10 +281,10 @@ class Controller
         header($status_header);
         header('Content-Type: application/json');
         if (gettype($video) == 'object')
-		{
+        {
             $video_body = $video->getVidObj();
             echo json_encode($video_body, JSON_PRETTY_PRINT);
-		}
+        }
         else if (gettype($video) == 'array')
         {
             echo json_encode($video, JSON_PRETTY_PRINT);
