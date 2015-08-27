@@ -16,8 +16,7 @@ class Controller
         return $request;
     }
 
-	public function route($request)
-	{
+	public function route($request) {
 		$collection = $request->getCollection();
 		$id			= $request->getId();
 		$resource	= $request->getResource();
