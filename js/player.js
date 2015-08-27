@@ -64,6 +64,10 @@ var cr = clientRequest.getParams();
 $.ajax(cr);
 
 function showComments(video) {
+
+  for (i = 0; i < video.comments.length; i++) {
+    var listItemId = video.comments[i][0].toString();
+  }
 }
 
 var videoModule = (function () {
