@@ -11,40 +11,40 @@ class Controller
         $request = new Request;
         $request->setMethod($request_method);
         $request->setResources($rest_url);
-		$request->setData(json_decode(file_get_contents('php://input'), TRUE));
+        $request->setData(json_decode(file_get_contents('php://input'), TRUE));
 
         return $request;
     }
 
-	public function route($request) {
-		$collection = $request->getCollection();
-		$id			= $request->getId();
-		$resource	= $request->getResource();
+    public function route($request)
+    {
+        $collection = $request->getCollection();
+        $id	= $request->getId();
+        $resource = $request->getResource();
 
-		if ($collection == 'videos')
-		{
-			if (!$id)
-			{
-				$this->handle_videos($request);
-			}
-			else
-			{
-				if (!$resource)
-				{
-					$this->handle_id($request);
-				}
-				else if ($resource == 'comments')
-				{
-					$this->handle_comments($request);
-				}
-				else
-				{
-					echo 'no such resource';
-				}
-			}
-		}
-	}
-
+        if ($collection == 'videos')
+        {
+            if (!$id)
+            {
+                $this->handle_videos($request);
+            }
+            else
+            {
+                if (!$resource)
+                {
+                    $this->handle_id($request);
+                }
+                else if ($resource == 'comments')
+                {
+                    $this->handle_comments($request);
+                }
+                else
+                {
+                    echo 'no such resource';
+                }
+            }
+        }
+    }
 
 	public function handle_videos($request)
 	{
