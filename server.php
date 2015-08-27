@@ -46,40 +46,40 @@ class Controller
         }
     }
 
-	public function handle_videos($request)
-	{
-		switch($request->getMethod())
-		{
-			case 'GET':
-				$this->getVideos($request);
-				break;
-			case 'POST':
-				$this->createVideo($request);
-				break;
-			default:
-				echo 'error';
-				break;
-		}
-	}
+    public function handle_videos($request)
+    {
+        switch($request->getMethod())
+        {
+            case 'GET':
+                $this->getVideos($request);
+                break;
+            case 'POST':
+                $this->createVideo($request);
+                break;
+            default:
+                echo 'error';
+                break;
+        }
+    }
 
-	public function handle_id($request)
-	{
-		switch($request->getMethod())
-		{
-			case 'GET':
-				$this->getVideo($request);
-				break;
-			case 'PUT':
-				$this->updateVideo($request);
-				break;
-			case 'DELETE':
-				$this->deleteVideo($request);
-				break;
-			default:
-				echo 'error';
-				break;
-		}
-	}
+    public function handle_id($request)
+    {
+        switch($request->getMethod())
+        {
+            case 'GET':
+                $this->getVideo($request);
+                break;
+            case 'PUT':
+                $this->updateVideo($request);
+                break;
+            case 'DELETE':
+                $this->deleteVideo($request);
+                break;
+            default:
+                echo 'error';
+                break;
+        }
+    }
 
 	public function handle_comments($request)
 	{
