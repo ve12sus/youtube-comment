@@ -62,14 +62,17 @@ var clientRequest = (function () {
   }
 })();
 
+function sendRequest(request_object) {
+  var cr = request_object.getParams();
+  $.ajax(cr);
+}
+
 clientRequest.setUrl("http://localhost/~jeff/ytcserver/videos/1");
 clientRequest.setType("GET");
 clientRequest.setDataType("json");
 clientRequest.setSuccess();
 
-var cr = clientRequest.getParams();
-
-$.ajax(cr);
+sendRequest(clientRequest);
 
 function showComments(video) {
 
