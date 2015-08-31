@@ -24,11 +24,6 @@ function loadPlayer(json) {
     event.target.playVideo();
     showComments(json);
   }
-
-  function testing() {
-    showComments(json);
-  }
-
 }
 
 var clientRequest = (function () {
@@ -79,7 +74,11 @@ function showComments(video) {
   for (i = 0; i < video.comments.length; i++) {
     var listItem = document.createElement("li");
     var commentNode = document.createTextNode(video.comments[i].comment);
+    var timeSpan = document.createElement("span");
+    var timeNode = document.createTextNode(secondsToHms(video.comments[i].time));
 
+    timeSpan.appendChild(timeNode);
+    listItem.appendChild(timeSpan);
     listItem.appendChild(commentNode);
 
     var element = document.getElementById("comments");
