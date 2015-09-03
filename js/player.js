@@ -1,30 +1,54 @@
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+var player;
+
 function loadPlayer(json) {
-  var tag = document.createElement('script');
-
-  tag.src = "https://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-  // 3. This function creates an <iframe> (and YouTube player)
-  //    after the API code downloads.
-  var player;
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('player', {
-      height: '390',
-      width: '640',
-      videoId: json.youtubeId,
-      events: {
-        'onReady': onPlayerReady,
-      }
-    });
-  }
-
-  // 4. The API will call this function when the video player is ready.
-  function onPlayerReady(event) {
-    event.target.playVideo();
-    showComments(json);
-  }
+  player = new YT.Player('player', {
+    height: '390',
+    width: '640',
+    videoId: json.youtubeId,
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
 }
+
+function onPlayerReady(event) {
+  event.target.playVideo();
+  showComments(json);
+}
+
+function onPlayerStateChange() {
+}
+
+var videoModule = (function () {
+
+  // privates
+
+  var video = {};
+
+  function doSomethingPrivate() {
+    //...
+  }
+
+    // Return an object exposed to the public
+  return {
+
+    // set Object
+    setVideo: function(vid_object) {
+      video = vid_object;
+    },
+
+    getVideo: function() {
+      return video;
+    },
+  }
+})();
 
 var clientRequest = (function () {
 
@@ -44,11 +68,8 @@ var clientRequest = (function () {
       params.dataType = dataType;
     },
 
-    setSuccess: function() {
-      params.success = function(json) {
-        loadPlayer(json);
-        //showComments(json);
-      }
+    setSuccess: function(callback) {
+      params.success = callback;
     },
 
     getParams: function() {
@@ -65,25 +86,31 @@ function sendRequest(request_object) {
 clientRequest.setUrl("http://localhost/~jeff/ytcserver/videos/1");
 clientRequest.setType("GET");
 clientRequest.setDataType("json");
-clientRequest.setSuccess();
+clientRequest.setSuccess(function(json) {videoModule.setVideo(json); loadPlayer(json);
+});
 
-sendRequest(clientRequest);
+function onYouTubeIframeAPIReady() {
+  sendRequest(clientRequest);
+}
 
 function showComments(video) {
 
   for (i = 0; i < video.comments.length; i++) {
     var listItem = document.createElement("li");
-    var commentNode = document.createTextNode(video.comments[i].comment);
+    var listItemId = video.comments[i].time;
+    var commentNode = document.createTextNode(" " + video.comments[i].comment);
     var timeSpan = document.createElement("span");
     var timeNode = document.createTextNode(secondsToHms(video.comments[i].time));
 
     timeSpan.appendChild(timeNode);
     listItem.appendChild(timeSpan);
     listItem.appendChild(commentNode);
+    listItem.setAttribute("id", listItemId);
 
     var element = document.getElementById("comments");
     element.appendChild(listItem);
   }
+  //here's the seekto function, it will be set to seek to comment.time later
 }
 
 function secondsToHms(d) {
@@ -95,6 +122,7 @@ function secondsToHms(d) {
   return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") +
     s);
 }
+
 
 var videoModule = (function () {
 
