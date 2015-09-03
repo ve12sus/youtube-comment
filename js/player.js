@@ -5,25 +5,40 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
+var data = {};
 
-function loadPlayer(json) {
+
+function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '390',
     width: '640',
-    videoId: json.youtubeId,
     events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
+      'onReady': onPlayerReady
     }
   });
 }
 
 function onPlayerReady(event) {
-  event.target.playVideo();
-  showComments(json);
+  loadPlayerJson(playVideo);
 }
 
-function onPlayerStateChange() {
+function loadPlayerJson(callback) {
+  var data;
+  $.ajax({
+    url: "http://localhost/~jeff/ytcserver/videos/1",
+    type: "GET",
+    dataType: "json",
+    success: function(json) {callback(json);}
+  });
+}
+
+function playVideo(json) {
+  player.loadVideoById({videoId: json.youtubeId});
+  document.getElementById("button").onclick = function() {player.seekTo(100)};
+  data = json;
+  document.getElementById("button2").onclick = function() {player.seekTo(
+    data.comments[0].time)
+  }
 }
 
 var videoModule = (function () {
@@ -83,16 +98,6 @@ function sendRequest(request_object) {
   $.ajax(cr);
 }
 
-clientRequest.setUrl("http://localhost/~jeff/ytcserver/videos/1");
-clientRequest.setType("GET");
-clientRequest.setDataType("json");
-clientRequest.setSuccess(function(json) {videoModule.setVideo(json); loadPlayer(json);
-});
-
-function onYouTubeIframeAPIReady() {
-  sendRequest(clientRequest);
-}
-
 function showComments(video) {
 
   for (i = 0; i < video.comments.length; i++) {
@@ -110,7 +115,6 @@ function showComments(video) {
     var element = document.getElementById("comments");
     element.appendChild(listItem);
   }
-  //here's the seekto function, it will be set to seek to comment.time later
 }
 
 function secondsToHms(d) {
