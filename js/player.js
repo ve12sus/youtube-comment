@@ -25,11 +25,28 @@ var videoModule = (function () {
   };
 })();
 
+var playerModule = (function () {
+
+  var playerVars = {};
+
+  function publicPlayVid() {
+    console.log('playing a video!');
+  }
+
+  return {
+
+    playVid: publicPlayVid
+
+  };
+})();
+
 videoModule.setTitle("hello world");
 videoModule.getTitle();
 
+playerModule.playVid();
+
 function ObserverList() {
-  this.observerList = ['a robot was here', 'hello world', 'hello jeff'];
+  this.observerList = [];
 }
 
 ObserverList.prototype.add = function(obj) {
@@ -90,17 +107,20 @@ function extend(obj, extension) {
 
 // The Observer
 function Observer() {
-  this.update = function() {
-    //...
-  }
+  this.update = function(context) {
+    console.log(context);
+  };
 }
 extend(videoModule, new Subject() );
 
-console.log(videoModule.addObserver('Urien'));
-console.log(videoModule.observers.get(0));
-console.log(videoModule.observers.count());
-console.log(videoModule.observers.indexOf('hello jeff', 0));
-console.log(videoModule.observers.get(3));
-console.log(videoModule.observers.indexOf('mr robot', 0));
-console.log(videoModule.removeObserver('Urien'));
-console.log(videoModule.observers.count());
+extend(playerModule, new Observer() );
+
+videoModule.addObserver(playerModule);
+
+var button = document.getElementById("changeTitle");
+
+function changeTitle() {
+  videoModule.setTitle('New Title');
+  videoModule.getTitle();
+  videoModule.notify('video changed!');
+}
