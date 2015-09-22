@@ -1,11 +1,10 @@
-var videoModule = (function () {
+var videoModel = (function () {
 
   // A private video variable
   var privateVideo = {};
 
   // A private function which
   function privateFunction() {
-    console.log(privateVideo.title);
   }
 
   function publicSetTitle(title) {
@@ -13,7 +12,7 @@ var videoModule = (function () {
   }
 
   function publicGetTitle() {
-    privateFunction();
+    return privateVideo;
   }
 
   return {
@@ -25,7 +24,7 @@ var videoModule = (function () {
   };
 })();
 
-var playerModule = (function () {
+var playerModel = (function () {
 
   var playerVars = {};
 
@@ -39,11 +38,6 @@ var playerModule = (function () {
 
   };
 })();
-
-videoModule.setTitle("hello world");
-videoModule.getTitle();
-
-playerModule.playVid();
 
 function ObserverList() {
   this.observerList = [];
@@ -111,16 +105,39 @@ function Observer() {
     console.log(context);
   };
 }
-extend(videoModule, new Subject() );
 
-extend(playerModule, new Observer() );
+var View = (function () {
 
-videoModule.addObserver(playerModule);
+  var infoDiv = document.getElementById("info");
 
-var button = document.getElementById("changeTitle");
+  function publicShowTitle(video) {
+    infoDiv.innerHTML = video.title;
+  }
 
-function changeTitle() {
-  videoModule.setTitle('New Title');
-  videoModule.getTitle();
-  videoModule.notify('video changed!');
+  return {
+
+    update: publicShowTitle
+
+  };
+
+})();
+
+extend(videoModel, new Subject() );
+
+extend(playerModel, new Observer() );
+
+extend(View, new Observer() );
+
+View.update = function(video) {
+  var infoDiv = document.getElementById("info");
+
+  infoDiv.innerHTML = video.title;
 }
+
+videoModel.addObserver(playerModel);
+
+videoModel.addObserver(View);
+
+videoModel.setTitle('New Title');
+
+videoModel.notify(videoModel.getTitle());
