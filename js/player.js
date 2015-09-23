@@ -129,8 +129,14 @@ var Controller = (function () {
   var button = document.getElementById("button");
 
   button.onclick = function() {
-    videoModel.setTitle('new new title');
-    videoModel.notify(videoModel.getTitle());
+    $.ajax({
+      url: "http://localhost/~jeff/ytcserver/videos/1",
+      dataType: "json",
+      success: function(data) {
+        videoModel.setTitle(data.title);
+        videoModel.notify(videoModel.getTitle());
+      }
+    });
   }
 })();
 
