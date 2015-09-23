@@ -2,26 +2,33 @@ var videoModel = (function () {
 
   // A private video variable
   var privateVideo = {
-    title: "Default Title"
+    title: "Default Title",
+    comments: [
+      { time: 10,
+        comment: "Default Comment",
+        style: "Default Style"
+      }
+    ]
   };
 
   // A private function which
   function privateFunction() {
   }
 
-  function publicSetTitle(title) {
-    privateVideo.title = title;
+  function publicSetData(data) {
+    privateVideo.title = data.title;
+    privateVideo.comments = data.comments;
   }
 
-  function publicGetTitle() {
+  function publicGetData() {
     return privateVideo;
   }
 
   return {
 
-    setTitle: publicSetTitle,
+    setData: publicSetData,
 
-    getTitle: publicGetTitle
+    getData: publicGetData
 
   };
 })();
@@ -110,15 +117,30 @@ function Observer() {
 
 var View = (function () {
 
-  var infoDiv = document.getElementById("info");
+  var heading = document.getElementById("title");
+  var commentDiv = document.getElementById("comments");
 
   function publicShowTitle(video) {
-    infoDiv.innerHTML = video.title;
+    heading.innerHTML = video.title;
+  }
+
+  function publicShowComments(video) {
+    var cl = document.createElement("ul");
+
+    for (i = 0; i < video.comments.length; i++) {
+      var commentNode = document.createTextNode(video.comments[i].comment);
+      var listItem = document.createElement("li");
+      listItem.appendChild(commentNode);
+      cl.appendChild(listItem);
+    }
+    commentDiv.replaceChild(cl, commentDiv.childNodes[0]);
   }
 
   return {
 
-    showTitle: publicShowTitle
+    showTitle: publicShowTitle,
+
+    showComments: publicShowComments
 
   };
 
@@ -133,8 +155,8 @@ var Controller = (function () {
       url: "http://localhost/~jeff/ytcserver/videos/1",
       dataType: "json",
       success: function(data) {
-        videoModel.setTitle(data.title);
-        videoModel.notify(videoModel.getTitle());
+        videoModel.setData(data);
+        videoModel.notify(videoModel.getData());
       }
     });
   }
@@ -148,10 +170,11 @@ extend(View, new Observer() );
 
 View.update = function(video) {
   View.showTitle(video);
+  View.showComments(video);
 }
 
 videoModel.addObserver(playerModel);
 
 videoModel.addObserver(View);
 
-videoModel.notify(videoModel.getTitle());
+videoModel.notify(videoModel.getData());
