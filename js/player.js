@@ -1,7 +1,9 @@
 var videoModel = (function () {
 
   // A private video variable
-  var privateVideo = {};
+  var privateVideo = {
+    title: "Default Title"
+  };
 
   // A private function which
   function privateFunction() {
@@ -116,10 +118,20 @@ var View = (function () {
 
   return {
 
-    update: publicShowTitle
+    showTitle: publicShowTitle
 
   };
 
+})();
+
+var Controller = (function () {
+
+  var button = document.getElementById("button");
+
+  button.onclick = function() {
+    videoModel.setTitle('new new title');
+    videoModel.notify(videoModel.getTitle());
+  }
 })();
 
 extend(videoModel, new Subject() );
@@ -129,15 +141,11 @@ extend(playerModel, new Observer() );
 extend(View, new Observer() );
 
 View.update = function(video) {
-  var infoDiv = document.getElementById("info");
-
-  infoDiv.innerHTML = video.title;
+  View.showTitle(video);
 }
 
 videoModel.addObserver(playerModel);
 
 videoModel.addObserver(View);
-
-videoModel.setTitle('New Title');
 
 videoModel.notify(videoModel.getTitle());
