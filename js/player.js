@@ -172,6 +172,10 @@ var View = (function () {
     commentDiv.replaceChild(cl, commentDiv.childNodes[0]);
   }
 
+  function displayComment() {
+    //show comments somehow
+  }
+
   return {
 
     showTitle: publicShowTitle,
