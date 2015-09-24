@@ -3,6 +3,7 @@ var videoModel = (function () {
   // A private video variable
   var privateVideo = {
     title: "Default Title",
+    youtubeId: "Default Id",
     comments: [
       { time: 10,
         comment: "Default Comment",
@@ -17,6 +18,7 @@ var videoModel = (function () {
 
   function publicSetData(data) {
     privateVideo.title = data.title;
+    privateVideo.youtubeId = data.youtubeId;
     privateVideo.comments = data.comments;
   }
 
@@ -35,15 +37,35 @@ var videoModel = (function () {
 
 var playerModel = (function () {
 
-  var playerVars = {};
+  var tag = document.createElement('script');
 
-  function publicPlayVid() {
-    console.log('playing a video!');
+  tag.src = "http://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: 'M7lc1UVf-VE',
+    });
+  }
+
+  function publicLoadVid(video) {
+    player.loadVideoById({videoId:video.youtubeId});
+  }
+
+  function publicGetPlayer() {
+    return player;
   }
 
   return {
 
-    playVid: publicPlayVid
+    loadVid: publicLoadVid,
+
+    getPlayer: publicGetPlayer
 
   };
 })();
@@ -173,8 +195,17 @@ View.update = function(video) {
   View.showComments(video);
 }
 
+playerModel.update = function(video) {
+  if (playerModel.getPlayer()) {
+    playerModel.loadVid(video);
+  } else {
+    return;
+  }
+}
+
 videoModel.addObserver(playerModel);
 
 videoModel.addObserver(View);
 
 videoModel.notify(videoModel.getData());
+
