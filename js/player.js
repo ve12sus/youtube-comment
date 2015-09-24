@@ -150,9 +150,23 @@ var View = (function () {
     var cl = document.createElement("ul");
 
     for (i = 0; i < video.comments.length; i++) {
-      var commentNode = document.createTextNode(video.comments[i].comment);
+      var timeSpan = document.createElement("span");
+      var timeNode = document.createTextNode(
+        secondsToHms(video.comments[i].time));
+
+      var commentNode = document.createTextNode(" " + video.comments[i].comment);
       var listItem = document.createElement("li");
+      var listItemId = video.comments[i].time;
+
+      timeSpan.appendChild(timeNode);
+      timeSpan.setAttribute("class", "time-link");
+      listItem.appendChild(timeSpan);
       listItem.appendChild(commentNode);
+      listItem.setAttribute("id", listItemId);
+
+      timeSpan.onclick = function() {
+        playerModel.getPlayer().seekTo(this.parentNode.id);
+      }
       cl.appendChild(listItem);
     }
     commentDiv.replaceChild(cl, commentDiv.childNodes[0]);
@@ -183,6 +197,15 @@ var Controller = (function () {
     });
   }
 })();
+
+function secondsToHms(d) {
+  d = Number(d);
+  var h = Math.floor(d / 3600);
+  var m = Math.floor(d % 3600 / 60);
+  var s = Math.floor(d % 3600 % 60);
+  return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
+}
+
 
 extend(videoModel, new Subject() );
 
