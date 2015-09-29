@@ -1,0 +1,10 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /~jeff/ytcserver/api/server.php
+<Limit GET POST>
+Require all granted
+</Limit>
+<Limit PUT DELETE>
+Require all granted
+</Limit>

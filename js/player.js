@@ -173,7 +173,6 @@ var View = (function () {
   }
 
   function displayComment() {
-    //show comments somehow
   }
 
   return {
@@ -190,9 +189,20 @@ var Controller = (function () {
 
   var button = document.getElementById("button");
 
+  var search = window.location.pathname;
+
+  var params = search.split("/");
+  var before = params.indexOf("ytcserver");
+  var after;
+
+  if (before) {
+    var after = params[before + 1];
+    alert(after);
+  }
+
   button.onclick = function() {
     $.ajax({
-      url: "http://localhost/~jeff/ytcserver/videos/1",
+      url: "http://localhost/~jeff/ytcserver/api/videos/1",
       dataType: "json",
       success: function(data) {
         videoModel.setData(data);
@@ -235,4 +245,3 @@ videoModel.addObserver(playerModel);
 videoModel.addObserver(View);
 
 videoModel.notify(videoModel.getData());
-
