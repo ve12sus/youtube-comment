@@ -1,13 +1,104 @@
+// 2. This code loads the IFrame Player API code asynchronously.
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// 3. This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player = null;
+
+function onYouTubeIframeAPIReady() {
+  //Controller.send();
+}
+
+$('#loadvid').click(function() {
+  playerStuff($('#videoid').val());
+});
+
+function playerStuff(vidid) {
+  if (player === null) {
+    player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: vidid,
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  else {
+    player.loadVideoById(vidid);
+  }
+}
+
+// 4. The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+  event.target.playVideo();
+  setInterval(commentLoad, 1000);
+}
+
+// 5. The API calls this function when the player's state changes.
+//    The function indicates that when playing a video (state=1),
+//    the player should play for six seconds and then stop.
+
+var done = false;
+
+function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.PLAYING && !done) {
+    //setTimeout(stopVideo, 6000);
+    done = true;
+  }
+}
+
+function stopVideo() {
+  player.stopVideo();
+}
+
+function commentLoad() {
+  var playerTime = Math.round(player.getCurrentTime());
+  var data = videoModel.get();
+  for (var i = 0; i < data.comments.length; i ++) {
+    if (playerTime >= data.comments[i][0]) {
+      document.getElementById('currentComment').innerHTML = data.comments[i][1];
+    }
+  }
+}
+
+function displayComment() {
+  playerTime = Math.round(player.getCurrentTime());
+  video = videoModel.get();
+  for (var i = 0; i < video.comments.length; i ++) {
+    if (playerTime >= video.comments[i][0]) {
+      document.getElementById('currentComment').style.visibility = 'visible';
+      document.getElementById("currentComment").innerHTML = video.comments[i][1];
+    }
+  }
+}
+
 var videoModel = (function () {
 
   // A private video variable
-  var privateVideo = {
+  var video = {
+    id: 1,
     title: "Default Title",
-    youtubeId: "Default Id",
+    youtubeId: "HGfC4CFBAns",
     comments: [
       { time: 10,
-        comment: "Default Comment",
-        style: "Default Style"
+        comment: "daigo san",
+        style: "pogchamp"
+      },
+      {
+        time: 24,
+        comment: "infiltration jump in",
+        style: null
+      },
+      {
+        time: 36,
+        comment: "a fraud move",
+        style: "jchensor"
       }
     ]
   };
@@ -16,59 +107,28 @@ var videoModel = (function () {
   function privateFunction() {
   }
 
-  function publicSetData(data) {
-    privateVideo.title = data.title;
-    privateVideo.youtubeId = data.youtubeId;
-    privateVideo.comments = data.comments;
+  function publicSet(data) {
+    video.title = data.title;
+    video.youtubeId = data.youtubeId;
+    video.comments = data.comments;
+    playerStuff(video);
+    videoModel.notify(video);
   }
 
-  function publicGetData() {
-    return privateVideo;
-  }
-
-  return {
-
-    setData: publicSetData,
-
-    getData: publicGetData
-
-  };
-})();
-
-var playerModel = (function () {
-
-  var tag = document.createElement('script');
-
-  tag.src = "http://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-  var player;
-
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('player', {
-      height: '390',
-      width: '640',
-      videoId: 'M7lc1UVf-VE',
-    });
-  }
-
-  function publicLoadVid(video) {
-    player.loadVideoById({videoId:video.youtubeId});
-  }
-
-  function publicGetPlayer() {
-    return player;
+  function publicGet() {
+    return video;
   }
 
   return {
 
-    loadVid: publicLoadVid,
+    set: publicSet,
 
-    getPlayer: publicGetPlayer
+    get: publicGet
 
   };
 })();
+
+
 
 function ObserverList() {
   this.observerList = [];
@@ -133,7 +193,7 @@ function extend(obj, extension) {
 // The Observer
 function Observer() {
   this.update = function(context) {
-    console.log(context);
+    //to be updated later
   };
 }
 
@@ -165,14 +225,11 @@ var View = (function () {
       listItem.setAttribute("id", listItemId);
 
       timeSpan.onclick = function() {
-        playerModel.getPlayer().seekTo(this.parentNode.id);
+        player.seekTo(this.parentNode.id);
       }
       cl.appendChild(listItem);
     }
     commentDiv.replaceChild(cl, commentDiv.childNodes[0]);
-  }
-
-  function displayComment() {
   }
 
   return {
@@ -186,30 +243,22 @@ var View = (function () {
 })();
 
 var Controller = (function () {
-
-  var button = document.getElementById("button");
-
-  var search = window.location.pathname;
-
-  var params = search.split("/");
-  var before = params.indexOf("ytcserver");
-  var after;
-
-  if (before) {
-    var after = params[before + 1];
-    alert(after);
-  }
-
-  button.onclick = function() {
+  function sendRequest() {
     $.ajax({
       url: "http://localhost/~jeff/ytcserver/api/videos/1",
       dataType: "json",
       success: function(data) {
-        videoModel.setData(data);
-        videoModel.notify(videoModel.getData());
+        videoModel.set(data);
       }
     });
   }
+
+  return {
+
+    send: sendRequest
+
+  };
+
 })();
 
 function secondsToHms(d) {
@@ -223,8 +272,6 @@ function secondsToHms(d) {
 
 extend(videoModel, new Subject() );
 
-extend(playerModel, new Observer() );
-
 extend(View, new Observer() );
 
 View.update = function(video) {
@@ -232,16 +279,4 @@ View.update = function(video) {
   View.showComments(video);
 }
 
-playerModel.update = function(video) {
-  if (playerModel.getPlayer()) {
-    playerModel.loadVid(video);
-  } else {
-    return;
-  }
-}
-
-videoModel.addObserver(playerModel);
-
 videoModel.addObserver(View);
-
-videoModel.notify(videoModel.getData());
