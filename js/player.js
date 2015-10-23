@@ -2,7 +2,7 @@ var Controller = (function () {
 
   var search = window.location.pathname;
   var params = search.split("/");
-  var before = params.indexOf("~jeff");
+  var before = params.indexOf("ytcserver");
   var after;
 
   if (before) {
@@ -10,10 +10,12 @@ var Controller = (function () {
     document.getElementById("error").innerHTML = after;
   }
 
+  var url = "http://localhost/~jeff/ytcserver/api/videos/" + after;
+
   function sendRequest() {
 
     $.ajax({
-      url: "http://localhost/~jeff/ytcserver/api/videos/1",
+      url: url,
       dataType: "json",
       success: function(data) {
         videoModel.set(data);
