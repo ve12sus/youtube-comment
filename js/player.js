@@ -12,15 +12,21 @@ var Controller = (function () {
 
   var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
 
-  function sendRequest() {
+  window.onYouTubeIframeAPIReady = function() {
+    Controller.send('GET', url).done(function(data) {
+      videoModel.set(data);
+    });
+  }
 
-    $.ajax({
+  function sendRequest(method, url) {
+
+    return $.ajax({
       url: url,
       dataType: "json",
-      success: function(data) {
-        videoModel.set(data);
-        //playerModel.createPlayer(videoModel.get());
-      }
+      type: method
+      //success: function(data) {
+      //  videoModel.set(data);
+      //}
     });
   }
 
@@ -83,6 +89,7 @@ var videoModel = (function () {
     video.title = data.title;
     video.youtubeId = data.youtubeId;
     video.comments = data.comments;
+    commentSort();
     this.notify(video);
   }
 
@@ -344,7 +351,3 @@ playerModel.update = function(video) {
 videoModel.addObserver(View);
 
 videoModel.addObserver(playerModel);
-
-function onYouTubeIframeAPIReady() {
-  Controller.send();
-}
