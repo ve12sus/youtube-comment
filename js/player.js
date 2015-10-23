@@ -3,14 +3,14 @@ var Controller = (function () {
   var search = window.location.pathname;
   var params = search.split("/");
   var before = params.indexOf("ytcserver");
-  var after;
+  var id;
 
   if (before) {
-    var after = params[before + 1];
-    document.getElementById("error").innerHTML = after;
+    var id = params[before + 1];
+    document.getElementById("error").innerHTML = id;
   }
 
-  var url = "http://localhost/~jeff/ytcserver/api/videos/" + after;
+  var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
 
   function sendRequest() {
 
@@ -19,7 +19,7 @@ var Controller = (function () {
       dataType: "json",
       success: function(data) {
         videoModel.set(data);
-        playerModel.createPlayer(videoModel.get());
+        //playerModel.createPlayer(videoModel.get());
       }
     });
   }
@@ -40,12 +40,6 @@ var Controller = (function () {
   }
 
   function publicDeleteComment(time) {
-    var comment = {
-      time: 5,
-      comment: "new comment",
-      style: "kappa"
-    }
-
     videoModel.deleteComment(time);
   }
 
@@ -68,22 +62,7 @@ var videoModel = (function () {
     id: 1,
     title: "Default Title",
     youtubeId: "Default id",
-    comments: [
-      { time: 10,
-        comment: "daigo san",
-        style: "pogchamp"
-      },
-      {
-        time: 24,
-        comment: "infiltration jump in",
-        style: null
-      },
-      {
-        time: 36,
-        comment: "a fraud move",
-        style: "jchensor"
-      }
-    ]
+    comments: []
   };
 
   // A private function which
@@ -139,16 +118,10 @@ var videoModel = (function () {
   };
 })();
 
-console.log(videoModel.get());
-
 var View = (function () {
 
   var addButton = document.getElementById("add");
   addButton.addEventListener("click", function() {Controller.createComment()});
-
-  //var deleteButton = document.getElementById("delete");
-  //deleteButton.addEventListener("click", function() {Controller.deleteComment()});
-
   var title = document.getElementById("title");
   var comments = document.getElementById("comments");
 
@@ -354,14 +327,24 @@ extend(videoModel, new Subject() );
 
 extend(View, new Observer() );
 
+extend(playerModel, new Observer() );
+
 View.update = function(video) {
   View.showTitle(video);
   View.showComments(video);
 }
 
+playerModel.update = function(video) {
+  var player = playerModel.getPlayer();
+  if (player == null) {
+    playerModel.createPlayer(video);
+  }
+}
+
 videoModel.addObserver(View);
+
+videoModel.addObserver(playerModel);
 
 function onYouTubeIframeAPIReady() {
   Controller.send();
-  //playerModel.createPlayer(videoModel.get());
 }
