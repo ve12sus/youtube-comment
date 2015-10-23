@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Youtube Commenter</title>
-    <link rel="stylesheet" href="css/style.css">
-		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	</head>
-	<body>
-    <div id="main">
+    <head>
+      <title>playground</title>
+      <link rel="stylesheet" href="css/style.css">
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    </head>
+    <body>
+      <div id="main">
+      <div id="playerwrap">
       <div id="player"></div>
-      <h2 id="currentComment">comments appear here</h2>
-      <input id="videoid"/><input value="load video" type="button" id="loadvid"/>
+      </div>
+      <h2 id="caption">Text</h2>
+      <div id="commentPane">
+      <input type="text" id="text" value="pause and type comment here" size="50">
+      <input id="add" type="button" value="add comment">
       <h1 id="title"></h1>
       <div id="comments"></div>
-    </div>
-  <script src="js/player.js"></script>
-  </body>
+      <div id="error"></div>
+      </div>
+      </div>
+    </body>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="player.js"></script>
 </html>
