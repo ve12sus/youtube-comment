@@ -68,13 +68,29 @@ var Controller = (function () {
     videoModel.deleteComment(time);
   }
 
+  function publicSaveTitle () {
+    try {
+      var titleElement = document.getElementById("title");
+      var newTitle = titleElement.innerHTML;
+
+      videoModel.updateTitle(newTitle);
+      var data = JSON.stringify(videoModel.get());
+      sendRequest('PUT', url, data);
+    }
+    catch(err) {
+      document.getElementById("error").innerHTML = err.message;
+    }
+  }
+
   return {
 
     send: sendRequest,
 
     createComment: publicCreateComment,
 
-    deleteComment: publicDeleteComment
+    deleteComment: publicDeleteComment,
+
+    saveTitle: publicSaveTitle
 
   };
 
@@ -123,7 +139,12 @@ var videoModel = (function () {
       if (video.comments[i].time === time) {
         video.comments.splice(i, 1);
       }
-    }
+  }
+    this.notify(video);
+  }
+
+  function publicUpdateTitle(title) {
+    video.title = title;
     this.notify(video);
   }
 
@@ -139,7 +160,9 @@ var videoModel = (function () {
 
     addComment: publicAddComment,
 
-    deleteComment: publicDeleteComment
+    deleteComment: publicDeleteComment,
+
+    updateTitle: publicUpdateTitle
 
   };
 })();
@@ -150,6 +173,9 @@ var View = (function () {
   addButton.addEventListener("click", function() {Controller.createComment()});
   var title = document.getElementById("title");
   var comments = document.getElementById("comments");
+
+  var outside = document.documentElement;
+  outside.addEventListener("click", function() {Controller.saveTitle()});
 
   function publicShowTitle(video) {
     title.innerHTML = video.title;
