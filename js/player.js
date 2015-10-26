@@ -18,12 +18,13 @@ var Controller = (function () {
     });
   }
 
-  function sendRequest(method, url) {
+  function sendRequest(method, url, data) {
 
     return $.ajax({
       url: url,
       dataType: "json",
-      type: method
+      type: method,
+      data: data
       //success: function(data) {
       //  videoModel.set(data);
       //}
@@ -43,9 +44,27 @@ var Controller = (function () {
     }
 
     videoModel.addComment(comment);
+
+    try {
+      var commentURL = url + "/comments";
+      var data = JSON.stringify(comment);
+      sendRequest('POST', commentURL, data);
+    }
+    catch(err) {
+      document.getElementById("error").innerHTML = err.message;
+    }
   }
 
   function publicDeleteComment(time) {
+    try {
+      var data = JSON.stringify({ time: time });
+      var commentURL = url + "/comments";
+      sendRequest('DELETE', commentURL, data);
+    }
+    catch(err) {
+      document.getElementById("error").innerHTML = err.message;
+    }
+
     videoModel.deleteComment(time);
   }
 
@@ -185,7 +204,8 @@ var View = (function () {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
+    return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" +
+      (s < 10 ? "0" : "") + s);
   }
 
   return {
