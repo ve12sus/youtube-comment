@@ -13,7 +13,7 @@ var Controller = (function () {
   var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
 
   window.onYouTubeIframeAPIReady = function() {
-    Controller.send('GET', url).done(function(data) {
+    sendRequest('GET', url).done(function(data) {
       videoModel.set(data);
     });
   }
@@ -25,9 +25,6 @@ var Controller = (function () {
       dataType: "json",
       type: method,
       data: data
-      //success: function(data) {
-      //  videoModel.set(data);
-      //}
     });
   }
 
@@ -56,6 +53,9 @@ var Controller = (function () {
   }
 
   function publicDeleteComment(time) {
+
+    videoModel.deleteComment(time);
+
     try {
       var data = JSON.stringify({ time: time });
       var commentURL = url + "/comments";
@@ -64,16 +64,16 @@ var Controller = (function () {
     catch(err) {
       document.getElementById("error").innerHTML = err.message;
     }
-
-    videoModel.deleteComment(time);
   }
 
-  function publicSaveTitle () {
+  function publicSaveTitle() {
+
     try {
       var titleElement = document.getElementById("title");
       var newTitle = titleElement.innerHTML;
 
       videoModel.updateTitle(newTitle);
+
       var data = JSON.stringify(videoModel.get());
       sendRequest('PUT', url, data);
     }
@@ -82,15 +82,37 @@ var Controller = (function () {
     }
   }
 
-  return {
+  function publicParseURL() {
+    try {
+      var link = document.getElementById("link").value;
+      var videoId = youtube_parser(link);
+      document.getElementById("error").innerHTML = videoId;
+      playerModel.getPlayer().loadVideoById(videoId);
+    }
+    catch(err) {
+      document.getElementById("error").innerHTML = err.message;
+    }
+  }
 
-    send: sendRequest,
+  function youtube_parser(url){
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    if (match && match[2].length == 11) {
+      return match[2];
+    } else {
+      //error
+    }
+  }
+
+  return {
 
     createComment: publicCreateComment,
 
     deleteComment: publicDeleteComment,
 
-    saveTitle: publicSaveTitle
+    saveTitle: publicSaveTitle,
+
+    parseURL: publicParseURL
 
   };
 
@@ -106,7 +128,6 @@ var videoModel = (function () {
     comments: []
   };
 
-  // A private function which
   function commentSort() {
     video.comments.sort(function (a, b) {
       if (a.time > b.time) {
@@ -165,6 +186,7 @@ var videoModel = (function () {
     updateTitle: publicUpdateTitle
 
   };
+
 })();
 
 var View = (function () {
@@ -176,6 +198,9 @@ var View = (function () {
 
   var outside = document.documentElement;
   outside.addEventListener("click", function() {Controller.saveTitle()});
+
+  var parseButton = document.getElementById("parseLink");
+  parseButton.addEventListener("click", function() {Controller.parseURL()});
 
   function publicShowTitle(video) {
     title.innerHTML = video.title;
@@ -217,6 +242,7 @@ var View = (function () {
 
       cl.appendChild(listItem);
     }
+
     if (comments.hasChildNodes() ) {
       comments.removeChild(comments.firstChild);
       comments.appendChild(cl);
@@ -307,6 +333,7 @@ var playerModel =(function () {
     getPlayer: publicGetPlayer
 
   };
+
 })();
 
 function ObserverList() {
@@ -328,6 +355,7 @@ ObserverList.prototype.get = function(index) {
 }
 
 ObserverList.prototype.indexOf = function(obj, startIndex) {
+
   var i = startIndex;
 
   while(i < this.observerList.length) {
