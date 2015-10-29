@@ -4,10 +4,14 @@ var Controller = (function () {
   var params = search.split("/");
   var before = params.indexOf("ytcserver");
   var id;
+  var mode;
 
   if (before) {
     var id = params[before + 1];
-    document.getElementById("error").innerHTML = id;
+    if (id) {
+      var mode = params[before + 2];
+    }
+    document.getElementById("error").innerHTML = mode;
   }
 
   var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
