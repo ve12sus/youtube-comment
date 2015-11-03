@@ -1,25 +1,36 @@
 var Controller = (function () {
-
-  var search = window.location.pathname;
-  var params = search.split("/");
-  var before = params.indexOf("ytcserver");
-  var id;
-  var mode;
-
-  if (before) {
-    var id = params[before + 1];
-    if (id) {
-      var mode = params[before + 2];
-    }
-    document.getElementById("error").innerHTML = mode;
-  }
-
+  var id = findId().id
+  var mode = findId().mode
   var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
+
+  function findId() {
+    var pathname = window.location.pathname;
+    var paths = pathname.split("/");
+    var indexLocation = paths.indexOf("ytcserver");
+    var obj = {
+      id: "",
+      mode: "",
+    };
+
+    if (indexLocation) {
+      obj.id = paths[indexLocation + 1];
+      if (id) {
+        obj.mode = paths[indexLocation + 2];
+      }
+
+      document.getElementById("error").innerHTML = mode;
+    }
+    return obj;
+  }
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
       videoModel.set(data);
     });
+  }
+
+  function publicSetMode() {
+    View.setMode(mode);
   }
 
   function sendRequest(method, url, data) {
@@ -116,7 +127,9 @@ var Controller = (function () {
 
     saveTitle: publicSaveTitle,
 
-    parseURL: publicParseURL
+    parseURL: publicParseURL,
+
+    setMode: publicSetMode
 
   };
 
@@ -206,6 +219,10 @@ var View = (function () {
   var parseButton = document.getElementById("parseLink");
   parseButton.addEventListener("click", function() {Controller.parseURL()});
 
+  function publicSetMode(mode) {
+    this.mode = mode;
+  }
+
   function publicShowTitle(video) {
     title.innerHTML = video.title;
   }
@@ -222,26 +239,27 @@ var View = (function () {
       var listItem = document.createElement("li");
       var listItemId = video.comments[i].time;
 
-      var deleteSpan = document.createElement("span");
-      var deleteNode = document.createTextNode(" x");
-
-      deleteSpan.appendChild(deleteNode);
-      deleteSpan.setAttribute("class", "time-link");
-
       timeSpan.appendChild(timeNode);
       timeSpan.setAttribute("class", "time-link");
 
       listItem.appendChild(timeSpan);
       listItem.appendChild(commentNode);
-      listItem.appendChild(deleteSpan);
-      listItem.setAttribute("id", listItemId);
 
-      timeSpan.onclick = function() {
-        playerModel.getPlayer().seekTo(this.parentNode.id);
+      if (this.mode == "edit") {
+        var deleteSpan = document.createElement("span");
+        var deleteNode = document.createTextNode(" x");
+        deleteSpan.appendChild(deleteNode);
+        deleteSpan.setAttribute("class", "time-link");
+        listItem.appendChild(deleteSpan);
+
+        deleteSpan.onclick = function() {
+        Controller.deleteComment(parseInt(this.parentNode.id));
+        }
       }
 
-      deleteSpan.onclick = function() {
-        Controller.deleteComment(parseInt(this.parentNode.id));
+      listItem.setAttribute("id", listItemId);
+      timeSpan.onclick = function() {
+        playerModel.getPlayer().seekTo(this.parentNode.id);
       }
 
       cl.appendChild(listItem);
@@ -268,7 +286,9 @@ var View = (function () {
 
     showTitle: publicShowTitle,
 
-    showComments: publicShowComments
+    showComments: publicShowComments,
+
+    setMode: publicSetMode
 
   };
 
@@ -415,6 +435,7 @@ extend(View, new Observer() );
 extend(playerModel, new Observer() );
 
 View.update = function(video) {
+  Controller.setMode();
   View.showTitle(video);
   View.showComments(video);
 }
