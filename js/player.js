@@ -1,4 +1,5 @@
 var Controller = (function () {
+
   var id = findId().id
   var mode = findId().mode
   var url = "http://localhost/~jeff/ytcserver/api/videos/" + id;
@@ -97,18 +98,6 @@ var Controller = (function () {
     }
   }
 
-  function publicParseURL() {
-    try {
-      var link = document.getElementById("link").value;
-      var videoId = youtube_parser(link);
-      document.getElementById("error").innerHTML = videoId;
-      playerModel.getPlayer().loadVideoById(videoId);
-    }
-    catch(err) {
-      document.getElementById("error").innerHTML = err.message;
-    }
-  }
-
   function youtube_parser(url){
     var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     var match = url.match(regExp);
@@ -116,6 +105,24 @@ var Controller = (function () {
       return match[2];
     } else {
       //error
+    }
+  }
+
+  function publicCreateVideo() {
+    try {
+      var createURL = "http://localhost/~jeff/ytcserver/api/videos";
+      var link = document.getElementById("link").value;
+      var videoId = youtube_parser(link);
+      var video = {
+        youtubeId: videoId
+      };
+      var data = JSON.stringify(video);
+      sendRequest('POST', createURL, data).done(function(data) {
+        window.location = "http://localhost/~jeff/ytcserver/" + data.id + "/edit";
+      });
+    }
+    catch(err) {
+      document.getElementById("error").innerHTML = err.message;
     }
   }
 
@@ -127,7 +134,7 @@ var Controller = (function () {
 
     saveTitle: publicSaveTitle,
 
-    parseURL: publicParseURL,
+    createVideo: publicCreateVideo,
 
     setMode: publicSetMode
 
@@ -139,7 +146,7 @@ var videoModel = (function () {
 
   // A private video variable
   var video = {
-    id: 1,
+    id: null,
     title: "Default Title",
     youtubeId: "Default id",
     comments: []
@@ -208,16 +215,39 @@ var videoModel = (function () {
 
 var View = (function () {
 
-  var addButton = document.getElementById("add");
-  addButton.addEventListener("click", function() {Controller.createComment()});
+  var infoPane = document.getElementById("infoPane");
   var title = document.getElementById("title");
   var comments = document.getElementById("comments");
+
+  var commentTextInput = document.createElement("input");
+  commentTextInput.type = "text";
+  commentTextInput.setAttribute("id", "text");
+  commentTextInput.setAttribute("placeholder", "pause video and comment");
+  commentTextInput.setAttribute("size", "40");
+  infoPane.insertBefore(commentTextInput, infoPane.childNodes[2]);
+
+  var addButton = document.createElement("input");
+  addButton.type = "button";
+  addButton.setAttribute("id", "add");
+  addButton.setAttribute("value", "add comments");
+  addButton.addEventListener("click", function() {Controller.createComment()});
+  infoPane.insertBefore(addButton, infoPane.childNodes[3]);
 
   var outside = document.documentElement;
   outside.addEventListener("click", function() {Controller.saveTitle()});
 
-  var parseButton = document.getElementById("parseLink");
-  parseButton.addEventListener("click", function() {Controller.parseURL()});
+  var linkTextInput = document.createElement("input");
+  linkTextInput.type = "text";
+  linkTextInput.setAttribute("id", "link");
+  linkTextInput.setAttribute("placeholder", "paste youtube link");
+  infoPane.insertBefore(linkTextInput, infoPane.lastChild);
+
+  var parseButton = document.createElement("input");
+  parseButton.type = "button";
+  parseButton.setAttribute("id", "parseLink");
+  parseButton.setAttribute("value", "go");
+  parseButton.addEventListener("click", function() {Controller.createVideo()});
+  infoPane.insertBefore(parseButton, infoPane.lastChild);
 
   function publicSetMode(mode) {
     this.mode = mode;

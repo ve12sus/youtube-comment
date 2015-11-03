@@ -17,7 +17,7 @@
 	visibility: hidden;
 }
 
-#commentPane {
+#infoPane {
 	margin: 0 auto;
 	/*border: 1px solid black;*/
 	max-width: 640px;
