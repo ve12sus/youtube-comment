@@ -18,20 +18,18 @@ var Controller = (function () {
       if (id) {
         obj.mode = paths[indexLocation + 2];
       }
-
-      document.getElementById("error").innerHTML = mode;
     }
     return obj;
   }
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
-      videoModel.set(data);
+      VideoModel.set(data);
     });
   }
 
   function publicSetMode() {
-    View.setMode(mode);
+    View.mode = mode;
   }
 
   function sendRequest(method, url, data) {
@@ -46,7 +44,7 @@ var Controller = (function () {
 
   function publicCreateComment() {
 
-    var currentTime = Math.round(playerModel.getPlayer().getCurrentTime());
+    var currentTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
     var text = document.getElementById("text").value;
     var style =  "kappa";
 
@@ -56,7 +54,7 @@ var Controller = (function () {
       style: style
     }
 
-    videoModel.addComment(comment);
+    VideoModel.addComment(comment);
 
     try {
       var commentURL = url + "/comments";
@@ -70,7 +68,7 @@ var Controller = (function () {
 
   function publicDeleteComment(time) {
 
-    videoModel.deleteComment(time);
+    VideoModel.deleteComment(time);
 
     try {
       var data = JSON.stringify({ time: time });
@@ -88,9 +86,9 @@ var Controller = (function () {
       var titleElement = document.getElementById("title");
       var newTitle = titleElement.innerHTML;
 
-      videoModel.updateTitle(newTitle);
+      VideoModel.updateTitle(newTitle);
 
-      var data = JSON.stringify(videoModel.get());
+      var data = JSON.stringify(VideoModel.get());
       sendRequest('PUT', url, data);
     }
     catch(err) {
@@ -114,6 +112,7 @@ var Controller = (function () {
       var link = document.getElementById("link").value;
       var videoId = youtube_parser(link);
       var video = {
+        title: "click me to change",
         youtubeId: videoId
       };
       var data = JSON.stringify(video);
@@ -137,12 +136,11 @@ var Controller = (function () {
     createVideo: publicCreateVideo,
 
     setMode: publicSetMode
-
   };
 
 })();
 
-var videoModel = (function () {
+var VideoModel = (function () {
 
   // A private video variable
   var video = {
@@ -219,42 +217,61 @@ var View = (function () {
   var title = document.getElementById("title");
   var comments = document.getElementById("comments");
 
-  var commentTextInput = document.createElement("input");
-  commentTextInput.type = "text";
-  commentTextInput.setAttribute("id", "text");
-  commentTextInput.setAttribute("placeholder", "pause video and comment");
-  commentTextInput.setAttribute("size", "40");
-  infoPane.insertBefore(commentTextInput, infoPane.childNodes[2]);
+  function publicShowAddComment() {
+    if (this.mode == "edit" && !document.getElementById("text")) {
+      var commentTextInput = document.createElement("input");
+      commentTextInput.type = "text";
+      commentTextInput.setAttribute("id", "text");
+      commentTextInput.setAttribute("placeholder", "pause video and comment");
+      commentTextInput.setAttribute("size", "40");
+      infoPane.insertBefore(commentTextInput, infoPane.childNodes[2]);
 
-  var addButton = document.createElement("input");
-  addButton.type = "button";
-  addButton.setAttribute("id", "add");
-  addButton.setAttribute("value", "add comments");
-  addButton.addEventListener("click", function() {Controller.createComment()});
-  infoPane.insertBefore(addButton, infoPane.childNodes[3]);
+      var addButton = document.createElement("input");
+      addButton.type = "button";
+      addButton.setAttribute("id", "add");
+      addButton.setAttribute("value", "add comments");
+      addButton.addEventListener("click", function() {Controller.createComment()});
+      infoPane.insertBefore(addButton, infoPane.childNodes[3]);
+    }
+  }
 
-  var outside = document.documentElement;
-  outside.addEventListener("click", function() {Controller.saveTitle()});
+  function publicShowNewLink() {
+    if (this.mode == "edit" && !document.getElementById("link")) {
+      var linkTextInput = document.createElement("input");
+      linkTextInput.type = "text";
+      linkTextInput.setAttribute("id", "link");
+      linkTextInput.setAttribute("placeholder", "paste youtube link");
+      infoPane.insertBefore(linkTextInput, infoPane.lastChild);
 
-  var linkTextInput = document.createElement("input");
-  linkTextInput.type = "text";
-  linkTextInput.setAttribute("id", "link");
-  linkTextInput.setAttribute("placeholder", "paste youtube link");
-  infoPane.insertBefore(linkTextInput, infoPane.lastChild);
+      var parseButton = document.createElement("input");
+      parseButton.type = "button";
+      parseButton.setAttribute("id", "parseLink");
+      parseButton.setAttribute("value", "go");
+      parseButton.addEventListener("click", function() {Controller.createVideo()});
+      infoPane.insertBefore(parseButton, infoPane.lastChild);
+    }
+  }
 
-  var parseButton = document.createElement("input");
-  parseButton.type = "button";
-  parseButton.setAttribute("id", "parseLink");
-  parseButton.setAttribute("value", "go");
-  parseButton.addEventListener("click", function() {Controller.createVideo()});
-  infoPane.insertBefore(parseButton, infoPane.lastChild);
-
-  function publicSetMode(mode) {
-    this.mode = mode;
+  function publicShowShare() {
+    if (this.mode == "edit" && !document.getElementById("share")) {
+      var shareURL = document.createElement("input");
+      var id = VideoModel.get().id;
+      var url = "http://localhost/~jeff/ytcserver/videos/" + id;
+      shareURL.type = "text";
+      shareURL.setAttribute("id", "share");
+      shareURL.setAttribute("value", url);
+      shareURL.setAttribute("size", "30");
+      infoPane.insertBefore(shareURL, infoPane.lastChild);
+    }
   }
 
   function publicShowTitle(video) {
     title.innerHTML = video.title;
+    if (this.mode == "edit") {
+      title.setAttribute("contenteditable", "true");
+      var outside = document.documentElement;
+      outside.addEventListener("click", function() {Controller.saveTitle()});
+    }
   }
 
   function publicShowComments(video) {
@@ -277,7 +294,7 @@ var View = (function () {
 
       if (this.mode == "edit") {
         var deleteSpan = document.createElement("span");
-        var deleteNode = document.createTextNode(" x");
+        var deleteNode = document.createTextNode(" " + "delete");
         deleteSpan.appendChild(deleteNode);
         deleteSpan.setAttribute("class", "time-link");
         listItem.appendChild(deleteSpan);
@@ -289,7 +306,7 @@ var View = (function () {
 
       listItem.setAttribute("id", listItemId);
       timeSpan.onclick = function() {
-        playerModel.getPlayer().seekTo(this.parentNode.id);
+        PlayerModel.getPlayer().seekTo(this.parentNode.id);
       }
 
       cl.appendChild(listItem);
@@ -318,13 +335,17 @@ var View = (function () {
 
     showComments: publicShowComments,
 
-    setMode: publicSetMode
+    showAdd: publicShowAddComment,
+
+    showNew: publicShowNewLink,
+
+    showShare: publicShowShare
 
   };
 
 })();
 
-var playerModel =(function () {
+var PlayerModel =(function () {
 
   var player;
   var hold = false;
@@ -364,7 +385,7 @@ var playerModel =(function () {
     try {
       if (hold) { return; };
       var playerTime = Math.round(player.getCurrentTime());
-      var comments = videoModel.get().comments;
+      var comments = VideoModel.get().comments;
       for (var i = 0; i < comments.length; i++) {
         if (playerTime == comments[i].time) {
           document.getElementById("caption").style.visibility = "visible";
@@ -458,25 +479,28 @@ function Observer() {
   };
 }
 
-extend(videoModel, new Subject() );
+extend(VideoModel, new Subject() );
 
 extend(View, new Observer() );
 
-extend(playerModel, new Observer() );
+extend(PlayerModel, new Observer() );
 
 View.update = function(video) {
   Controller.setMode();
+  View.showAdd();
+  View.showNew();
   View.showTitle(video);
   View.showComments(video);
+  View.showShare();
 }
 
-playerModel.update = function(video) {
-  var player = playerModel.getPlayer();
+PlayerModel.update = function(video) {
+  var player = PlayerModel.getPlayer();
   if (player == null) {
-    playerModel.createPlayer(video);
+    PlayerModel.createPlayer(video);
   }
 }
 
-videoModel.addObserver(View);
+VideoModel.addObserver(View);
 
-videoModel.addObserver(playerModel);
+VideoModel.addObserver(PlayerModel);
