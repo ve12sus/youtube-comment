@@ -41,3 +41,15 @@ ul {
 #title {
   cursor: text;
 }
+
+#bigComment {
+  display: block;
+}
+
+#commentSlot {
+  background-color: yellow;
+}
+
+#liveComment {
+  display: inline;
+}
