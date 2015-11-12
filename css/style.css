@@ -1,55 +1,66 @@
-.time-link {
-	color: blue;
-	text-decoration: underline;
-	cursor: pointer;
+#main-wrapper {
+  margin: 0 auto;
+  width: 750px;
+}
+
+#player-wrapper {
+  margin: 0 auto;
+  text-align: center;
 }
 
 #caption {
-	color: #466BB0;
-	background-color: #000;
-	text-align: center;
-	margin: 0 auto;
-	position: relative;
-	top: -65px;
-	width: 640px;
-	/*border: 1px solid black;*/
-	z-index: 10;
-	visibility: hidden;
+  background-color: #000;
+  color: #466bb0;
+  margin: 0 auto;
+  position: relative;
+  text-align: center;
+  top: -65px;
+  width: 640px;
+  visibility: hidden;
+  z-index: 10;
 }
 
-#infoPane {
-	margin: 0 auto;
-	/*border: 1px solid black;*/
-	max-width: 640px;
-}
-
-#main {
-	width: 750px;
-	/*border: 1px solid black;*/
-	margin: 0 auto;
-}
-
-#playerwrap {
-	margin: 0 auto;
-	text-align: center;
-}
-
-ul {
-	list-style-type: none;
+#info-panel {
+  margin: 0 auto;
+  max-width: 640px;
 }
 
 #title {
   cursor: text;
 }
 
-#bigComment {
+#start-button {
   display: block;
 }
 
-#commentSlot {
+#comment-slot {
   background-color: yellow;
 }
 
-#liveComment {
+#live-comment {
   display: inline;
 }
+
+ul {
+  list-style-type: none;
+}
+
+.time-link,
+.delete-link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.delete-link {
+  visibility: hidden;
+}
+
+
+
+
+
+
+
+
+
