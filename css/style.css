@@ -31,6 +31,14 @@
 
 #start-button {
   display: block;
+  font-size: 1em;
+  margin: 0 auto;
+  height: 5em;
+  width: 30em;
+}
+
+#word-count {
+  background-color: yellow;
 }
 
 #comment-slot {
@@ -50,10 +58,6 @@ ul {
   color: blue;
   cursor: pointer;
   text-decoration: underline;
-}
-
-.delete-link {
-  visibility: hidden;
 }
 
 

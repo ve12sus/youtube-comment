@@ -3,6 +3,7 @@ var Controller = (function () {
   var id = findId().id;
   var mode = findId().mode;
   var url = '//localhost/~jeff/ytcserver/api/videos/' + id;
+  var errorDiv = document.getElementById('error');
 
   function findId() {
     var pathname = window.location.pathname;
@@ -52,7 +53,7 @@ var Controller = (function () {
   function publicCreateComment() {
 
     var currentTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
-    var text = document.getElementById('text').value;
+    var text = document.getElementById('new-comment-text').value;
     var style =  'kappa';
 
     var comment = {
@@ -69,7 +70,7 @@ var Controller = (function () {
       sendRequest('POST', commentURL, data);
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -83,7 +84,7 @@ var Controller = (function () {
       sendRequest('DELETE', commentURL, data);
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -99,7 +100,7 @@ var Controller = (function () {
       sendRequest('PUT', url, data);
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -128,7 +129,7 @@ var Controller = (function () {
       });
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -137,7 +138,7 @@ var Controller = (function () {
       PlayerModel.getPlayer().playVideo();
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -146,7 +147,7 @@ var Controller = (function () {
       PlayerModel.getPlayer().pauseVideo();
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      errorDiv.innerHTML = err.message;
     }
   }
 
@@ -260,90 +261,113 @@ var VideoModel = (function () {
 var View = (function () {
 
   var mode = Controller.getMode();
-
-  var infoPane = document.getElementById('info-panel');
-  var title = document.getElementById('title');
-  var commentsDiv = document.getElementById('comments');
+  var doc = document;
+  var infoPane = doc.getElementById('info-panel');
+  var title = doc.getElementById('title');
+  var commentsDiv = doc.getElementById('comments');
   var commentList;
-  var startButton;
+  var commentTextInput;
+  var commentSlot;
+  var wordCount;
 
   function publicShowBigAdd() {
-    var deleteLinks;
     var i;
+    var startButton;
 
-    if (!startButton) {
-      startButton = document.createElement('input');
+    if (!doc.getElementById('start-button')) {
+      startButton = doc.createElement('input');
       startButton.type = 'button';
       startButton.setAttribute('id', 'start-button');
       startButton.setAttribute('value', 'add a comment');
-      infoPane.insertBefore(startButton, commentsDiv);
       startButton.addEventListener('click', function() {
         Controller.pauseVideo();
         publicShowAddComment();
-        startButton.style.visibility = 'hidden';
-        deleteLinks = document.getElementsByClassName('delete-link');
-        for ( i = 0; i < deleteLinks.length; i+=1 ) {
-          deleteLinks[i].style.visibility = 'visible';
-        }
+        startButton.style.display = 'none';
+        toggleDelete();
       });
+
+      insertAfter(startButton, title);
+    }
+  }
+
+  function toggleDelete() {
+    var deleteLinks = doc.getElementsByClassName('delete-link');
+    var i;
+
+    for ( i = 0; i < deleteLinks.length; i+=1 ) {
+      if ( deleteLinks[i].style.visibility = 'hidden' ) {
+        deleteLinks[i].style.visibility = 'visible';
+      } else {
+        deleteLinks[i].style.visibility = 'hidden';
+      }
     }
   }
 
   function publicShowAddComment() {
-    if (!document.getElementById('text')) {
-      var commentTextInput = document.createElement('input');
-      commentTextInput.type = 'text';
-      commentTextInput.setAttribute('id', 'text');
-      commentTextInput.setAttribute('placeholder', 'type a comment');
-      commentTextInput.setAttribute('size', '40');
-      commentTextInput.addEventListener('mouseover',
-        function() {
-          showCommentInsert();
-        });
-      commentTextInput.addEventListener('mouseout',
-        function() {
-          var commentSlot = document.getElementById('comment-slot');
-          var slotParent = commentSlot.parentElement;
-          slotParent.removeChild(commentSlot);
-        });
-      commentTextInput.addEventListener('keyup',
-        function() {
-          document.getElementById('live-comment').innerHTML =
-            ' ' + commentTextInput.value;
-        });
-      insertAfter(commentTextInput, startButton);
+    var addButton;
+    var addCommentDiv; //TODO wrap button and text in div and size/center
 
-      var addButton = document.createElement('input');
+    if (!doc.getElementById('new-comment-text')) {
+      commentTextInput = doc.createElement('input');
+      commentTextInput.type = 'text';
+      commentTextInput.setAttribute('id', 'new-comment-text');
+      commentTextInput.setAttribute('placeholder', 'type a comment');
+      commentTextInput.setAttribute('maxlength', '70');
+
+      commentTextInput.addEventListener('mouseover',
+        function() { showCommentSlot(); });
+
+      commentTextInput.addEventListener('mouseout',
+        function() { removeCommentSlot(); });
+
+      commentTextInput.addEventListener('keyup',
+        function() { commentPreview(); });
+
+      infoPane.insertBefore(commentTextInput, commentsDiv);
+
+      addButton = doc.createElement('input');
       addButton.type = 'button';
-      addButton.setAttribute('id', 'add');
+      addButton.setAttribute('id', 'new-comment-button');
       addButton.setAttribute('value', 'add comment');
       addButton.addEventListener('click', function() {
         Controller.createComment();
         Controller.playVideo();
       });
       insertAfter(addButton, commentTextInput);
+
+      wordCount = doc.createElement('div');
+      wordCount.setAttribute('id', 'word-count');
+      insertAfter(wordCount, addButton);
     }
   }
 
-  function showCommentInsert() {
-    if (commentList && !document.getElementById('comment-slot')) {
-      var playerTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
-      var commentSlot = document.createElement('li');
-      var timeSpan = document.createElement('span');
-      var timeNode = document.createTextNode(secondsToHms(playerTime));
-      var commentNode = document.createElement('div');
+  function showCommentSlot() {
+    var playerTime;
+    var timeSpan;
+    var timeNode;
+    var commentNode;
+    var vidComments;
+    var i;
 
-      timeSpan.appendChild(timeNode);
-      commentNode.setAttribute('id', 'live-comment');
-      commentSlot.appendChild(timeSpan);
-      commentSlot.appendChild(commentNode);
+    if (!doc.getElementById('comment-slot')) {
+      playerTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
+      timeNode = doc.createTextNode(secondsToHms(playerTime));
+
+      commentSlot = doc.createElement('li');
       commentSlot.setAttribute('id', 'comment-slot');
 
-      var comments = VideoModel.get().comments;
-      var i;
-      var commentTime;
-      for ( i = 0; i < comments.length; i+=1 ) {
-        commentTime = comments[i].time;
+      timeSpan = doc.createElement('span');
+      timeSpan.appendChild(timeNode);
+
+      commentNode = doc.createElement('div');
+      commentNode.setAttribute('id', 'live-comment');
+
+      commentSlot.appendChild(timeSpan);
+      commentSlot.appendChild(commentNode);
+
+      vidComments = VideoModel.get().comments;
+      for ( i = 0; i < vidComments.length; i+=1 ) {
+        commentTime = vidComments[i].time;
         if (playerTime <= commentTime) {
           commentList.insertBefore(commentSlot, commentList.childNodes[i]);
         } else {
@@ -353,31 +377,52 @@ var View = (function () {
     }
   }
 
+  function removeCommentSlot() {
+    if (doc.getElementById('comment-slot')) {
+      commentSlot.parentElement.removeChild(commentSlot);
+    }
+  }
+
+  function commentPreview() {
+    var node;
+    node = doc.getElementById('live-comment');
+    node.innerHTML = ' ' + commentTextInput.value;
+    wordCount.innerHTML = 70 - commentTextInput.value.length;
+  }
+
   function publicShowNewLink() {
-    if (!document.getElementById('youtube-link')) {
-      var makelink = document.getElementById('makelink');
-      var text = document.createTextNode('Make your own!');
+    var makelink;
+    var text;
+    var youtubeLink;
+    var youtubeLinkButton;
 
-      var linkTextInput = document.createElement('input');
-      linkTextInput.type = 'text';
-      linkTextInput.setAttribute('id', 'youtube-link');
-      linkTextInput.setAttribute('placeholder', 'Paste YouTube link');
-      linkTextInput.setAttribute('size', '35');
+    if (!doc.getElementById('youtube-link')) {
+      makelink = doc.getElementById('makelink');
+      text = doc.createTextNode('Make your own!');
 
-      var parseButton = document.createElement('input');
-      parseButton.type = 'button';
-      parseButton.setAttribute('id', 'youtube-link-button');
-      parseButton.setAttribute('value', 'Go');
-      parseButton.addEventListener('click', function() {Controller.createVideo();});
+      youtubeLink = doc.createElement('input');
+      youtubeLink.type = 'text';
+      youtubeLink.setAttribute('id', 'youtube-link');
+      youtubeLink.setAttribute('placeholder', 'Paste YouTube link');
+      youtubeLink.setAttribute('size', '35');
+
+      youtubeLinkButton = doc.createElement('input');
+      youtubeLinkButton.type = 'button';
+      youtubeLinkButton.setAttribute('id', 'youtube-link-button');
+      youtubeLinkButton.setAttribute('value', 'Go');
+      youtubeLinkButton.addEventListener('click',
+        function() { Controller.createVideo(); });
 
       makelink.appendChild(text);
-      makelink.appendChild(linkTextInput);
-      makelink.appendChild(parseButton);
+      makelink.appendChild(youtubeLink);
+      makelink.appendChild(youtubeLinkButton);
     }
   }
 
   function publicShowShare() {
-    if (mode == 'edit' && !document.getElementById('share')) {
+    //TODO feature to share newly created video
+
+    /*if (mode == 'edit' && !document.getElementById('share')) {
       var shareURL = document.createElement('input');
       var id = VideoModel.get().id;
       var url = '//localhost/~jeff/ytcserver/videos/' + id;
@@ -386,35 +431,36 @@ var View = (function () {
       shareURL.setAttribute('value', url);
       shareURL.setAttribute('size', '30');
       infoPane.insertBefore(shareURL, infoPane.lastChild);
-    }
+    }*/
   }
 
   function publicShowCollection(collection) {
-    title.innerHTML = 'Video List';
-    var vl = document.createElement('ul');
+    var vl = doc.createElement('ul');
     var i;
-    var titleNode;
+    var titleText;
     var link;
     var url;
     var listItem;
 
     for ( i = 0; i < collection.length; i+=1 ) {
-      titleNode = document.createTextNode(collection[i].title);
-      link = document.createElement('a');
+      titleText = doc.createTextNode(collection[i].title);
+      link = doc.createElement('a');
       url = '//localhost/~jeff/ytcserver/' + collection[i].id;
-      listItem = document.createElement('li');
+      listItem = doc.createElement('li');
 
-      link.appendChild(titleNode);
+      link.appendChild(titleText);
       link.setAttribute('class', 'time-link');
       link.setAttribute('href', url);
       listItem.appendChild(link);
       vl.appendChild(listItem);
     }
+    title.innerHTML = 'Video List';
     commentsDiv.appendChild(vl);
   }
 
   function publicShowTitle(video) {
     title.innerHTML = video.title;
+    //TODO change this function to make titles editable under certain conditions
     if (mode == 'edit') {
       title.setAttribute('contenteditable', 'true');
       title.addEventListener('keypress', function(e) {
@@ -436,34 +482,36 @@ var View = (function () {
     var deleteSpan;
     var deleteNode;
 
-    commentList = document.createElement('ul');
+    commentList = doc.createElement('ul');
     commentList.setAttribute('id', 'comment-list');
 
     for ( i = 0; i < video.comments.length; i+=1 ) {
-      timeSpan = document.createElement('span');
-      timeNode = document.createTextNode(
+      listItem = doc.createElement('li');
+      listItemId = video.comments[i].time;
+      listItem.setAttribute('id', listItemId);
+      listItem.setAttribute('class', 'comment');
+
+      timeNode = doc.createTextNode(
         secondsToHms(video.comments[i].time));
 
-      commentNode = document.createTextNode(' ' + video.comments[i].comment);
-      listItem = document.createElement('li');
-      listItemId = video.comments[i].time;
-
-      timeSpan.appendChild(timeNode);
+      timeSpan = doc.createElement('span');
       timeSpan.setAttribute('class', 'time-link');
+      timeSpan.appendChild(timeNode);
+      timeSpan.onclick = skipToComment;
+
+      commentNode = doc.createTextNode(' ' + video.comments[i].comment);
+
+      deleteNode = doc.createTextNode(' ' + 'delete');
+      deleteSpan = doc.createElement('span');
+      deleteSpan.setAttribute('class', 'delete-link');
+      deleteSpan.style.visibility = 'hidden';
+      deleteSpan.appendChild(deleteNode);
+      deleteSpan.onclick = deleteClick;
 
       listItem.appendChild(timeSpan);
       listItem.appendChild(commentNode);
-
-      deleteSpan = document.createElement('span');
-      deleteNode = document.createTextNode(' ' + 'delete');
-      deleteSpan.appendChild(deleteNode);
-      deleteSpan.setAttribute('class', 'delete-link');
       listItem.appendChild(deleteSpan);
-      deleteSpan.onclick = deleteClick;
 
-      listItem.setAttribute('id', listItemId);
-      listItem.setAttribute('class', 'comment');
-      timeSpan.onclick = skipToComment;
       commentList.appendChild(listItem);
     }
 
@@ -517,11 +565,12 @@ var View = (function () {
 })();
 
 var PlayerModel =(function () {
-
-  var tag = document.createElement('script');
+  var doc = document;
+  var caption = doc.getElementById('caption');
+  var tag = doc.createElement('script');
 
   tag.src = '//www.youtube.com/iframe_api';
-  var firstScriptTag = document.getElementsByTagName('script')[0];
+  var firstScriptTag = doc.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
   var player;
@@ -547,7 +596,7 @@ var PlayerModel =(function () {
   function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PAUSED) {
       hold = true;
-      document.getElementById('caption').style.visibility = 'hidden';
+      caption.style.visibility = 'hidden';
     }
     if (event.data == YT.PlayerState.PLAYING) {
       hold = false;
@@ -559,27 +608,31 @@ var PlayerModel =(function () {
   }
 
   function commentLoad() {
+    var playerTime;
+    var comments;
+    var i;
+
     try {
       if (hold) { return; }
-      var playerTime = Math.round(player.getCurrentTime());
-      var comments = VideoModel.get().comments;
-      var i;
+      playerTime = Math.round(player.getCurrentTime());
+      comments = VideoModel.get().comments;
+
       for ( i = 0; i < comments.length; i+=1 ) {
         if (playerTime == comments[i].time) {
-          document.getElementById('caption').style.visibility = 'visible';
-          document.getElementById('caption').innerHTML = comments[i].comment;
+          caption.style.visibility = 'visible';
+          caption.innerHTML = comments[i].comment;
           hideCaption();
         }
       }
     }
     catch(err) {
-      document.getElementById('error').innerHTML = err.message;
+      doc.getElementById('error').innerHTML = err.message;
     }
   }
 
   function hideCaption() {
     setTimeout( function() {
-      document.getElementById('caption').style.visibility = 'hidden';
+      caption.style.visibility = 'hidden';
     }, 3000);
   }
 
@@ -593,6 +646,7 @@ var PlayerModel =(function () {
 
 })();
 
+//Observer pattern
 function ObserverList() {
   this.observerList = [];
 }
@@ -696,4 +750,3 @@ PlayerModel.update = function(video) {
 VideoModel.addObserver(View);
 
 VideoModel.addObserver(PlayerModel);
-
