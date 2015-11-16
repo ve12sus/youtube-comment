@@ -29,7 +29,8 @@
   cursor: text;
 }
 
-#start-button {
+#start-button,
+#change-title-button {
   display: block;
   font-size: 1em;
   margin: 0 auto;
