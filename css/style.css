@@ -1,6 +1,31 @@
+body {
+  color: #414142;
+  font-family: Arial;
+  margin: 0;
+}
+
+#logo {
+  text-align: center;
+  background-color: #ededed;
+  margin: 0 0 10px 0;
+  padding: 0.75em 0;
+}
+
+#logo a {
+  text-decoration: none;
+  color: #414142;
+  position: relative;
+}
+
+#logo span {
+  vertical-align: middle;
+  font-size: 1.5em;
+  font-family: 'Lucida Console', monospace;
+}
+
 #main-wrapper {
   margin: 0 auto;
-  width: 750px;
+  max-width: 750px;
 }
 
 #player-wrapper {
@@ -22,27 +47,65 @@
 
 #info-panel {
   margin: 0 auto;
+  margin-top: 0;
   max-width: 640px;
 }
 
+#superscript {
+  display: inline;
+  margin: 0;
+}
+
+#hints {
+  color: red;
+  display: inline;
+  font-size: 0.75em;
+  margin: 0 0 0 25px;
+}
+
 #title {
-  cursor: text;
+  margin: 0;
+}
+
+#buttons {
+  margin: 0 auto;
+  text-align: center;
+  width: 80%;
 }
 
 #start-button,
 #change-title-button {
-  display: block;
+  background-color: #466bb0;
+  display: inline-block;
   font-size: 1em;
+  height: 2.5em;
   margin: 0 auto;
-  height: 5em;
-  width: 30em;
+  width: 15em;
+}
+
+#new-comment-inputs {
+  margin: 10px auto;
+  text-align: center;
+  width: 80%;
+}
+
+#new-comment-text {
+  display: inline-block;
+  width: 60%;
+}
+
+#new-comment-button,
+#new-comment-cancel {
+  display: inline-block;
 }
 
 #word-count {
+  display: inline-block;
   background-color: yellow;
 }
 
 #comment-slot {
+  display: inline;
   background-color: yellow;
 }
 
@@ -61,7 +124,10 @@ ul {
   text-decoration: underline;
 }
 
-
+.delete-link {
+  font-size: 0.75em;
+  margin: 0 0 0 5px;
+}
 
 
 

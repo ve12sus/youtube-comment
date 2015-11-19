@@ -93,10 +93,17 @@ var Controller = (function () {
     var titleElement;
     var key;
     var newTitle;
+    var oldTitle = VideoModel.get().title;
+    var hint;
+    var data;
 
     try {
       titleElement = doc.getElementById('title');
       titleElement.setAttribute('contenteditable', 'true');
+      titleElement.addEventListener('focus', function() {
+        hint = 'Press enter to save';
+        View.showHint(hint);
+      });
       titleElement.focus();
 
       titleElement.addEventListener('keypress', function(e) {
@@ -108,8 +115,11 @@ var Controller = (function () {
 
           VideoModel.updateTitle(newTitle);
 
-          var data = JSON.stringify(VideoModel.get());
+          data = JSON.stringify(VideoModel.get());
           sendRequest('PUT', url, data);
+
+          hint = 'Title updated';
+          View.showHint(hint);
         }
       });
     }
@@ -277,17 +287,20 @@ var View = (function () {
   var mode = Controller.getMode();
   var doc = document;
   var infoPane = doc.getElementById('info-panel');
+  var superscript = doc.getElementById('superscript');
   var title = doc.getElementById('title');
+  var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
-  var commentList;
+
+  var startButton;
+  var titleButton;
   var addCommentDiv;
   var commentTextInput;
   var commentSlot;
-  var startButton;
-  var titleButton;
   var wordCount;
+  var commentList;
 
-  function publicShowBigAdd() {
+  function publicShowBigButtons() {
     var i;
 
     if (!doc.getElementById('start-button')) {
@@ -297,56 +310,58 @@ var View = (function () {
       startButton.setAttribute('value', 'add a comment');
       startButton.addEventListener('click', function() {
         Controller.pauseVideo();
-        publicShowAddComment();
+        showAddComment();
         showCommentSlot();
-        removeBigAdd();
       });
-      if(!doc.getElementById('change-title-button')) {
-        insertAfter(startButton, title);
-      } else {
-        insertAfter(startButton, titleButton);
-      }
+      startButton.addEventListener('mouseover', function() {
+        var hint = 'add a comment at the current time'
+        showHint(hint);
+      });
+      startButton.addEventListener('mouseout', function() {
+        removeHint();
+      });
+      buttons.appendChild(startButton);
+    }
+
+    if (!doc.getElementById('change-title-button')) {
+      titleButton = doc.createElement('input');
+      titleButton.type = 'button';
+      titleButton.setAttribute('id', 'change-title-button');
+      titleButton.setAttribute('value', 'change the title');
+      titleButton.addEventListener('click', function() {
+        Controller.changeTitle();
+      });
+      titleButton.addEventListener('mouseover', function() {
+        var hint = 'click to change the title of your quickcap';
+        showHint(hint);
+      });
+      titleButton.onmouseout = removeHint;
+      buttons.appendChild(titleButton);
     }
   }
 
-  function removeBigAdd() {
-    if (doc.getElementById('start-button')) {
-      startButton.parentNode.removeChild(startButton);
-    }
-  }
-
-  function toggleDelete() {
-    var deleteLinks = doc.getElementsByClassName('delete-link');
-    var i;
-
-    for ( i = 0; i < deleteLinks.length; i+=1 ) {
-      if ( deleteLinks[i].style.visibility = 'hidden' ) {
-        deleteLinks[i].style.visibility = 'visible';
-      } else {
-        deleteLinks[i].style.visibility = 'hidden';
-      }
-    }
-  }
-
-  function publicShowAddComment() {
+  function showAddComment() {
     var addButton;
     var cancelButton;
 
     if (!doc.getElementById('new-comment-text')) {
+
       commentTextInput = doc.createElement('input');
       commentTextInput.type = 'text';
       commentTextInput.setAttribute('id', 'new-comment-text');
       commentTextInput.setAttribute('placeholder', 'type a comment');
       commentTextInput.setAttribute('maxlength', '70');
 
-      //commentTextInput.addEventListener('mouseover',
-      //  function() { showCommentSlot(); });
-
-      //commentTextInput.addEventListener('mouseout',
-      //  function() { removeCommentSlot(); });
-
-      commentTextInput.addEventListener('keyup',
-        function() { commentPreview(); });
+      commentTextInput.addEventListener('mouseover', function() {
+        var hint = 'comments can be 70 characters long';
+        showHint(hint);
+      });
+      commentTextInput.addEventListener('mouseout', function() {
+        removeHint();
+      });
+      commentTextInput.addEventListener('keyup', function() {
+        commentPreview();
+      });
 
       addCommentDiv = doc.createElement('div');
       addCommentDiv.setAttribute('id', 'new-comment-inputs');
@@ -357,10 +372,12 @@ var View = (function () {
       addButton.setAttribute('id', 'new-comment-button');
       addButton.setAttribute('value', 'add comment');
       addButton.addEventListener('click', function() {
+        var hint = 'new comment added';
         Controller.createComment();
         Controller.playVideo();
         removeCommentSlot();
         removeCommentDiv();
+        showHint(hint);
       });
       insertAfter(addButton, commentTextInput);
 
@@ -372,7 +389,6 @@ var View = (function () {
         Controller.playVideo();
         removeCommentSlot();
         removeCommentDiv();
-        publicShowBigAdd();
       });
       insertAfter(cancelButton, addButton);
 
@@ -508,15 +524,22 @@ var View = (function () {
   }
 
   function publicShowTitle(video) {
+    if (mode == 'edit') {
+      superscript.innerHTML = 'Now editing';
+    } else {
+      superscript.innerHTML = 'Now playing';
+    }
 
     title.innerHTML = video.title;
-    if (mode == 'edit' && !doc.getElementById('change-title-button')) {
+    /*if (mode == 'edit' && !doc.getElementById('change-title-button')) {
       titleButton = doc.createElement('input');
       titleButton.type = 'button';
       titleButton.setAttribute('id', 'change-title-button');
       titleButton.setAttribute('value', 'change the title');
-      insertAfter(titleButton, title);
-      titleButton.onclick = Controller.changeTitle;
+      titleButton.addEventListener('click', function() {
+        Controller.changeTitle();
+      });
+      buttons.appendChild(titleButton);
     }
     /*  title.setAttribute('contenteditable', 'true');
       title.addEventListener('keypress', function(e) {
@@ -554,6 +577,11 @@ var View = (function () {
       timeSpan.setAttribute('class', 'time-link');
       timeSpan.appendChild(timeNode);
       timeSpan.onclick = skipToComment;
+      timeSpan.addEventListener('mouseover', function() {
+        var hint = 'seek to this comment';
+        showHint(hint);
+      });
+      timeSpan.onmouseout = removeHint;
 
       commentNode = doc.createTextNode(' ' + video.comments[i].comment);
 
@@ -561,11 +589,20 @@ var View = (function () {
       listItem.appendChild(commentNode);
 
       if (mode == 'edit') {
-        deleteNode = doc.createTextNode(' ' + 'delete');
+        deleteNode = doc.createTextNode('delete');
         deleteSpan = doc.createElement('span');
         deleteSpan.setAttribute('class', 'delete-link');
         deleteSpan.appendChild(deleteNode);
         deleteSpan.onclick = deleteClick;
+        deleteSpan.addEventListener('click', function () {
+          var hint = 'comment deleted';
+          showHint(hint);
+        });
+        deleteSpan.addEventListener('mouseover', function() {
+          var hint = 'delete this comment';
+          showHint(hint);
+        });
+        deleteSpan.onmouseout = removeHint;
         listItem.appendChild(deleteSpan);
       }
 
@@ -588,6 +625,21 @@ var View = (function () {
     Controller.deleteComment(parseInt(this.parentNode.id));
   }
 
+  function showHint(hint) {
+    var hintDiv = doc.getElementById('hints');
+    hintDiv.innerHTML = hint;
+  }
+
+  function publicShowHint(hint) {
+    var hintDiv = doc.getElementById('hints');
+    hintDiv.innerHTML = hint;
+  }
+
+  function removeHint() {
+    var hintDiv = doc.getElementById('hints');
+    hintDiv.innerHTML = "";
+  }
+
   function secondsToHms(d) {
     d = Number(d);
     var h = Math.floor(d / 3600);
@@ -607,15 +659,15 @@ var View = (function () {
 
     showComments: publicShowComments,
 
-    showAdd: publicShowAddComment,
-
     showNew: publicShowNewLink,
 
     showShare: publicShowShare,
 
     showCollection: publicShowCollection,
 
-    showBig: publicShowBigAdd
+    showBig: publicShowBigButtons,
+
+    showHint: publicShowHint
 
   };
 
