@@ -1,6 +1,14 @@
-Youtube Commentor takes youtube videos and allows user to add comments and share easily.
+YouTube Commentator lets users comment, timestamp, and share YouTube videos easily.
 
-server.php api
+This is a full stack solution that includes a RESTful API back-end: server.php
+
+mySQL handles database duties.
+
+A front-end client using vanilla Javascript/JQuery AJAX: Index.html and player.js.
+
+a live version of this application is available at www.ve12sus.com/ytc
+
+API details:
 GET api/videos - get videos
 POST api/videos - create video
 
