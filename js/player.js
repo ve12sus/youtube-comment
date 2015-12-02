@@ -256,7 +256,7 @@ var View = (function () {
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
 
-  var addCommentDiv;
+  var commentBar;
   var commentSlot;
   var commentList;
 
@@ -280,7 +280,7 @@ var View = (function () {
       commentButton.setAttribute('value', 'Add comment');
       commentButton.addEventListener('click', function() {
         PlayerModel.pause();
-        showAddComment();
+        showCommentBar();
         showCommentSlot();
       });
       commentButton.addEventListener('mouseover', function() {
@@ -329,18 +329,18 @@ var View = (function () {
     title.focus();
   }
 
-  function showAddComment() {
+  function showCommentBar() {
     var textInput;
     var addButton;
     var cancelButton;
     var wordCount;
 
-    if (!doc.getElementById('new-comment-text')) {
+    if (!doc.getElementById('comment-bar')) {
 
       textInput = doc.createElement('input');
       textInput.type = 'text';
       textInput.setAttribute('id', 'new-comment-text');
-      textInput.setAttribute('placeholder', 'type a comment');
+      textInput.setAttribute('placeholder', 'Enter a comment');
       textInput.setAttribute('maxlength', '70');
 
       textInput.addEventListener('mouseover', function() {
@@ -363,14 +363,14 @@ var View = (function () {
         }
       });
 
-      addCommentDiv = doc.createElement('div');
-      addCommentDiv.setAttribute('id', 'new-comment-inputs');
-      addCommentDiv.appendChild(textInput);
+      commentBar = doc.createElement('div');
+      commentBar.setAttribute('id', 'comment-bar');
+      commentBar.appendChild(textInput);
 
       addButton = doc.createElement('input');
       addButton.type = 'button';
       addButton.setAttribute('id', 'new-comment-button');
-      addButton.setAttribute('value', 'add comment');
+      addButton.setAttribute('value', 'Add');
       addButton.addEventListener('click', function() {
         Controller.createComment();
         Controller.playVideo();
@@ -383,7 +383,7 @@ var View = (function () {
       cancelButton = doc.createElement('input');
       cancelButton.type = 'button';
       cancelButton.setAttribute('id', 'new-comment-cancel');
-      cancelButton.setAttribute('value', 'cancel');
+      cancelButton.setAttribute('value', 'Cancel');
       cancelButton.addEventListener('click', function() {
         Controller.playVideo();
         removeCommentSlot();
@@ -395,14 +395,14 @@ var View = (function () {
       wordCount.setAttribute('id', 'word-count');
       insertAfter(wordCount, cancelButton);
 
-      info.insertBefore(addCommentDiv, commentsDiv);
+      info.insertBefore(commentBar, commentsDiv);
       textInput.focus();
     }
   }
 
   function removeAddComment() {
-    if (doc.getElementById('new-comment-inputs')) {
-      addCommentDiv.parentNode.removeChild(addCommentDiv);
+    if (doc.getElementById('comment-bar')) {
+      commentBar.parentNode.removeChild(commentBar);
     }
   }
 
