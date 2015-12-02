@@ -313,23 +313,21 @@ var View = (function () {
   }
 
   function changeTitle() {
-    var key;
-    var oldTitle = VideoModel.get().title;
-    var newTitle;
 
     title.setAttribute('contenteditable', 'true');
+    title.innerHTML = '';
     title.addEventListener('focus', function() {
       showHint('Press enter to save');
     });
     title.addEventListener('keypress', function(e) {
+      var key;
       key = e.which || e.KeyCode;
       if (key === 13) {
         e.preventDefault();
         title.blur();
-        newTitle = title.innerHTML;
 
-        if (newTitle != oldTitle) {
-          Controller.changeTitle(newTitle);
+        if (title.innerHTML.length !== 0) {
+          Controller.changeTitle(title.innerHTML);
           showHint('Title updated');
         }
       }
