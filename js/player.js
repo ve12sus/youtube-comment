@@ -281,7 +281,7 @@ var View = (function () {
       commentButton.addEventListener('click', function() {
         PlayerModel.pause();
         showAddComment();
-        publicShowCommentSlot();
+        showCommentSlot();
       });
       commentButton.addEventListener('mouseover', function() {
         showHint('Click to add a comment at the current time');
@@ -406,41 +406,38 @@ var View = (function () {
     }
   }
 
-  function publicShowCommentSlot() {
-    var playerTime;
+  function showCommentSlot() {
+    var playerTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
     var timeSpan;
     var timeNode;
     var commentNode;
-    var vidComments;
+    var comments;
     var commentTime;
     var i;
 
     removeCommentSlot();
 
-    if (!doc.getElementById('comment-slot')) {
-      playerTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
-      timeNode = doc.createTextNode(secondsToHms(playerTime));
+    timeNode = doc.createTextNode(secondsToHms(playerTime));
 
-      commentSlot = doc.createElement('li');
-      commentSlot.setAttribute('id', 'comment-slot');
+    commentSlot = doc.createElement('li');
+    commentSlot.setAttribute('id', 'comment-slot');
 
-      timeSpan = doc.createElement('span');
-      timeSpan.appendChild(timeNode);
+    timeSpan = doc.createElement('span');
+    timeSpan.appendChild(timeNode);
 
-      commentNode = doc.createElement('div');
-      commentNode.setAttribute('id', 'live-comment');
+    commentNode = doc.createElement('div');
+    commentNode.setAttribute('id', 'live-comment');
 
-      commentSlot.appendChild(timeSpan);
-      commentSlot.appendChild(commentNode);
+    commentSlot.appendChild(timeSpan);
+    commentSlot.appendChild(commentNode);
 
-      vidComments = VideoModel.get().comments;
-      for ( i = 0; i < vidComments.length; i+=1 ) {
-        commentTime = vidComments[i].time;
-        if (playerTime <= commentTime) {
-          commentList.insertBefore(commentSlot, commentList.childNodes[i]);
-        } else {
-          insertAfter(commentSlot, commentList.lastChild);
-        }
+    comments = VideoModel.get().comments;
+    for ( i = 0; i < comments.length; i+=1 ) {
+      commentTime = comments[i].time;
+      if (playerTime <= commentTime) {
+        commentList.insertBefore(commentSlot, commentList.childNodes[i]);
+      } else {
+        insertAfter(commentSlot, commentList.lastChild);
       }
     }
   }
@@ -635,8 +632,6 @@ var View = (function () {
     render: publicRender,
 
     showComments: publicShowComments,
-
-    showCommentSlot: publicShowCommentSlot,
 
     showNew: publicShowNewLink,
 
