@@ -525,10 +525,12 @@ var View = (function () {
   }
 
   function publicShowTitle(video) {
-    if (mode == 'edit') {
-      superscript.innerHTML = 'Now editing';
-    } else {
-      superscript.innerHTML = 'Now playing';
+    switch(mode) {
+      case 'edit':
+        superscript.innerHTML = 'Now editing';
+        break;
+      default:
+        superscript.innerHTML = 'Now playing';
     }
 
     title.innerHTML = video.title;
