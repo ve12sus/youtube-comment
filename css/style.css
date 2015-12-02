@@ -73,8 +73,8 @@ body {
   width: 80%;
 }
 
-#start-button,
-#change-title-button {
+#comment-button,
+#title-button {
   background-color: #466bb0;
   display: inline-block;
   font-size: 1em;

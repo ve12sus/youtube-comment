@@ -273,34 +273,38 @@ var View = (function () {
   function publicRender(data) {
     setTitle(data);
     setSuper();
+
+    if (mode == 'edit') {
+      showBigButtons();
+    }
   }
 
-  function publicShowBigButtons() {
-    var startButton;
+  function showBigButtons() {
+    var commentButton;
     var titleButton;
 
-    if (!doc.getElementById('start-button')) {
-      startButton = doc.createElement('input');
-      startButton.type = 'button';
-      startButton.setAttribute('id', 'start-button');
-      startButton.setAttribute('value', 'add a comment');
-      startButton.addEventListener('click', function() {
+    if (!doc.getElementById('comment-button')) {
+      commentButton = doc.createElement('input');
+      commentButton.type = 'button';
+      commentButton.setAttribute('id', 'comment-button');
+      commentButton.setAttribute('value', 'Add comment');
+      commentButton.addEventListener('click', function() {
         Controller.pauseVideo();
         showAddComment();
         publicShowCommentSlot();
       });
-      startButton.addEventListener('mouseover', function() {
+      commentButton.addEventListener('mouseover', function() {
         showHint('Click to add a comment at the current time');
       });
-      startButton.onmouseout = removeHint;
-      buttons.appendChild(startButton);
+      commentButton.onmouseout = removeHint;
+      buttons.appendChild(commentButton);
     }
 
-    if (!doc.getElementById('change-title-button')) {
+    if (!doc.getElementById('title-button')) {
       titleButton = doc.createElement('input');
       titleButton.type = 'button';
-      titleButton.setAttribute('id', 'change-title-button');
-      titleButton.setAttribute('value', 'change the title');
+      titleButton.setAttribute('id', 'title-button');
+      titleButton.setAttribute('value', 'Change title');
       titleButton.addEventListener('click', function() {
         changeTitle();
       });
@@ -648,9 +652,7 @@ var View = (function () {
 
     showShare: publicShowShare,
 
-    showCollection: publicShowCollection,
-
-    showBig: publicShowBigButtons
+    showCollection: publicShowCollection
 
   };
 
@@ -820,10 +822,9 @@ View.update = function(data) {
   if (data[0]) {
     View.showCollection(data);
     View.showNew();
-  } else if (Controller.getMode() == 'edit') {
-    View.render(data);
-    View.showBig();
-    View.showComments(data);
+//  } else if (Controller.getMode() == 'edit') {
+//    View.render(data);
+//    View.showComments(data);
   } else {
     View.render(data);
     View.showComments(data);
