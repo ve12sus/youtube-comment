@@ -41,7 +41,8 @@ var Controller = (function () {
 
     return $.ajax({
       url: url,
-      dataType: 'json',
+      contentType: "application/json",
+      dataType: "json",
       type: method,
       data: data
     });
@@ -84,13 +85,13 @@ var Controller = (function () {
     }
   }
 
-  function publicDeleteComment(time) {
+  function publicDeleteComment(comment) {
 
-    VideoModel.deleteComment(time);
+    VideoModel.deleteComment(comment);
 
     try {
       var commentURL = url + '/comments';
-      var data = JSON.stringify({ time: time });
+      var data = JSON.stringify(comment);
       sendRequest('DELETE', commentURL, data);
     }
     catch(err) {
@@ -200,10 +201,11 @@ var VideoModel = (function () {
     this.notify(video);
   }
 
-  function publicDeleteComment(time) {
+  function publicDeleteComment(comment) {
     var i;
     for ( i = 0; i < video.comments.length; i+=1 ) {
-      if (video.comments[i].time === time) {
+      if (video.comments[i].time === comment.time &&
+          video.comments[i].comment == comment.text) {
         video.comments.splice(i, 1);
       }
     }
@@ -348,7 +350,7 @@ var View = (function () {
       textInput.onmouseout = removeHint;
       textInput.addEventListener('keyup', function() {
         var node = doc.getElementById('live-comment');
-        node.innerHTML = ' ' + textInput.value;
+        node.innerHTML = textInput.value;
         wordCount.innerHTML = 70 - textInput.value.length;
       });
       textInput.addEventListener('keypress', function(e) {
@@ -563,8 +565,7 @@ var View = (function () {
       });
       timeSpan.onmouseout = removeHint;
 
-      commentNode = doc.createTextNode(' ' + video.comments[i].comment);
-
+      commentNode = doc.createTextNode(video.comments[i].comment);
       listItem.appendChild(timeSpan);
       listItem.appendChild(commentNode);
 
@@ -600,7 +601,11 @@ var View = (function () {
   }
 
   function deleteClick() {
-    Controller.deleteComment(parseInt(this.parentNode.id));
+    var comment = {
+      time: parseInt(this.parentNode.id),
+      text: this.parentNode.childNodes[1].nodeValue
+    }
+    Controller.deleteComment(comment);
   }
 
   function showHint(hint) {
