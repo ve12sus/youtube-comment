@@ -270,6 +270,11 @@ var View = (function () {
   var commentSlot;
   var commentList;
 
+  function publicRender(data) {
+    setTitle(data);
+    setSuper();
+  }
+
   function publicShowBigButtons() {
     var startButton;
     var titleButton;
@@ -524,7 +529,11 @@ var View = (function () {
     commentsDiv.appendChild(videoList);
   }
 
-  function publicShowTitle(video) {
+  function setTitle(data) {
+    title.innerHTML = data.title;
+  }
+
+  function setSuper() {
     switch(mode) {
       case 'edit':
         superscript.innerHTML = 'Now editing';
@@ -532,8 +541,6 @@ var View = (function () {
       default:
         superscript.innerHTML = 'Now playing';
     }
-
-    title.innerHTML = video.title;
   }
 
   function publicShowComments(video) {
@@ -633,7 +640,7 @@ var View = (function () {
 
   return {
 
-    showTitle: publicShowTitle,
+    render: publicRender,
 
     showComments: publicShowComments,
 
@@ -816,11 +823,11 @@ View.update = function(data) {
     View.showCollection(data);
     View.showNew();
   } else if (Controller.getMode() == 'edit') {
+    View.render(data);
     View.showBig();
-    View.showTitle(data);
     View.showComments(data);
   } else {
-    View.showTitle(data);
+    View.render(data);
     View.showComments(data);
   }
 };
