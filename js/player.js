@@ -140,15 +140,6 @@ var Controller = (function () {
     }
   }
 
-  function publicPauseVideo() {
-    try {
-      PlayerModel.getPlayer().pauseVideo();
-    }
-    catch(err) {
-      errorDisplay.innerHTML = err.message;
-    }
-  }
-
   return {
 
     getMode: publicGetMode,
@@ -161,9 +152,8 @@ var Controller = (function () {
 
     createVideo: publicCreateVideo,
 
-    playVideo: publicPlayVideo,
+    playVideo: publicPlayVideo
 
-    pauseVideo: publicPauseVideo
   };
 
 })();
@@ -289,7 +279,7 @@ var View = (function () {
       commentButton.setAttribute('id', 'comment-button');
       commentButton.setAttribute('value', 'Add comment');
       commentButton.addEventListener('click', function() {
-        Controller.pauseVideo();
+        PlayerModel.pause();
         showAddComment();
         publicShowCommentSlot();
       });
@@ -701,6 +691,10 @@ var PlayerModel =(function () {
     return player;
   }
 
+  function publicPauseVideo() {
+    player.pauseVideo();
+  }
+
   function commentLoad() {
     var playerTime;
     var comments;
@@ -736,7 +730,9 @@ var PlayerModel =(function () {
 
     createPlayer: publicCreatePlayer,
 
-    getPlayer: publicGetPlayer
+    getPlayer: publicGetPlayer,
+
+    pause: publicPauseVideo
 
   };
 
@@ -822,9 +818,6 @@ View.update = function(data) {
   if (data[0]) {
     View.showCollection(data);
     View.showNew();
-//  } else if (Controller.getMode() == 'edit') {
-//    View.render(data);
-//    View.showComments(data);
   } else {
     View.render(data);
     View.showComments(data);
