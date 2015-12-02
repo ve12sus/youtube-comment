@@ -61,10 +61,9 @@ var Controller = (function () {
     return mode;
   }
 
-  function publicCreateComment() {
+  function publicCreateComment(text) {
 
     var currentTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
-    var text = doc.getElementById('new-comment-text').value;
     var style = '';
 
     var comment = {
@@ -355,10 +354,10 @@ var View = (function () {
       textInput.addEventListener('keypress', function(e) {
         var key = e.which || e.KeyCode;
         if (key === 13) {
-          Controller.createComment();
+          Controller.createComment(textInput.value);
           Controller.playVideo();
           removeCommentSlot();
-          removeAddComment();
+          removeCommentBar();
           showHint('New comment added');
         }
       });
@@ -372,10 +371,10 @@ var View = (function () {
       addButton.setAttribute('id', 'new-comment-button');
       addButton.setAttribute('value', 'Add');
       addButton.addEventListener('click', function() {
-        Controller.createComment();
+        Controller.createComment(textInput.value);
         Controller.playVideo();
         removeCommentSlot();
-        removeAddComment();
+        removeCommentBar();
         showHint('New comment added');
       });
       insertAfter(addButton, textInput);
@@ -387,7 +386,7 @@ var View = (function () {
       cancelButton.addEventListener('click', function() {
         Controller.playVideo();
         removeCommentSlot();
-        removeAddComment();
+        removeCommentBar();
       });
       insertAfter(cancelButton, addButton);
 
@@ -400,7 +399,7 @@ var View = (function () {
     }
   }
 
-  function removeAddComment() {
+  function removeCommentBar() {
     if (doc.getElementById('comment-bar')) {
       commentBar.parentNode.removeChild(commentBar);
     }
