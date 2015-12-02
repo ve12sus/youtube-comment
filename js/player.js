@@ -827,13 +827,13 @@ View.update = function(data) {
 };
 
 PlayerModel.update = function(video) {
-  if (video[0]) {
-    return;
-  } else {
-    var player = PlayerModel.getPlayer();
-    if (player === undefined) {
-      PlayerModel.createPlayer(video);
-    }
+  switch (Object.prototype.toString.call(video)) {
+    case ('[object Array]'):
+      break;
+    default:
+      if (PlayerModel.getPlayer() === undefined) {
+        PlayerModel.createPlayer(video);
+      }
   }
 };
 
