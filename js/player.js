@@ -131,15 +131,6 @@ var Controller = (function () {
     }
   }
 
-  function publicPlayVideo() {
-    try {
-      PlayerModel.getPlayer().playVideo();
-    }
-    catch(err) {
-      errorDisplay.innerHTML = err.message;
-    }
-  }
-
   return {
 
     getMode: publicGetMode,
@@ -150,9 +141,7 @@ var Controller = (function () {
 
     changeTitle: publicChangeTitle,
 
-    createVideo: publicCreateVideo,
-
-    playVideo: publicPlayVideo
+    createVideo: publicCreateVideo
 
   };
 
@@ -357,7 +346,7 @@ var View = (function () {
         var key = e.which || e.KeyCode;
         if (key === 13) {
           Controller.createComment(textInput.value);
-          Controller.playVideo();
+          PlayerModel.play();
           removeCommentSlot();
           removeCommentBar();
           showHint('New comment added');
@@ -374,7 +363,7 @@ var View = (function () {
       addButton.setAttribute('value', 'Add');
       addButton.addEventListener('click', function() {
         Controller.createComment(textInput.value);
-        Controller.playVideo();
+        PlayerModel.play();
         removeCommentSlot();
         removeCommentBar();
         showHint('New comment added');
@@ -386,7 +375,7 @@ var View = (function () {
       cancelButton.setAttribute('id', 'new-comment-cancel');
       cancelButton.setAttribute('value', 'Cancel');
       cancelButton.addEventListener('click', function() {
-        Controller.playVideo();
+        PlayerModel.play();
         removeCommentSlot();
         removeCommentBar();
       });
@@ -694,6 +683,10 @@ var PlayerModel =(function () {
     player.pauseVideo();
   }
 
+  function publicPlayVideo() {
+    player.playVideo();
+  }
+
   function commentLoad() {
     var playerTime;
     var comments;
@@ -731,8 +724,9 @@ var PlayerModel =(function () {
 
     getPlayer: publicGetPlayer,
 
-    pause: publicPauseVideo
+    pause: publicPauseVideo,
 
+    play: publicPlayVideo
   };
 
 })();
