@@ -815,12 +815,14 @@ extend(View, new Observer() );
 extend(PlayerModel, new Observer() );
 
 View.update = function(data) {
-  if (data[0]) {
-    View.showCollection(data);
-    View.showNew();
-  } else {
-    View.render(data);
-    View.showComments(data);
+  switch (Object.prototype.toString.call(data)) {
+    case ('[object Array]'):
+      View.showCollection(data);
+      View.showNew();
+      break;
+    default:
+      View.render(data);
+      View.showComments(data);
   }
 };
 
