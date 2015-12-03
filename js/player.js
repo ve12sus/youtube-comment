@@ -115,12 +115,13 @@ var Controller = (function () {
 
   function publicCreateVideo(youtubeLink) {
     try {
-      var createURL = '//localhost/~jeff/ytcserver/api/videos';
       var videoId = youtube_parser(youtubeLink);
 
       if (videoId === undefined) {
         errorDisplay.innerHTML = 'Not a valid YouTube link';
       } else {
+        var createURL = '//localhost/~jeff/ytcserver/api/videos';
+
         var video = {
           title: 'I am the title of your video',
           youtubeId: videoId
