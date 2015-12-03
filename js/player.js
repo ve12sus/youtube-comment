@@ -269,7 +269,7 @@ var View = (function () {
       commentButton.setAttribute('id', 'comment-button');
       commentButton.setAttribute('value', 'Add comment');
       commentButton.addEventListener('click', function() {
-        PlayerModel.pause();
+        PlayerModel.toggle();
         showCommentBar();
         showCommentSlot();
       });
@@ -685,6 +685,19 @@ var PlayerModel =(function () {
     player.playVideo();
   }
 
+  function publicToggle() {
+    switch (player.getPlayerState()) {
+      case 1:
+        player.pauseVideo();
+        break;
+      case 2:
+        player.playVideo();
+        break;
+      default:
+        break;
+    }
+  }
+
   function commentLoad() {
     var playerTime;
     var comments;
@@ -724,7 +737,9 @@ var PlayerModel =(function () {
 
     pause: publicPauseVideo,
 
-    play: publicPlayVideo
+    play: publicPlayVideo,
+
+    toggle: publicToggle
   };
 
 })();
