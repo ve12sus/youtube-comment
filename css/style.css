@@ -34,12 +34,13 @@ body {
 }
 
 #caption {
-  background-color: #000;
+  /*background-color: #000;*/
   color: #ffffff;
   margin: 0 auto;
   position: relative;
   text-align: center;
-  top: -65px;
+  text-shadow: 2px 2px #000;
+  top: -70px;
   width: 640px;
   visibility: hidden;
   z-index: 10;
