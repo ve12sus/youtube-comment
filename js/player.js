@@ -54,7 +54,7 @@ var Controller = (function () {
     if (match && match[2].length == 11) {
       return match[2];
     } else {
-      errorDisplay.innerHTML = 'Not a valid YouTube link';
+      return undefined;
     }
   }
 
@@ -117,14 +117,20 @@ var Controller = (function () {
     try {
       var createURL = '//localhost/~jeff/ytcserver/api/videos';
       var videoId = youtube_parser(youtubeLink);
-      var video = {
-        title: 'I am the title of your video',
-        youtubeId: videoId
-      };
-      var data = JSON.stringify(video);
-      sendRequest('POST', createURL, data).done(function(data) {
-        window.location = '//localhost/~jeff/ytcserver/' + data.id + '/edit';
-      });
+
+      if (videoId === undefined) {
+        errorDisplay.innerHTML = 'Not a valid YouTube link';
+      } else {
+        var video = {
+          title: 'I am the title of your video',
+          youtubeId: videoId
+        };
+
+        var data = JSON.stringify(video);
+        sendRequest('POST', createURL, data).done(function(data) {
+          window.location = '//localhost/~jeff/ytcserver/' + data.id + '/edit';
+        });
+      }
     }
     catch(err) {
       errorDisplay.innerHTML = err.message;
