@@ -74,8 +74,7 @@ body {
   width: 80%;
 }
 
-#comment-button,
-#title-button {
+#buttons input[type="button"] {
   background-color: #466bb0;
   display: inline-block;
   font-size: 1em;
@@ -95,8 +94,7 @@ body {
   width: 60%;
 }
 
-#new-comment-button,
-#new-comment-cancel {
+#new-comment-button {
   display: inline-block;
 }
 

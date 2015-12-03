@@ -246,6 +246,7 @@ var View = (function () {
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
 
+  var commentButton;
   var commentBar;
   var commentSlot;
   var commentList;
@@ -260,21 +261,34 @@ var View = (function () {
   }
 
   function showBigButtons() {
-    var commentButton;
     var titleButton;
 
-    if (!doc.getElementById('comment-button')) {
+    if (!doc.getElementById('comment-button') &&
+        !doc.getElementById('new-cancel-button')) {
+
       commentButton = doc.createElement('input');
       commentButton.type = 'button';
       commentButton.setAttribute('id', 'comment-button');
       commentButton.setAttribute('value', 'Add comment');
       commentButton.addEventListener('click', function() {
-        PlayerModel.toggle();
-        showCommentBar();
-        showCommentSlot();
+        if (commentButton.id == 'comment-button') {
+          toggle();
+          PlayerModel.pause();
+          showCommentBar();
+          showCommentSlot();
+        } else if (commentButton.id == 'new-cancel-button') {
+          toggle();
+          PlayerModel.play();
+          removeCommentBar();
+          removeCommentSlot();
+        }
       });
       commentButton.addEventListener('mouseover', function() {
-        showHint('Click to add a comment at the current time');
+        if (commentButton.id == 'comment-button') {
+          showHint('Click to add a comment at the current time');
+        } else if (commentButton.id == 'new-cancel-button') {
+          showHint('Click to cancel');
+        }
       });
       commentButton.onmouseout = removeHint;
       buttons.appendChild(commentButton);
@@ -293,6 +307,16 @@ var View = (function () {
       });
       titleButton.onmouseout = removeHint;
       buttons.appendChild(titleButton);
+    }
+  }
+
+  function toggle() {
+    if (commentButton.id == 'comment-button') {
+      commentButton.id = 'new-cancel-button';
+      commentButton.value = 'Cancel';
+    } else if (commentButton.id == 'new-cancel-button') {
+      commentButton.id = 'comment-button';
+      commentButton.value = 'Add comment';
     }
   }
 
@@ -322,7 +346,6 @@ var View = (function () {
   function showCommentBar() {
     var textInput;
     var addButton;
-    var cancelButton;
     var wordCount;
 
     if (!doc.getElementById('comment-bar')) {
@@ -347,6 +370,7 @@ var View = (function () {
         if (key === 13) {
           Controller.createComment(textInput.value);
           PlayerModel.play();
+          toggle();
           removeCommentSlot();
           removeCommentBar();
           showHint('New comment added');
@@ -364,26 +388,16 @@ var View = (function () {
       addButton.addEventListener('click', function() {
         Controller.createComment(textInput.value);
         PlayerModel.play();
+        toggle();
         removeCommentSlot();
         removeCommentBar();
         showHint('New comment added');
       });
       insertAfter(addButton, textInput);
 
-      cancelButton = doc.createElement('input');
-      cancelButton.type = 'button';
-      cancelButton.setAttribute('id', 'new-comment-cancel');
-      cancelButton.setAttribute('value', 'Cancel');
-      cancelButton.addEventListener('click', function() {
-        PlayerModel.play();
-        removeCommentSlot();
-        removeCommentBar();
-      });
-      insertAfter(cancelButton, addButton);
-
       wordCount = doc.createElement('div');
       wordCount.setAttribute('id', 'word-count');
-      insertAfter(wordCount, cancelButton);
+      insertAfter(wordCount, addButton);
 
       info.insertBefore(commentBar, commentsDiv);
       textInput.focus();
@@ -685,19 +699,6 @@ var PlayerModel =(function () {
     player.playVideo();
   }
 
-  function publicToggle() {
-    switch (player.getPlayerState()) {
-      case 1:
-        player.pauseVideo();
-        break;
-      case 2:
-        player.playVideo();
-        break;
-      default:
-        break;
-    }
-  }
-
   function commentLoad() {
     var playerTime;
     var comments;
@@ -719,7 +720,7 @@ var PlayerModel =(function () {
       }
     }
     catch(err) {
-      doc.getElementById('error').innerHTML = err.message;
+        doc.getElementById('error').innerHTML = err.message;
     }
   }
 
@@ -737,9 +738,8 @@ var PlayerModel =(function () {
 
     pause: publicPauseVideo,
 
-    play: publicPlayVideo,
+    play: publicPlayVideo
 
-    toggle: publicToggle
   };
 
 })();
