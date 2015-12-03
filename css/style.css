@@ -112,6 +112,7 @@ body {
 
 #live-comment {
   display: inline;
+  margin: 0 0 0 5px;
 }
 
 ul {
