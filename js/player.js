@@ -481,21 +481,6 @@ var View = (function () {
     }
   }
 
-  function publicShowShare() {
-    //TODO feature to share newly created video
-
-    /*if (mode == 'edit' && !document.getElementById('share')) {
-      var shareURL = document.createElement('input');
-      var id = VideoModel.get().id;
-      var url = '//localhost/~jeff/ytcserver/videos/' + id;
-      shareURL.type = 'text';
-      shareURL.setAttribute('id', 'share');
-      shareURL.setAttribute('value', url);
-      shareURL.setAttribute('size', '30');
-      infoPane.insertBefore(shareURL, infoPane.lastChild);
-    }*/
-  }
-
   function publicShowCollection(collection) {
     var videoList = doc.createElement('ul');
     var i;
@@ -639,8 +624,6 @@ var View = (function () {
     showComments: publicShowComments,
 
     showNew: publicShowNewLink,
-
-    showShare: publicShowShare,
 
     showCollection: publicShowCollection
 
