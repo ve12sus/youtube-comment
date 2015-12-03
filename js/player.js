@@ -443,7 +443,6 @@ var View = (function () {
     var text;
     var youtubeLink;
     var youtubeLinkButton;
-    var link;
 
     if (!doc.getElementById('youtube-link')) {
       makelink = doc.getElementById('makelink');
@@ -460,8 +459,7 @@ var View = (function () {
       youtubeLinkButton.setAttribute('id', 'youtube-link-button');
       youtubeLinkButton.setAttribute('value', 'Go');
       youtubeLinkButton.addEventListener('click', function() {
-        link = youtubeLink.value;
-        Controller.createVideo(link);
+        Controller.createVideo(youtubeLink.value);
       });
       makelink.appendChild(text);
       makelink.appendChild(youtubeLink);

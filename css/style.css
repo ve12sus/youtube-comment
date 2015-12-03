@@ -117,19 +117,24 @@ ul {
   list-style-type: none;
 }
 
-.time-link,
-.delete-link {
+.time-link {
   color: blue;
   cursor: pointer;
+  margin: 0 5px 0 0;
   text-decoration: underline;
 }
 
 .delete-link {
+  color: blue;
+  cursor: pointer;
   font-size: 0.75em;
   margin: 0 0 0 5px;
+  text-decoration: underline;
 }
 
-
+#youtube-link {
+  margin: 0 0 0 5px;
+}
 
 
 
