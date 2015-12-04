@@ -115,19 +115,19 @@ var Controller = (function () {
 
   function publicCreateVideo(youtubeLink) {
     try {
-      var videoId = youtube_parser(youtubeLink);
+      var youtubeId = youtube_parser(youtubeLink);
 
-      if (videoId === undefined) {
+      if (youtubeId === undefined) {
         errorDisplay.innerHTML = 'Not a valid YouTube link';
       } else {
         var createURL = '/~jeff/ytcserver/api/videos';
 
-        var video = {
+        var obj = {
           title: 'I am the title of your video',
-          youtubeId: videoId
+          youtubeId: youtubeId
         };
 
-        var data = JSON.stringify(video);
+        var data = JSON.stringify(obj);
         sendRequest('POST', createURL, data).done(function(data) {
           window.location = '/~jeff/ytcserver/' + data.id + '/edit';
         });
