@@ -64,7 +64,7 @@ var Controller = (function () {
 
   function publicCreateComment(text) {
 
-    var currentTime = Math.round(Player.getPlayer().getCurrentTime());
+    var currentTime = Math.round(Player.get().getCurrentTime());
     var style = '';
 
     var comment = {
@@ -418,7 +418,7 @@ var View = (function () {
   }
 
   function showCommentSlot() {
-    var playerTime = Math.round(Player.getPlayer().getCurrentTime());
+    var playerTime = Math.round(Player.get().getCurrentTime());
     var timeSpan;
     var timeNode;
     var commentNode;
@@ -590,7 +590,7 @@ var View = (function () {
   }
 
   function skipToComment() {
-    Player.getPlayer().seekTo(this.parentNode.id);
+    Player.get().seekTo(this.parentNode.id);
   }
 
   function deleteClick() {
@@ -677,7 +677,7 @@ var Player =(function () {
     }
   }
 
-  function publicGetPlayer() {
+  function publicGet() {
     return player;
   }
 
@@ -724,7 +724,7 @@ var Player =(function () {
 
     createPlayer: publicCreatePlayer,
 
-    getPlayer: publicGetPlayer,
+    get: publicGet,
 
     pause: publicPauseVideo,
 
@@ -827,7 +827,7 @@ Player.update = function(video) {
     case ('[object Array]'):
       break;
     default:
-      if (Player.getPlayer() === undefined) {
+      if (Player.get() === undefined) {
         Player.createPlayer(video);
       }
   }
