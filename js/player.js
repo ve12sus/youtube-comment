@@ -99,7 +99,7 @@ var Controller = (function () {
     }
   }
 
-  function publicChangeTitle(title) {
+  function publicUpdateTitle(title) {
     var data;
 
     try {
@@ -146,7 +146,7 @@ var Controller = (function () {
 
     deleteComment: publicDeleteComment,
 
-    changeTitle: publicChangeTitle,
+    updateTitle: publicUpdateTitle,
 
     createVideo: publicCreateVideo
 
@@ -307,7 +307,7 @@ var View = (function () {
       titleButton.setAttribute('id', 'title-button');
       titleButton.setAttribute('value', 'Change title');
       titleButton.addEventListener('click', function() {
-        changeTitle();
+        updateTitle();
       });
       titleButton.addEventListener('mouseover', function() {
         showHint('Click to change the title');
@@ -327,7 +327,7 @@ var View = (function () {
     }
   }
 
-  function changeTitle() {
+  function updateTitle() {
 
     title.setAttribute('contenteditable', 'true');
     title.innerHTML = '';
@@ -342,7 +342,7 @@ var View = (function () {
         title.blur();
 
         if (title.innerHTML.length !== 0) {
-          Controller.changeTitle(title.innerHTML);
+          Controller.updateTitle(title.innerHTML);
           showHint('Title updated');
         }
       }
