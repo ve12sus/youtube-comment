@@ -650,7 +650,7 @@ var Player =(function () {
   var player;
   var hold = false;
 
-  function publicCreatePlayer(video) {
+  function publicCreate(video) {
     player = new YT.Player('player', {
       height: '390',
       width: '640',
@@ -722,7 +722,7 @@ var Player =(function () {
 
   return {
 
-    createPlayer: publicCreatePlayer,
+    create: publicCreate,
 
     get: publicGet,
 
@@ -828,7 +828,7 @@ Player.update = function(video) {
       break;
     default:
       if (Player.get() === undefined) {
-        Player.createPlayer(video);
+        Player.create(video);
       }
   }
 };
