@@ -64,7 +64,7 @@ var Controller = (function () {
 
   function publicCreateComment(text) {
 
-    var currentTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
+    var currentTime = Math.round(Player.getPlayer().getCurrentTime());
     var style = '';
 
     var comment = {
@@ -280,12 +280,12 @@ var View = (function () {
       commentButton.addEventListener('click', function() {
         if (commentButton.id == 'comment-button') {
           toggle();
-          PlayerModel.pause();
+          Player.pause();
           showCommentBar();
           showCommentSlot();
         } else if (commentButton.id == 'new-cancel-button') {
           toggle();
-          PlayerModel.play();
+          Player.play();
           removeCommentBar();
           removeCommentSlot();
         }
@@ -376,7 +376,7 @@ var View = (function () {
         var key = e.which || e.KeyCode;
         if (key === 13) {
           Controller.createComment(textInput.value);
-          PlayerModel.play();
+          Player.play();
           toggle();
           removeCommentSlot();
           removeCommentBar();
@@ -394,7 +394,7 @@ var View = (function () {
       addButton.setAttribute('value', 'Add');
       addButton.addEventListener('click', function() {
         Controller.createComment(textInput.value);
-        PlayerModel.play();
+        Player.play();
         toggle();
         removeCommentSlot();
         removeCommentBar();
@@ -418,7 +418,7 @@ var View = (function () {
   }
 
   function showCommentSlot() {
-    var playerTime = Math.round(PlayerModel.getPlayer().getCurrentTime());
+    var playerTime = Math.round(Player.getPlayer().getCurrentTime());
     var timeSpan;
     var timeNode;
     var commentNode;
@@ -590,7 +590,7 @@ var View = (function () {
   }
 
   function skipToComment() {
-    PlayerModel.getPlayer().seekTo(this.parentNode.id);
+    Player.getPlayer().seekTo(this.parentNode.id);
   }
 
   function deleteClick() {
@@ -638,7 +638,7 @@ var View = (function () {
 
 })();
 
-var PlayerModel =(function () {
+var Player =(function () {
   var doc = document;
   var caption = doc.getElementById('caption');
   var tag = doc.createElement('script');
@@ -808,7 +808,7 @@ extend(Video, new Subject() );
 
 extend(View, new Observer() );
 
-extend(PlayerModel, new Observer() );
+extend(Player, new Observer() );
 
 View.update = function(data) {
   switch (Object.prototype.toString.call(data)) {
@@ -822,17 +822,17 @@ View.update = function(data) {
   }
 };
 
-PlayerModel.update = function(video) {
+Player.update = function(video) {
   switch (Object.prototype.toString.call(video)) {
     case ('[object Array]'):
       break;
     default:
-      if (PlayerModel.getPlayer() === undefined) {
-        PlayerModel.createPlayer(video);
+      if (Player.getPlayer() === undefined) {
+        Player.createPlayer(video);
       }
   }
 };
 
 Video.addObserver(View);
 
-Video.addObserver(PlayerModel);
+Video.addObserver(Player);
