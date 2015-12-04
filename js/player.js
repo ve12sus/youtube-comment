@@ -9,9 +9,9 @@ var Controller = (function () {
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
       if (id) {
-        VideoModel.set(data);
+        Video.set(data);
       } else {
-        VideoModel.setCollection(data);
+        Video.setCollection(data);
       }
     });
   };
@@ -73,7 +73,7 @@ var Controller = (function () {
       style: style
     };
 
-    VideoModel.addComment(comment);
+    Video.addComment(comment);
 
     try {
       var commentURL = url + '/comments';
@@ -87,7 +87,7 @@ var Controller = (function () {
 
   function publicDeleteComment(comment) {
 
-    VideoModel.deleteComment(comment);
+    Video.deleteComment(comment);
 
     try {
       var commentURL = url + '/comments';
@@ -103,9 +103,9 @@ var Controller = (function () {
     var data;
 
     try {
-      VideoModel.updateTitle(title);
+      Video.updateTitle(title);
 
-      data = JSON.stringify(VideoModel.get());
+      data = JSON.stringify(Video.get());
       sendRequest('PUT', url, data);
     }
     catch(err) {
@@ -154,7 +154,7 @@ var Controller = (function () {
 
 })();
 
-var VideoModel = (function () {
+var Video = (function () {
 
   var video = {
     id: null,
@@ -442,7 +442,7 @@ var View = (function () {
     commentSlot.appendChild(timeSpan);
     commentSlot.appendChild(commentNode);
 
-    comments = VideoModel.get().comments;
+    comments = Video.get().comments;
     for ( i = 0; i < comments.length; i+=1 ) {
       commentTime = comments[i].time;
       if (playerTime <= commentTime) {
@@ -697,7 +697,7 @@ var PlayerModel =(function () {
     try {
       if (hold) { return; }
       playerTime = Math.round(player.getCurrentTime());
-      comments = VideoModel.get().comments;
+      comments = Video.get().comments;
 
       for ( i = 0; i < comments.length; i+=1 ) {
         if (playerTime == comments[i].time) {
@@ -804,7 +804,7 @@ function Observer() {
   };
 }
 
-extend(VideoModel, new Subject() );
+extend(Video, new Subject() );
 
 extend(View, new Observer() );
 
@@ -833,6 +833,6 @@ PlayerModel.update = function(video) {
   }
 };
 
-VideoModel.addObserver(View);
+Video.addObserver(View);
 
-VideoModel.addObserver(PlayerModel);
+Video.addObserver(PlayerModel);
