@@ -681,11 +681,11 @@ var Player =(function () {
     return player;
   }
 
-  function publicPauseVideo() {
+  function publicPause() {
     player.pauseVideo();
   }
 
-  function publicPlayVideo() {
+  function publicPlay() {
     player.playVideo();
   }
 
@@ -726,9 +726,9 @@ var Player =(function () {
 
     get: publicGet,
 
-    pause: publicPauseVideo,
+    pause: publicPause,
 
-    play: publicPlayVideo
+    play: publicPlay
 
   };
 
