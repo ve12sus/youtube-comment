@@ -3,7 +3,7 @@ var Controller = (function () {
   var doc = document;
   var id = getResources().id;
   var mode = getResources().mode;
-  var url = '//localhost/~jeff/ytcserver/api/videos/' + id;
+  var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
 
   window.onYouTubeIframeAPIReady = function() {
@@ -120,7 +120,7 @@ var Controller = (function () {
       if (videoId === undefined) {
         errorDisplay.innerHTML = 'Not a valid YouTube link';
       } else {
-        var createURL = '//localhost/~jeff/ytcserver/api/videos';
+        var createURL = '/~jeff/ytcserver/api/videos';
 
         var video = {
           title: 'I am the title of your video',
@@ -129,7 +129,7 @@ var Controller = (function () {
 
         var data = JSON.stringify(video);
         sendRequest('POST', createURL, data).done(function(data) {
-          window.location = '//localhost/~jeff/ytcserver/' + data.id + '/edit';
+          window.location = '/~jeff/ytcserver/' + data.id + '/edit';
         });
       }
     }
@@ -499,7 +499,7 @@ var View = (function () {
     for ( i = 0; i < collection.length; i+=1 ) {
       titleText = doc.createTextNode(collection[i].title);
       link = doc.createElement('a');
-      url = '//localhost/~jeff/ytcserver/' + collection[i].id;
+      url = '/~jeff/ytcserver/' + collection[i].id;
       listItem = doc.createElement('li');
 
       link.appendChild(titleText);
