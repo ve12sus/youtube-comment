@@ -461,7 +461,7 @@ var View = (function () {
 
   function publicShowNewLink() {
     var makelink;
-    var text;
+    var label;
     var youtubeLink;
     var youtubeLinkButton;
 
