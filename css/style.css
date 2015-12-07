@@ -53,18 +53,19 @@ body {
 }
 
 #superscript {
-  display: inline;
+  display: inline-block;
   margin: 0;
 }
 
 #hints {
   color: red;
-  display: inline;
+  display: block;
   font-size: 0.75em;
   margin: 0 0 0 25px;
 }
 
 #title {
+  display: inline-block;
   margin: 0;
 }
 
@@ -132,11 +133,21 @@ ul {
   text-decoration: underline;
 }
 
+.update-link {
+  color: blue;
+  cursor: pointer;
+  font-size: 0.75em;
+  margin: 0 0 0 5px;
+  text-decoration: underline;
+}
+
 #youtube-link {
   margin: 0 0 0 5px;
 }
 
-
+[contenteditable=true]:empty:before {
+  content: attr(placeholder);
+}
 
 
 

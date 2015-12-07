@@ -123,7 +123,7 @@ var Controller = (function () {
         var createURL = '/~jeff/ytcserver/api/videos';
 
         var obj = {
-          title: 'I am the title of your video',
+          title: '',
           youtubeId: youtubeId
         };
 
@@ -158,8 +158,8 @@ var Video = (function () {
 
   var video = {
     id: null,
-    title: 'Default Title',
-    youtubeId: 'Default id',
+    title: '',
+    youtubeId: '',
     comments: []
   };
 
@@ -262,7 +262,7 @@ var View = (function () {
     setTitle(data);
     setSuper();
 
-    if (mode == 'edit') {
+    if (mode == 'edit' && Video.get().title != '') {
       showBigButtons();
     }
   }
@@ -330,7 +330,8 @@ var View = (function () {
   function updateTitle() {
 
     title.setAttribute('contenteditable', 'true');
-    title.innerHTML = '';
+    //title.innerHTML = '';
+    title.setAttribute('placeholder', "Enter a title");
     title.addEventListener('focus', function() {
       showHint('Press enter to save');
     });
@@ -340,11 +341,8 @@ var View = (function () {
       if (key === 13) {
         e.preventDefault();
         title.blur();
-
-        if (title.innerHTML.length !== 0) {
-          Controller.updateTitle(title.innerHTML);
-          showHint('Title updated');
-        }
+        Controller.updateTitle(title.innerHTML);
+        showHint('Title updated');
       }
     });
     title.focus();
@@ -515,7 +513,23 @@ var View = (function () {
   }
 
   function setTitle(data) {
-    title.innerHTML = data.title;
+    var update;
+    var updateSpan;
+
+    if (data.title == 'default' || data.title == '') {
+      updateTitle();
+    } else {
+      title.innerHTML = data.title;
+
+      if (!doc.getElementsByClassName('update-link').length && mode == 'edit') {
+        update = doc.createTextNode('update');
+        updateSpan = doc.createElement('span');
+        updateSpan.setAttribute('class', 'update-link');
+        updateSpan.appendChild(update);
+        updateSpan.onclick = updateTitle;
+        insertAfter(updateSpan, title);
+      }
+    }
   }
 
   function setSuper() {
@@ -604,8 +618,8 @@ var View = (function () {
   }
 
   function showHint(hint) {
-    var hintDiv = doc.getElementById('hints');
-    hintDiv.innerHTML = hint;
+    //var hintDiv = doc.getElementById('hints');
+    //hintDiv.innerHTML = hint;
   }
 
   function removeHint() {
