@@ -467,7 +467,9 @@ var View = (function () {
 
     if (!doc.getElementById('youtube-link')) {
       makelink = doc.getElementById('makelink');
-      text = doc.createTextNode('Make your own!');
+      label = doc.createElement('label');
+      label.setAttribute('for', 'youtube-link');
+      label.innerHTML = 'Make your own!';
 
       youtubeLink = doc.createElement('input');
       youtubeLink.type = 'text';
@@ -482,7 +484,7 @@ var View = (function () {
       youtubeLinkButton.addEventListener('click', function() {
         Controller.createVideo(youtubeLink.value);
       });
-      makelink.appendChild(text);
+      makelink.appendChild(label);
       makelink.appendChild(youtubeLink);
       makelink.appendChild(youtubeLinkButton);
     }
