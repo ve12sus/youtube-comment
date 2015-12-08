@@ -519,7 +519,12 @@ var View = (function () {
       youtubeLink.setAttribute('id', 'youtube-link');
       youtubeLink.setAttribute('placeholder', 'Paste YouTube link');
       youtubeLink.setAttribute('size', '35');
-
+      youtubeLink.addEventListener('keyup', function(e) {
+        var key = e.which || e.KeyCode;
+        if (key === 13) {
+          Controller.createVideo(youtubeLink.value);
+        }
+      });
       youtubeLinkButton = doc.createElement('input');
       youtubeLinkButton.type = 'button';
       youtubeLinkButton.setAttribute('id', 'youtube-link-button');

@@ -57,15 +57,8 @@ h1 {
 }
 
 #superscript {
-  display: inline-block;
-  margin: 0;
-}
-
-#hints {
-  color: red;
   display: block;
-  font-size: 0.75em;
-  margin: 0 0 0 25px;
+  margin: 0;
 }
 
 #title {
@@ -77,7 +70,7 @@ h1 {
 }
 
 #buttons {
-  margin: 0 auto;
+  margin: 10px auto;
   text-align: center;
   width: 80%;
 }
