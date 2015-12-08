@@ -276,10 +276,16 @@ var View = (function () {
     }
   }
 
-  function showTitle(text) {
+  function Title(text) {
     var textNode = doc.createTextNode(text);
     var heading = doc.createElement('h1');
     heading.appendChild(textNode);
+    heading.id = 'title-text';
+    return heading;
+  }
+
+  function showTitle(text) {
+    var heading = new Title(text);
 
     if (title.childNodes[0]) {
       title.replaceChild(heading, title.childNodes[0]);
@@ -303,7 +309,7 @@ var View = (function () {
   }
 
   function showTitleForm() {
-    var form =  new titleForm();
+    var form =  new TitleForm();
 
     if (title.childNodes[0]) {
       title.replaceChild(form, title.childNodes[0]);
@@ -313,7 +319,7 @@ var View = (function () {
   }
 
   function updateTitle() {
-    var form = new titleForm();
+    var form = new TitleForm();
     var oldTitle = Video.get().title;
     form.value = oldTitle;
     if (title.childNodes[0]) {
@@ -324,7 +330,7 @@ var View = (function () {
     form.focus();
   }
 
-  function titleForm() {
+  function TitleForm() {
     var form;
 
     form = doc.createElement('input');
