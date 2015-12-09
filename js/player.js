@@ -357,10 +357,27 @@ var View = (function () {
 
   function CommentButton() {
     var button = doc.createElement('input');
+    var buttonAction = function(e) {
+      var key = e.which || e.KeyCode;
+      if (key === 13 || key === 32) {
+        toggleCommentBar();
+        if (this.value == 'Add comment') {
+          this.value = 'Cancel';
+          Player.pause();
+          showCommentSlot();
+        } else if (this.value == 'Cancel') {
+          this.value = 'Add comment';
+          Player.play();
+          removeCommentSlot();
+        }
+      }
+    };
+
     button.type = 'button';
     button.setAttribute('id', 'comment-button');
     button.setAttribute('value', 'Add comment');
-    button.addEventListener('click', function() {
+    button.addEventListener('keyup', buttonAction);
+    button.addEventListener('mouseup', function() {
       toggleCommentBar();
       if (this.value == 'Add comment') {
         this.value = 'Cancel';
@@ -397,14 +414,17 @@ var View = (function () {
     inputText.setAttribute('id', 'new-comment-text');
     inputText.setAttribute('placeholder', 'Enter a comment');
     inputText.setAttribute('maxlength', '70');
-    inputText.addEventListener('keyup', function(e) {
-      var key = e.which || e.KeyCode;
+    inputText.addEventListener('keyup', function() {
       var text = this.value;
       livePreview(text);
+    });
+    inputText.addEventListener('keyup', function(e) {
+      var key = e.which || e.KeyCode;
       if (key === 13) {
-        Controller.createComment(inputText.value);
         Player.play();
+        toggleCommentBar();
         removeCommentSlot();
+        Controller.createComment(inputText.value);
       }
       if (key === 27) {
         toggleCommentBar();
@@ -416,7 +436,9 @@ var View = (function () {
     inputButton.type = 'button';
     inputButton.setAttribute('id', 'new-comment-button');
     inputButton.setAttribute('value', 'Add');
-    inputButton.addEventListener('click', function() {
+    inputButton.addEventListener('mouseup', function() {
+      toggleCommentBar();
+      removeCommentSlot();
       Controller.createComment(inputText.value);
       Player.play();
     });
@@ -479,7 +501,7 @@ var View = (function () {
     var vidComments = Video.get().comments;
     var commentTime;
 
-    playerTime = Player.get().getCurrentTime();
+    playerTime = Math.round(Player.get().getCurrentTime());
     slot = new CommentSlot(secondsToHms(playerTime));
 
     if (vidComments.length == 0) {
@@ -532,7 +554,7 @@ var View = (function () {
       youtubeLinkButton.type = 'button';
       youtubeLinkButton.setAttribute('id', 'youtube-link-button');
       youtubeLinkButton.setAttribute('value', 'Go');
-      youtubeLinkButton.addEventListener('click', function() {
+      youtubeLinkButton.addEventListener('mouseup', function() {
         Controller.createVideo(youtubeLink.value);
       });
       makelink.appendChild(label);
@@ -673,6 +695,11 @@ var Player =(function () {
       height: '390',
       width: '640',
       videoId: video.youtubeId,
+      playerVars: {
+        iv_load_policy: 3,
+        modestbranding: 1,
+        showinfo: 0
+      },
       events: {
         'onReady': onPlayerReady,
         'onStateChange': onPlayerStateChange
