@@ -5,6 +5,7 @@ var Controller = (function () {
   var mode = getResources().mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
+  var commentList;
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
@@ -253,9 +254,6 @@ var View = (function () {
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
 
-  var commentButton;
-  var commentBar;
-  var commentSlot;
   var commentList;
 
   function publicRender(data) {
@@ -266,9 +264,9 @@ var View = (function () {
     } else {
       switch (mode) {
         case 'edit':
-          showUpdateTitle();
+          showUpdateSubscript();
           setSuper('Now Editing');
-          showBigButtons();
+          showButton();
           break;
         default:
           setSuper('Now Playing');
@@ -294,18 +292,45 @@ var View = (function () {
     }
   }
 
-  function showUpdateTitle() {
-    var updateText;
-    var updateSpan;
+  function setSuper(text) {
+    superscript.innerHTML = text;
+  }
 
-    if (!doc.getElementsByClassName('update-link').length) {
-      updateText = doc.createTextNode('update');
-      updateSpan = doc.createElement('span');
-      updateSpan.setAttribute('class', 'update-link');
-      updateSpan.appendChild(updateText);
-      updateSpan.onclick = updateTitle;
-      insertAfter(updateSpan, title);
+  function Subscript() {
+    var textNode = doc.createTextNode('update');
+    var span = doc.createElement('span');
+    span.setAttribute('class', 'update-link');
+    span.onclick = updateTitle;
+    span.appendChild(textNode);
+    return span;
+  }
+
+  function showUpdateSubscript() {
+    var update = new Subscript();
+
+    if (!doc.getElementsByClassName(update.className).length) {
+      insertAfter(update, title);
     }
+  }
+
+  function TitleForm() {
+    var form;
+
+    form = doc.createElement('input');
+    form.type = 'text';
+    form.setAttribute('id', 'title-form');
+    form.setAttribute('maxlength', '30');
+    form.setAttribute('placeholder', 'Press enter to save');
+    form.addEventListener('keyup', function(e) {
+      var key = e.which || e.KeyCode;
+      if (key === 13 && form.value.length > 0) {
+        Controller.updateTitle(form.value);
+      }
+      if (key === 27) {
+        Controller.updateTitle(Video.get().title);
+      }
+    });
+    return form;
   }
 
   function showTitleForm() {
@@ -330,181 +355,153 @@ var View = (function () {
     form.focus();
   }
 
-  function TitleForm() {
-    var form;
-
-    form = doc.createElement('input');
-    form.type = 'text';
-    form.setAttribute('id', 'title-form');
-    form.setAttribute('maxlength', '30');
-    form.setAttribute('placeholder', 'Press enter to save');
-    form.addEventListener('keyup', function(e) {
-      var key = e.which || e.KeyCode;
-      if (key === 13 && form.value.length > 0) {
-        Controller.updateTitle(form.value);
-      }
-      if (key === 27) {
-        Controller.updateTitle(Video.get().title);
+  function CommentButton() {
+    var button = doc.createElement('input');
+    button.type = 'button';
+    button.setAttribute('id', 'comment-button');
+    button.setAttribute('value', 'Add comment');
+    button.addEventListener('click', function() {
+      toggleCommentBar();
+      if (this.value == 'Add comment') {
+        this.value = 'Cancel';
+        Player.pause();
+        showCommentSlot();
+      } else if (this.value == 'Cancel') {
+        this.value = 'Add comment';
+        Player.play();
+        removeCommentSlot();
       }
     });
-    return form;
+    return button;
   }
 
-  function showBigButtons() {
-    var titleButton;
+  function showButton() {
 
-    if (!doc.getElementById('comment-button') &&
-        !doc.getElementById('new-cancel-button')) {
+    var commentButton = new CommentButton();
 
-      commentButton = doc.createElement('input');
-      commentButton.type = 'button';
-      commentButton.setAttribute('id', 'comment-button');
-      commentButton.setAttribute('value', 'Add comment');
-      commentButton.addEventListener('click', function() {
-        toggleCommentBar();
-        if (commentButton.id == 'comment-button') {
-          toggle();
-          Player.pause();
-          showCommentSlot();
-        } else if (commentButton.id == 'new-cancel-button') {
-          toggle();
-          Player.play();
-          removeCommentSlot();
-        }
-      });
-      commentButton.addEventListener('keyup', function(e) {
-        toggleCommentBar();
-        var key = e.which || e.KeyCode;
-        if (key === 32 && commentButton.id == 'comment-button') {
-          toggle();
-          Player.pause();
-          showCommentSlot();
-        }
-      });
+    if (buttons.childNodes[0]) {
+      buttons.replaceChild(commentButton, buttons.childNodes[0]);
+    } else {
       buttons.appendChild(commentButton);
-      commentButton.focus();
     }
+    commentButton.focus();
   }
 
-  function toggle() {
-    if (commentButton.id == 'comment-button') {
-      commentButton.id = 'new-cancel-button';
-      commentButton.value = 'Cancel';
-    } else if (commentButton.id == 'new-cancel-button') {
-      commentButton.id = 'comment-button';
-      commentButton.value = 'Add comment';
-    }
+  function CommentBar() {
+    var commentBar = doc.createElement('div');
+    var inputText = doc.createElement('input');
+    var inputButton = doc.createElement('input');
+    var wordCount = doc.createElement('div');
+
+    inputText.type = 'text';
+    inputText.setAttribute('id', 'new-comment-text');
+    inputText.setAttribute('placeholder', 'Enter a comment');
+    inputText.setAttribute('maxlength', '70');
+    inputText.addEventListener('keyup', function(e) {
+      var key = e.which || e.KeyCode;
+      var text = this.value;
+      livePreview(text);
+      if (key === 13) {
+        Controller.createComment(inputText.value);
+        Player.play();
+        removeCommentSlot();
+      }
+      if (key === 27) {
+        toggleCommentBar();
+        Player.play();
+        removeCommentSlot();
+      }
+    });
+
+    inputButton.type = 'button';
+    inputButton.setAttribute('id', 'new-comment-button');
+    inputButton.setAttribute('value', 'Add');
+    inputButton.addEventListener('click', function() {
+      Controller.createComment(inputText.value);
+      Player.play();
+    });
+
+    wordCount.setAttribute('id', 'word-count');
+
+    commentBar.setAttribute('id', 'comment-bar');
+    commentBar.appendChild(inputText);
+    insertAfter(inputButton, inputText);
+    insertAfter(wordCount, inputButton);
+
+    return commentBar;
+  }
+
+  function livePreview(text) {
+    var count = doc.getElementById('word-count');
+    var slot = doc.getElementById('live-comment');
+
+    slot.innerHTML = text;
+    count.innerHTML = 70 - text.length;
   }
 
   function toggleCommentBar() {
-    var textInput;
-    var addButton;
-    var wordCount;
+    var bar;
 
     if (!doc.getElementById('comment-bar')) {
-
-      textInput = doc.createElement('input');
-      textInput.type = 'text';
-      textInput.setAttribute('id', 'new-comment-text');
-      textInput.setAttribute('placeholder', 'Enter a comment');
-      textInput.setAttribute('maxlength', '70');
-
-      textInput.addEventListener('keyup', function() {
-        var node = doc.getElementById('live-comment');
-        node.innerHTML = textInput.value;
-        wordCount.innerHTML = 70 - textInput.value.length;
-      });
-      textInput.addEventListener('keyup', function(e) {
-        var key = e.which || e.KeyCode;
-        if (key === 13) {
-          Controller.createComment(textInput.value);
-          Player.play();
-          toggle();
-          removeCommentSlot();
-          toggleCommentBar();
-        }
-        if (key === 27) {
-          Player.play();
-          toggle();
-          removeCommentSlot();
-          toggleCommentBar();
-          commentButton.focus();
-        }
-      });
-
-      commentBar = doc.createElement('div');
-      commentBar.setAttribute('id', 'comment-bar');
-      commentBar.appendChild(textInput);
-
-      addButton = doc.createElement('input');
-      addButton.type = 'button';
-      addButton.setAttribute('id', 'new-comment-button');
-      addButton.setAttribute('value', 'Add');
-      addButton.addEventListener('click', function() {
-        Controller.createComment(textInput.value);
-        Player.play();
-        toggle();
-        removeCommentSlot();
-        toggleCommentBar();
-        buttons.focus();
-      });
-      insertAfter(addButton, textInput);
-
-      wordCount = doc.createElement('div');
-      wordCount.setAttribute('id', 'word-count');
-      insertAfter(wordCount, addButton);
-
-      info.insertBefore(commentBar, commentsDiv);
-      textInput.focus();
+      bar = new CommentBar();
+      info.insertBefore(bar, commentsDiv);
+      bar.firstChild.focus();
     } else {
-      commentBar = doc.getElementById('comment-bar');
-      commentBar.parentNode.removeChild(commentBar);
+      bar = doc.getElementById('comment-bar');
+      bar.parentElement.removeChild(bar);
+      showButton();
     }
   }
 
+  function CommentSlot(time) {
+    var slot;
+    var text;
+    var div;
+
+    slot = doc.createElement('li');
+    slot.setAttribute('id', 'comment-slot');
+    div = doc.createElement('div');
+    div.setAttribute('id', 'live-comment');
+    span = doc.createElement('span');
+    text = doc.createTextNode(time);
+    span.appendChild(text);
+
+    slot.appendChild(span);
+    slot.appendChild(div);
+    return slot;
+  }
+
   function showCommentSlot() {
+    var i;
+    var comments = commentList.childNodes;
     var playerTime;
-    var timeSpan;
-    var timeNode;
-    var commentNode;
-    var comments;
+    var slot;
     var vidComments = Video.get().comments;
     var commentTime;
-    var i;
 
-    commentSlot = doc.createElement('li');
-    commentSlot.setAttribute('id', 'comment-slot');
-
-    commentNode = doc.createElement('div');
-    commentNode.setAttribute('id', 'live-comment');
-
-    timeSpan = doc.createElement('span');
     playerTime = Player.get().getCurrentTime();
-    timeNode = doc.createTextNode(secondsToHms(playerTime));
-    timeSpan.appendChild(timeNode);
+    slot = new CommentSlot(secondsToHms(playerTime));
 
-    commentSlot.appendChild(timeSpan);
-    commentSlot.appendChild(commentNode);
-
-    comments = commentList.childNodes;
-    if (comments.length == 0) {
-      commentList.appendChild(commentSlot);
-    }
-
-    for ( i = 0; i < vidComments.length; i+=1 ) {
-      commentTime = vidComments[i].time;
-      if (playerTime <= commentTime) {
-        commentList.insertBefore(commentSlot, comments[i]);
-        break;
-      } else {
-        commentList.appendChild(commentSlot);
+    if (vidComments.length == 0) {
+      commentList.appendChild(slot);
+    } else {
+      for ( i = 0; i < vidComments.length; i+=1 ) {
+        commentTime = vidComments[i].time;
+        if (playerTime <= commentTime) {
+          commentList.insertBefore(slot, comments[i]);
+          break;
+        } else {
+          commentList.appendChild(slot);
+        }
       }
     }
   }
 
   function removeCommentSlot() {
+    var slot = doc.getElementById('comment-slot');
+
     if (doc.getElementById('comment-slot')) {
-      commentSlot.parentElement.removeChild(commentSlot);
+      slot.parentElement.removeChild(slot);
     }
   }
 
@@ -568,25 +565,6 @@ var View = (function () {
     commentsDiv.appendChild(videoList);
   }
 
-  function showUpdateTitle() {
-    var updateText;
-    var updateSpan;
-
-    if (!doc.getElementsByClassName('update-link').length) {
-      updateText = doc.createTextNode('update');
-      updateSpan = doc.createElement('span');
-      updateSpan.setAttribute('class', 'update-link');
-      updateSpan.appendChild(updateText);
-      updateSpan.onclick = updateTitle;
-      insertAfter(updateSpan, title);
-    }
-  }
-
-
-  function setSuper(text) {
-    superscript.innerHTML = text;
-  }
-
   function publicShowComments(video) {
 
     var i;
@@ -647,7 +625,7 @@ var View = (function () {
     var comment = {
       time: parseInt(this.parentNode.id),
       text: this.parentNode.childNodes[1].nodeValue
-    }
+    };
     Controller.deleteComment(comment);
   }
 
