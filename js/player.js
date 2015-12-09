@@ -458,7 +458,9 @@ var View = (function () {
     var slot = doc.getElementById('live-comment');
 
     slot.innerHTML = text;
-    count.innerHTML = 70 - text.length;
+    if (text.length > 0) {
+      count.innerHTML = 70 - text.length;
+    }
   }
 
   function toggleCommentBar() {
