@@ -1,8 +1,9 @@
 var Controller = (function () {
 
   var doc = document;
-  var id = getResources().id;
-  var mode = getResources().mode;
+  var resources = new Resources;
+  var id = resources.id;
+  var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
   var commentList;
@@ -17,7 +18,22 @@ var Controller = (function () {
     });
   };
 
-  function getResources() {
+  function Resources() {
+    var paths = window.location.pathname.split('/');
+    var index = paths.indexOf('ytcserver');
+
+    if (index) {
+      this.id = paths[index + 1];
+      if (this.id) {
+        this.mode = paths[index + 2];
+      }
+    } else {
+      this.id = null;
+      this.mode = null;
+    }
+  }
+
+  /*function getResources() {
     var pathname = window.location.pathname;
     var paths = pathname.split('/');
     var indexLocation = paths.indexOf('ytcserver');
@@ -28,7 +44,7 @@ var Controller = (function () {
 
     if (indexLocation) {
       obj.id = paths[indexLocation + 1];
-      if (id) {
+      if (obj.id) {
         obj.mode = paths[indexLocation + 2];
       }
     } else {
@@ -36,7 +52,7 @@ var Controller = (function () {
       obj.mode = 'main';
     }
     return obj;
-  }
+  }*/
 
   function sendRequest(method, url, data) {
 
@@ -65,11 +81,10 @@ var Controller = (function () {
 
   function publicCreateComment(text) {
 
-    var currentTime = Math.round(Player.get().getCurrentTime());
-    var style = '';
+    var style; //not used yet
 
     var comment = {
-      time: currentTime,
+      time: Math.round(Player.time()),
       comment: text,
       style: style
     };
@@ -78,8 +93,7 @@ var Controller = (function () {
 
     try {
       var commentURL = url + '/comments';
-      var data = JSON.stringify(comment);
-      sendRequest('POST', commentURL, data);
+      sendRequest('POST', commentURL, JSON.stringify(comment));
     }
     catch(err) {
       errorDisplay.innerHTML = err.message;
@@ -503,7 +517,7 @@ var View = (function () {
     var vidComments = Video.get().comments;
     var commentTime;
 
-    playerTime = Math.round(Player.get().getCurrentTime());
+    playerTime = Math.round(Player.time());
     slot = new CommentSlot(secondsToHms(playerTime));
 
     if (vidComments.length == 0) {
@@ -736,6 +750,11 @@ var Player =(function () {
     player.playVideo();
   }
 
+  function publicTime() {
+
+    return player.getCurrentTime();
+  }
+
   function commentLoad() {
     var playerTime;
     var comments;
@@ -775,7 +794,9 @@ var Player =(function () {
 
     pause: publicPause,
 
-    play: publicPlay
+    play: publicPlay,
+
+    time: publicTime
 
   };
 
