@@ -1,12 +1,12 @@
 var Controller = (function () {
 
   var doc = document;
-  var resources = new Resources;
+  var resources = new Resources();
   var id = resources.id;
   var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
-  var commentList;
+  //var commentList;
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
@@ -32,27 +32,6 @@ var Controller = (function () {
       this.mode = null;
     }
   }
-
-  /*function getResources() {
-    var pathname = window.location.pathname;
-    var paths = pathname.split('/');
-    var indexLocation = paths.indexOf('ytcserver');
-    var obj = {
-      id: '',
-      mode: ''
-    };
-
-    if (indexLocation) {
-      obj.id = paths[indexLocation + 1];
-      if (obj.id) {
-        obj.mode = paths[indexLocation + 2];
-      }
-    } else {
-      obj.id = null;
-      obj.mode = 'main';
-    }
-    return obj;
-  }*/
 
   function sendRequest(method, url, data) {
 
@@ -91,41 +70,24 @@ var Controller = (function () {
 
     Video.addComment(comment);
 
-    try {
-      var commentURL = url + '/comments';
-      sendRequest('POST', commentURL, JSON.stringify(comment));
-    }
-    catch(err) {
-      errorDisplay.innerHTML = err.message;
-    }
+    var commentURL = url + '/comments';
+    sendRequest('POST', commentURL, JSON.stringify(comment));
   }
 
   function publicDeleteComment(comment) {
 
     Video.deleteComment(comment);
 
-    try {
-      var commentURL = url + '/comments';
-      var data = JSON.stringify(comment);
-      sendRequest('DELETE', commentURL, data);
-    }
-    catch(err) {
-      errorDisplay.innerHTML = err.message;
-    }
+    var commentURL = url + '/comments';
+    sendRequest('DELETE', commentURL, JSON.stringify(comment));
   }
 
   function publicUpdateTitle(title) {
-    var data;
 
-    try {
-      Video.updateTitle(title);
+    Video.updateTitle(title);
 
-      data = JSON.stringify(Video.get());
-      sendRequest('PUT', url, data);
-    }
-    catch(err) {
-      errorDisplay.innerHTML = err.message;
-    }
+    var data = Video.get();
+    sendRequest('PUT', url, JSON.stringify(data));
   }
 
   function publicCreateVideo(youtubeLink) {
@@ -181,7 +143,6 @@ var Video = (function () {
   var collection = [];
 
   function commentSort() {
-    try {
     video.comments.sort(function (a, b) {
       if (a.time > b.time) {
         return 1;
@@ -191,10 +152,6 @@ var Video = (function () {
       }
       return 0;
     });
-    }
-    catch(err) {
-      document.getElementById('error').innerHTML = err.message;
-    }
   }
 
   function publicSet(data) {
@@ -214,7 +171,8 @@ var Video = (function () {
 
   function publicDeleteComment(comment) {
     var i;
-    for ( i = 0; i < video.comments.length; i+=1 ) {
+    var length = video.comments.length;
+    for ( i = 0; i < length; i+=1 ) {
       if (video.comments[i].time === comment.time &&
           video.comments[i].comment == comment.text) {
         video.comments.splice(i, 1);
@@ -234,7 +192,8 @@ var Video = (function () {
 
   function publicSetCollection(data) {
     var i;
-    for ( i = 0; i < data.length; i+=1 ) {
+    var length = data.length;
+    for ( i = 0; i < length; i+=1 ) {
       collection.push(data[i]);
     }
     this.notify(collection);
@@ -515,17 +474,17 @@ var View = (function () {
     var playerTime;
     var slot;
     var vidComments = Video.get().comments;
-    var commentTime;
+    var length = vidComments.length;
+    //var commentTime;
 
     playerTime = Math.round(Player.time());
     slot = new CommentSlot(secondsToHms(playerTime));
 
-    if (vidComments.length == 0) {
+    if (length == 0) {
       commentList.appendChild(slot);
     } else {
-      for ( i = 0; i < vidComments.length; i+=1 ) {
-        commentTime = vidComments[i].time;
-        if (playerTime <= commentTime) {
+      for ( i = 0; i < length; i+=1 ) {
+        if (playerTime <= vidComments[i].time) {
           commentList.insertBefore(slot, comments[i]);
           break;
         } else {
@@ -538,7 +497,7 @@ var View = (function () {
   function removeCommentSlot() {
     var slot = doc.getElementById('comment-slot');
 
-    if (doc.getElementById('comment-slot')) {
+    if (slot) {
       slot.parentElement.removeChild(slot);
     }
   }
@@ -582,12 +541,13 @@ var View = (function () {
   function publicShowCollection(collection) {
     var videoList = doc.createElement('ul');
     var i;
+    var length = collection.length;
     var titleText;
     var link;
     var url;
     var listItem;
 
-    for ( i = 0; i < collection.length; i+=1 ) {
+    for ( i = 0; i < length; i+=1 ) {
       titleText = doc.createTextNode(collection[i].title);
       link = doc.createElement('a');
       url = '/~jeff/ytcserver/' + collection[i].id;
@@ -606,6 +566,7 @@ var View = (function () {
   function publicShowComments(video) {
 
     var i;
+    var length = video.comments.length;
     var timeSpan;
     var timeNode;
     var commentNode;
@@ -617,7 +578,7 @@ var View = (function () {
     commentList = doc.createElement('ul');
     commentList.setAttribute('id', 'comment-list');
 
-    for ( i = 0; i < video.comments.length; i+=1 ) {
+    for ( i = 0; i < length; i+=1 ) {
       listItem = doc.createElement('li');
       listItemId = video.comments[i].time;
       listItem.setAttribute('id', listItemId);
@@ -725,6 +686,8 @@ var Player =(function () {
 
   function onPlayerReady(event) {
     event.target.playVideo();
+    if (hold) { return; }
+
     setInterval(commentLoad, 500);
   }
 
@@ -732,8 +695,7 @@ var Player =(function () {
     if (event.data == YT.PlayerState.PAUSED) {
       hold = true;
       caption.style.visibility = 'hidden';
-    }
-    if (event.data == YT.PlayerState.PLAYING) {
+    } else if (event.data == YT.PlayerState.PLAYING) {
       hold = false;
     }
   }
@@ -756,27 +718,24 @@ var Player =(function () {
   }
 
   function commentLoad() {
-    var playerTime;
+    var cTime;
+    var pTime;
     var comments;
     var i;
+    var length;
 
-    try {
-      if (hold) { return; }
-      playerTime = Math.round(player.getCurrentTime());
-      comments = Video.get().comments;
-
-      for ( i = 0; i < comments.length; i+=1 ) {
-        if (playerTime == comments[i].time) {
-          caption.style.visibility = 'visible';
-          caption.innerHTML = comments[i].comment;
-          if (!comments[i + 1] || comments[i+1].time > (playerTime + 4) ) {
-            hideCaption();
-          }
+    pTime = Math.round(player.getCurrentTime());
+    comments = Video.get().comments;
+    length = comments.length;
+    for ( i = 0; i < length; i+=1 ) {
+      cTime = comments[i].time;
+      if (pTime == cTime) {
+        caption.style.visibility = 'visible';
+        caption.innerHTML = comments[i].comment;
+        if (!comments[i + 1] || comments[i+1].time > (pTime + 4) ) {
+          hideCaption();
         }
       }
-    }
-    catch(err) {
-        doc.getElementById('error').innerHTML = err.message;
     }
   }
 
