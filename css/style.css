@@ -55,17 +55,54 @@ h1 {
   max-width: 640px;
 }
 
-#superscript {
+/*#superscript {
   display: block;
   margin: 0;
-}
+}*/
 
 #title {
-  display: inline-block;
+  /*display: inline-block;
   margin: 0;
+  width: 100%;*/
 }
 
 #title-form {
+  border: 1px solid black;
+  height: 48px;
+  text-align: center;
+}
+
+#title-text {
+  border: none;
+  display: inline-block;
+  font-size: 30px;
+  height: 36px;
+  margin-top: 6px;
+  width: 75%;
+}
+
+#title-text:focus {
+  outline: 0;
+}
+
+#title-cancel,
+#title-save {
+  border: none;
+  display: inline-block;
+  height: 36px;
+  position: relative;
+  bottom: 6px;
+}
+
+#title-cancel {
+  background-color: transparent;
+}
+
+#title-save {
+  background-color: #383838;
+  border-radius: 5px;
+  color: white;
+  width: 75px;
 }
 
 #buttons {
@@ -146,7 +183,6 @@ ul {
   margin: 0 0 0 5px;
 }
 
-input[type=text]:focus,
 #buttons input[type=button]:focus,
 #bottons input[type=button]:hover {
   box-shadow: 0 0 5px black;

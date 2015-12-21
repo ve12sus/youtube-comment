@@ -222,7 +222,8 @@ var View = (function () {
   var mode = Controller.getMode();
   var doc = document;
   var info = doc.getElementById('info');
-  var superscript = doc.getElementById('superscript');
+  // Remove superscript in UX pass
+  //var superscript = doc.getElementById('superscript');
   var title = doc.getElementById('title');
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
@@ -233,16 +234,16 @@ var View = (function () {
     showTitle(data.title);
     if (data.title == '' || data.title == 'default') {
       showTitleForm();
-      setSuper('Enter a title:');
+      //setSuper('Enter a title:');
     } else {
       switch (mode) {
         case 'edit':
           showUpdateSubscript();
-          setSuper('Now Editing');
+          //setSuper('Now Editing');
           showButton();
           break;
         default:
-          setSuper('Now Playing');
+          //setSuper('Now Playing');
       }
     }
   }
@@ -265,9 +266,9 @@ var View = (function () {
     }
   }
 
-  function setSuper(text) {
-    superscript.innerHTML = text;
-  }
+  //function setSuper(text) {
+  //  superscript.innerHTML = text;
+  //}
 
   function Subscript() {
     var textNode = doc.createTextNode('update');
@@ -284,6 +285,53 @@ var View = (function () {
     if (!doc.getElementsByClassName(update.className).length) {
       insertAfter(update, title);
     }
+  }
+
+  function NewTitleForm() {
+    var form;
+    var text;
+    var cancel;
+    var save;
+
+    form = doc.createElement('div');
+    form.setAttribute('id', 'title-form');
+
+    text = doc.createElement('input');
+    text.type = 'text';
+    text.setAttribute('id', 'title-text');
+    text.setAttribute('maxlength', '30');
+    text.setAttribute('placeholder', 'Press enter to save');
+    text.addEventListener('keyup', function(e) {
+      var key = e.which || e.KeyCode;
+      if (key === 13 && text.value.length > 0) {
+        Controller.updateTitle(text.value);
+      }
+      if (key === 27) {
+        Controller.updateTitle(Video.get().title);
+      }
+    });
+
+    cancel = doc.createElement('input');
+    cancel.type = 'button';
+    cancel.setAttribute('id', 'title-cancel');
+    cancel.value = 'Cancel';
+    cancel.addEventListener('mouseup', function() {
+      Controller.updateTitle(Video.get().title);
+    });
+
+    save = doc.createElement('input');
+    save.type = 'button';
+    save.setAttribute('id', 'title-save');
+    save.value = 'Save';
+    save.addEventListener('mouseup', function() {
+      Controller.updateTitle(text.value);
+    });
+
+    form.appendChild(text);
+    form.appendChild(cancel);
+    form.appendChild(save);
+
+    return form;
   }
 
   function TitleForm() {
@@ -307,7 +355,8 @@ var View = (function () {
   }
 
   function showTitleForm() {
-    var form =  new TitleForm();
+    //var form =  new TitleForm();
+    var form = new NewTitleForm();
 
     if (title.childNodes[0]) {
       title.replaceChild(form, title.childNodes[0]);
@@ -317,9 +366,9 @@ var View = (function () {
   }
 
   function updateTitle() {
-    var form = new TitleForm();
+    var form = new NewTitleForm();
     var oldTitle = Video.get().title;
-    form.value = oldTitle;
+    form.firstChild.value = oldTitle;
     if (title.childNodes[0]) {
       title.replaceChild(form, title.childNodes[0]);
     } else {
