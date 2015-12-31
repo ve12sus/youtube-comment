@@ -377,6 +377,29 @@ var View = (function () {
     form.focus();
   }
 
+  function NewCommentButton() {
+    var button = doc.createElement('input');
+    button.type = 'button';
+    button.setAttribute('id', 'comment-button');
+    button.setAttribute('value', '+ Add a comment');
+
+    var buttonAction = function(e) {
+      var key = e.which || e.KeyCode;
+      if (key === 13 || key === 32) {
+        Player.pause();
+        showCommentbar();
+      }
+    }
+
+    button.addEventListener('keyup', buttonAction);
+
+    button.addEventListener('mouseup', function() {
+      Player.pause();
+      showCommentBar();
+    });
+    return button;
+  }
+
   function CommentButton() {
     var button = doc.createElement('input');
     var buttonAction = function(e) {
@@ -416,7 +439,7 @@ var View = (function () {
 
   function showButton() {
 
-    var commentButton = new CommentButton();
+    var commentButton = new NewCommentButton();
 
     if (buttons.childNodes[0]) {
       buttons.replaceChild(commentButton, buttons.childNodes[0]);
@@ -424,6 +447,55 @@ var View = (function () {
       buttons.appendChild(commentButton);
     }
     commentButton.focus();
+  }
+
+  function NewCommentBar() {
+    var commentBar = doc.createElement('div');
+    var input = doc.createElement('div');
+    var buttons = doc.createElement('div');
+    var text;
+    var save;
+    var cancel;
+    var word;
+
+    text = doc.createElement('input');
+    text.type = 'text';
+    text.setAttribute('id', 'comment-text');
+    text.setAttribute('placeholder', '<enter> to save');
+    text.setAttribute('maxlength', '70');
+
+    save = doc.createElement('input');
+    save.type = 'button';
+    save.setAttribute('id', 'comment-save');
+    save.setAttribute('value', 'Save');
+
+    cancel = doc.createElement('input');
+    cancel.type = 'button'
+    cancel.setAttribute('id', 'comment-cancel');
+    cancel.setAttribute('value', 'cancel');
+
+    word = doc.createElement('div');
+    word.setAttribute('id', 'comment-wordcount');
+    word.innerHTML = '0/70';
+
+    input.setAttribute('id', 'comment-input');
+    input.appendChild(text);
+    input.appendChild(word);
+
+    buttons.setAttribute('id', 'comment-buttons');
+    buttons.appendChild(save);
+    buttons.appendChild(cancel);
+
+    commentBar.appendChild(input);
+    commentBar.appendChild(buttons);
+    commentBar.setAttribute('id', 'comment-bar');
+
+    return commentBar;
+  }
+
+  function showCommentBar() {
+    var bar = new NewCommentBar();
+    buttons.replaceChild(bar, buttons.childNodes[0]);
   }
 
   function CommentBar() {
@@ -489,9 +561,9 @@ var View = (function () {
     var bar;
 
     if (!doc.getElementById('comment-bar')) {
-      bar = new CommentBar();
+      bar = new NewCommentBar();
       info.insertBefore(bar, commentsDiv);
-      bar.firstChild.focus();
+      //bar.firstChild.focus();
     } else {
       bar = doc.getElementById('comment-bar');
       bar.parentElement.removeChild(bar);

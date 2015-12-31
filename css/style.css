@@ -2,6 +2,7 @@ body {
   color: #414142;
   font-family: Arial;
   margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -108,27 +109,81 @@ h1 {
 #buttons {
   margin: 10px auto;
   text-align: center;
-  width: 80%;
+  /*width: 80%;*/
 }
 
-#buttons input[type="button"] {
-  background-color: #51cbee;
-  border-style: solid;
-  border-color: black;
+/*#buttons input[type="button"]*/
+#comment-button {
+  background-color: red;
+  border: none;
+  border-radius: 5px;
+  color: white;
   display: inline-block;
   font-size: 1em;
+  font-weight: bold;
   height: 2.5em;
   margin: 0 auto;
-  width: 15em;
+  width: 100%;
 }
 
 #comment-bar {
-  margin: 10px auto;
   text-align: center;
-  width: 80%;
+  height: 70px;
+  width: 100%;
 }
 
-#new-comment-text {
+#comment-input {
+  border: 1px solid #d3d3d3;
+  display: inline-block;
+  height: 48px;
+  width: 85%;
+}
+
+#comment-text,
+#comment-wordcount {
+  display: inline;
+}
+
+#comment-text {
+  border: none;
+  display: inline-block;
+  font-size: 30px;
+  height: 36px;
+  width: 90%;
+}
+
+#comment-text:focus {
+  outline: 0;
+}
+
+#comment-buttons {
+  display: inline-block;
+  position: relative;
+  height: 48px;
+  width: 48px;
+  border: none;
+  vertical-align: bottom;
+}
+
+#comment-save {
+  background-color: #383838;
+  color: white;
+  border-radius: 5px;
+  height: 36px;
+  width: 75px;
+  position: absolute;
+  top: -10;
+}
+
+#comment-cancel {
+  background-color: transparent;
+  color: #d3d3d3;
+  border: none;
+  position: absolute;
+  bottom: -10px;
+}
+
+/*#new-comment-text {
   display: inline-block;
   width: 75%;
 }
@@ -140,7 +195,7 @@ h1 {
 #word-count {
   display: inline-block;
   background-color: yellow;
-}
+}*/
 
 #comment-slot {
   display: inline;
@@ -183,10 +238,10 @@ ul {
   margin: 0 0 0 5px;
 }
 
-#buttons input[type=button]:focus,
+/*#buttons input[type=button]:focus,
 #bottons input[type=button]:hover {
   box-shadow: 0 0 5px black;
   padding: 3px 0px 3px 3px;
   margin: 5px 1px 3px 0px;
   border: 2px solid black;
-}
+}*/
