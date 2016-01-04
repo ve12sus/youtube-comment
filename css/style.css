@@ -33,10 +33,10 @@ h1 {
   max-width: 750px;
 }
 
-#player-wrapper {
+/*#player-wrapper {
   margin: 0 auto;
   text-align: center;
-}
+}*/
 
 #caption {
   color: #ffffff;
@@ -180,6 +180,7 @@ h1 {
   color: #d3d3d3;
   border: none;
   position: absolute;
+  left: 40px;
   bottom: -10px;
 }
 
