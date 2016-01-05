@@ -33,10 +33,10 @@ h1 {
   max-width: 750px;
 }
 
-/*#player-wrapper {
+#player-wrapper {
   margin: 0 auto;
   text-align: center;
-}*/
+}
 
 #caption {
   color: #ffffff;
@@ -52,7 +52,6 @@ h1 {
 
 #info {
   margin: 0 auto;
-  margin-top: 0;
   max-width: 640px;
 }
 
@@ -97,12 +96,14 @@ h1 {
 
 #title-cancel {
   background-color: transparent;
+  color: #d3d3d3;
 }
 
 #title-save {
   background-color: #383838;
   border-radius: 5px;
   color: white;
+  font-weight: bold;
   width: 75px;
 }
 
@@ -114,7 +115,7 @@ h1 {
 
 /*#buttons input[type="button"]*/
 #comment-button {
-  background-color: red;
+  background-color: #e52d27;
   border: none;
   border-radius: 5px;
   color: white;
@@ -165,23 +166,35 @@ h1 {
   vertical-align: bottom;
 }
 
-#comment-save {
+#comment-add {
   background-color: #383838;
   color: white;
+  border: none;
   border-radius: 5px;
+  font-weight: bold;
   height: 36px;
   width: 75px;
-  position: absolute;
-  top: -10;
+  position: relative;
+  /*top: 0;*/
+}
+
+#comment-save {
+  background-color: #e52d27;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  height: 36px;
+  width: 75px;
+  position: relative;
 }
 
 #comment-cancel {
   background-color: transparent;
   color: #d3d3d3;
   border: none;
-  position: absolute;
-  left: 40px;
-  bottom: -10px;
+  position: relative;
+  /*bottom: 0;*/
 }
 
 /*#new-comment-text {
@@ -205,6 +218,7 @@ h1 {
 
 #live-comment {
   display: inline;
+  font-style: italic;
   margin: 0 0 0 5px;
 }
 
