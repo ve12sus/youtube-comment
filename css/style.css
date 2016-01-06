@@ -39,13 +39,13 @@ h1 {
 }
 
 #caption {
+  background-color: black;
   color: #ffffff;
   margin: 0 auto;
   position: relative;
   text-align: center;
-  text-shadow: 2px 2px #000;
   top: -70px;
-  width: 640px;
+  max-width: 640px;
   visibility: hidden;
   z-index: 10;
 }
@@ -55,15 +55,8 @@ h1 {
   max-width: 640px;
 }
 
-/*#superscript {
-  display: block;
-  margin: 0;
-}*/
-
 #title {
-  /*display: inline-block;
-  margin: 0;
-  width: 100%;*/
+
 }
 
 #title-form {
@@ -110,10 +103,8 @@ h1 {
 #buttons {
   margin: 10px auto;
   text-align: center;
-  /*width: 80%;*/
 }
 
-/*#buttons input[type="button"]*/
 #comment-button {
   background-color: #e52d27;
   border: none;
@@ -175,7 +166,6 @@ h1 {
   height: 36px;
   width: 75px;
   position: relative;
-  /*top: 0;*/
 }
 
 #comment-save {
@@ -194,22 +184,7 @@ h1 {
   color: #d3d3d3;
   border: none;
   position: relative;
-  /*bottom: 0;*/
 }
-
-/*#new-comment-text {
-  display: inline-block;
-  width: 75%;
-}
-
-#new-comment-button {
-  display: inline-block;
-}
-
-#word-count {
-  display: inline-block;
-  background-color: yellow;
-}*/
 
 #comment-slot {
   display: inline;
@@ -241,22 +216,6 @@ ul {
   text-decoration: underline;
 }
 
-.update-link {
-  color: blue;
-  cursor: pointer;
-  font-size: 0.75em;
-  margin: 0 0 0 5px;
-  text-decoration: underline;
-}
-
 #youtube-link {
   margin: 0 0 0 5px;
 }
-
-/*#buttons input[type=button]:focus,
-#bottons input[type=button]:hover {
-  box-shadow: 0 0 5px black;
-  padding: 3px 0px 3px 3px;
-  margin: 5px 1px 3px 0px;
-  border: 2px solid black;
-}*/

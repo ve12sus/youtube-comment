@@ -6,7 +6,6 @@ var Controller = (function () {
   var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
-  //var commentList;
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
@@ -225,8 +224,6 @@ var View = (function () {
   var title = doc.getElementById('title');
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
-
-  var commentList;
 
   function publicRender(data) {
     showTitle(data.title);
@@ -468,7 +465,8 @@ var View = (function () {
 
   function showCommentSlot() {
     var i;
-    var comments = commentList.childNodes;
+    var list = doc.getElementById('comment-list');
+    var comments = list.childNodes;
     var playerTime;
     var pslot;
     var slot;
@@ -485,14 +483,14 @@ var View = (function () {
     }
 
     if (length == 0) {
-      commentList.appendChild(slot);
+      list.appendChild(slot);
     } else {
       for ( i = 0; i < length; i+=1 ) {
         if (playerTime <= vidComments[i].time) {
-          commentList.insertBefore(slot, comments[i]);
+          list.insertBefore(slot, comments[i]);
           break;
         } else {
-          commentList.appendChild(slot);
+          list.appendChild(slot);
         }
       }
     }
@@ -567,7 +565,62 @@ var View = (function () {
     commentsDiv.appendChild(videoList);
   }
 
-  function publicShowComments(video) {
+  function Comments(data) {
+
+    var i;
+    var item;
+    var id;
+    var length = data.comments.length;
+    var list;
+    var node;
+    var comment;
+    var deleteNode;
+    var deleteSpan;
+
+    list = doc.createElement('ul');
+    list.setAttribute('id', 'comment-list');
+
+    for ( i = 0; i < length; i += 1 ) {
+      item = doc.createElement('li');
+      id = data.comments[i].time;
+      item.setAttribute('id', id);
+
+      node = doc.createTextNode(secondsToHms(id));
+
+      span = doc.createElement('span');
+      span.setAttribute('class', 'time-link');
+      span.appendChild(node);
+      span.onclick = skipToComment;
+
+      comment = doc.createTextNode(data.comments[i].comment);
+      item.appendChild(span);
+      item.appendChild(comment);
+
+      deleteNode = doc.createTextNode('delete');
+      deleteSpan = doc.createElement('span');
+      deleteSpan.setAttribute('class', 'delete-link');
+      deleteSpan.appendChild(deleteNode);
+      deleteSpan.onclick = callback(id, data.comments[i].comment);
+
+      item.appendChild(deleteSpan);
+
+      list.appendChild(item);
+    }
+    return list;
+  }
+
+  function newShowComments(data) {
+    var list = new Comments(data);
+
+    if ( commentsDiv.hasChildNodes() ) {
+      commentsDiv.removeChild(commentsDiv.firstChild);
+      commentsDiv.appendChild(list);
+    } else {
+      commentsDiv.appendChild(list);
+    }
+  }
+
+  /*function publicShowComments(video) {
 
     var i;
     var length = video.comments.length;
@@ -605,7 +658,7 @@ var View = (function () {
         deleteSpan = doc.createElement('span');
         deleteSpan.setAttribute('class', 'delete-link');
         deleteSpan.appendChild(deleteNode);
-        deleteSpan.onclick = deleteClick;
+        deleteSpan.addEventListener('click', deleteClick);
         listItem.appendChild(deleteSpan);
       }
 
@@ -618,18 +671,25 @@ var View = (function () {
     } else {
       commentsDiv.appendChild(commentList);
     }
-  }
+  }*/
 
   function skipToComment() {
     Player.get().seekTo(this.parentNode.id);
   }
 
-  function deleteClick() {
-    var comment = {
-      time: parseInt(this.parentNode.id),
-      text: this.parentNode.childNodes[1].nodeValue
-    };
+  function deleteClick(comment) {
     Controller.deleteComment(comment);
+  }
+
+  function callback(id, text) {
+    var comment = {
+      time: id,
+      text: text
+    };
+
+    return function() {
+      Controller.deleteComment(comment);
+    };
   }
 
   function secondsToHms(d) {
@@ -649,7 +709,7 @@ var View = (function () {
 
     render: publicRender,
 
-    showComments: publicShowComments,
+    showComments: newShowComments,
 
     showNew: publicShowNewLink,
 
