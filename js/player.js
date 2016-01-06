@@ -750,18 +750,18 @@ var Player =(function () {
 
   function onPlayerReady(event) {
     event.target.playVideo();
-    if (hold) { return; }
+    /*if (hold) { return; }
 
-    setInterval(commentLoad, 500);
+    setInterval(commentLoad, 500);*/
   }
 
   function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PAUSED) {
+    /*if (event.data == YT.PlayerState.PAUSED) {
       hold = true;
       caption.style.visibility = 'hidden';
     } else if (event.data == YT.PlayerState.PLAYING) {
       hold = false;
-    }
+    }*/
   }
 
   function publicGet() {
@@ -777,7 +777,6 @@ var Player =(function () {
   }
 
   function publicTime() {
-
     return player.getCurrentTime();
   }
 
@@ -794,20 +793,20 @@ var Player =(function () {
     for ( i = 0; i < length; i+=1 ) {
       cTime = comments[i].time;
       if (pTime == cTime) {
-        caption.style.visibility = 'visible';
+        /*caption.style.visibility = 'visible';*/
         caption.innerHTML = comments[i].comment;
-        if (!comments[i + 1] || comments[i+1].time > (pTime + 4) ) {
+        /*if (!comments[i + 1] || comments[i+1].time > (pTime + 4) ) {
           hideCaption();
-        }
+        }*/
       }
     }
   }
 
-  function hideCaption() {
+  /*function hideCaption() {
     setTimeout( function() {
       caption.style.visibility = 'hidden';
     }, 3000);
-  }
+  }*/
 
   return {
 
