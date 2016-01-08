@@ -39,14 +39,23 @@ h1 {
 }
 
 #caption {
-  background-color: black;
-  color: #ffffff;
-  margin: 0 auto;
+  /*margin: 0 auto;
   position: relative;
   text-align: center;
   top: -70px;
   max-width: 640px;
-  z-index: 10;
+  z-index: 10;*/
+  height: 0;
+  margin: auto;
+  max-width: 640px;
+  position: relative;
+  top: -45px;
+}
+
+#caption span {
+  background-color: black;
+  color: #ffffff;
+  font-size: 1.25em;
 }
 
 #info {

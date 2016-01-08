@@ -73,7 +73,12 @@ var Controller = (function () {
     sendRequest('POST', commentURL, JSON.stringify(comment));
   }
 
-  function publicDeleteComment(comment) {
+  function publicDeleteComment(id, text) {
+
+    var comment = {
+      time: id,
+      text: text
+    };
 
     Video.deleteComment(comment);
 
@@ -220,6 +225,7 @@ var View = (function () {
 
   var mode = Controller.getMode();
   var doc = document;
+  var caption = doc.getElementById('caption');
   var info = doc.getElementById('info');
   var title = doc.getElementById('title');
   var buttons = doc.getElementById('buttons');
@@ -600,7 +606,7 @@ var View = (function () {
       deleteSpan = doc.createElement('span');
       deleteSpan.setAttribute('class', 'delete-link');
       deleteSpan.appendChild(deleteNode);
-      deleteSpan.onclick = callback(id, data.comments[i].comment);
+      deleteSpan.addEventListener('mouseup', deleteClick);
 
       item.appendChild(deleteSpan);
 
@@ -620,76 +626,62 @@ var View = (function () {
     }
   }
 
-  /*function publicShowComments(video) {
+  function Caption(data) {
+    var text = doc.createTextNode(data.comment);
+    var span = doc.createElement('span');
+    var id = 'cap-' + data.time;
+    span.setAttribute('id', id);
+    span.appendChild(text);
 
-    var i;
-    var length = video.comments.length;
-    var timeSpan;
-    var timeNode;
-    var commentNode;
-    var listItem;
-    var listItemId;
-    var deleteSpan;
-    var deleteNode;
+    return span;
+  }
 
-    commentList = doc.createElement('ul');
-    commentList.setAttribute('id', 'comment-list');
+  function publicShowCap(data) {
+    var span = new Caption(data);
+    console.log(span);
+    caption.innerHTML = '';
+    caption.appendChild(span);
+    setTimeout(function(){capOut(span) }, 3000);
+  }
 
-    for ( i = 0; i < length; i+=1 ) {
-      listItem = doc.createElement('li');
-      listItemId = video.comments[i].time;
-      listItem.setAttribute('id', listItemId);
-      listItem.setAttribute('class', 'comment');
-
-      timeNode = doc.createTextNode(
-        secondsToHms(video.comments[i].time));
-
-      timeSpan = doc.createElement('span');
-      timeSpan.setAttribute('class', 'time-link');
-      timeSpan.appendChild(timeNode);
-      timeSpan.onclick = skipToComment;
-
-      commentNode = doc.createTextNode(video.comments[i].comment);
-      listItem.appendChild(timeSpan);
-      listItem.appendChild(commentNode);
-
-      if (mode == 'edit') {
-        deleteNode = doc.createTextNode('delete');
-        deleteSpan = doc.createElement('span');
-        deleteSpan.setAttribute('class', 'delete-link');
-        deleteSpan.appendChild(deleteNode);
-        deleteSpan.addEventListener('click', deleteClick);
-        listItem.appendChild(deleteSpan);
-      }
-
-      commentList.appendChild(listItem);
+  function capOut(span) {
+    var cap = doc.getElementById(span.id);
+    if (cap) {
+      cap.parentElement.removeChild(cap);
     }
+  }
 
-    if (commentsDiv.hasChildNodes() ) {
-      commentsDiv.removeChild(commentsDiv.firstChild);
-      commentsDiv.appendChild(commentList);
-    } else {
-      commentsDiv.appendChild(commentList);
-    }
-  }*/
+  function publicShiftCapUp() {
+    caption.style.top = '-70px';
+  }
+
+  function publicShiftCapDown() {
+    caption.style.top = '-45px';
+  }
 
   function skipToComment() {
     Player.get().seekTo(this.parentNode.id);
   }
 
-  function deleteClick(comment) {
-    Controller.deleteComment(comment);
+  function deleteClick() {
+    var id = this.parentNode.id;
+    var text = this.parentNode.childNodes[1].nodeValue;
+
+    Controller.deleteComment(id, text);
   }
 
-  function callback(id, text) {
-    var comment = {
+  function callback() {
+    var id = this.parentNode.id;
+    var text = this.parentNode.childNodes[1].nodeValue;
+    /*var comment = {
       time: id,
       text: text
     };
 
     return function() {
       Controller.deleteComment(comment);
-    };
+    };*/
+    alert(id + text);
   }
 
   function secondsToHms(d) {
@@ -713,7 +705,13 @@ var View = (function () {
 
     showNew: publicShowNewLink,
 
-    showCollection: publicShowCollection
+    showCollection: publicShowCollection,
+
+    showCap: publicShowCap,
+
+    capUp: publicShiftCapUp,
+
+    capDown: publicShiftCapDown
 
   };
 
@@ -746,22 +744,23 @@ var Player =(function () {
         'onStateChange': onPlayerStateChange
       }
     });
+
+    doc.getElementById('player').addEventListener('mouseenter', function () {
+      View.capUp();
+    });
+
+    doc.getElementById('player').addEventListener('mouseout', function() {
+      View.capDown();
+    });
   }
 
   function onPlayerReady(event) {
     event.target.playVideo();
-    /*if (hold) { return; }
 
-    setInterval(commentLoad, 500);*/
+    setInterval(commentLoad, 500);
   }
 
   function onPlayerStateChange(event) {
-    /*if (event.data == YT.PlayerState.PAUSED) {
-      hold = true;
-      caption.style.visibility = 'hidden';
-    } else if (event.data == YT.PlayerState.PLAYING) {
-      hold = false;
-    }*/
   }
 
   function publicGet() {
@@ -793,11 +792,7 @@ var Player =(function () {
     for ( i = 0; i < length; i+=1 ) {
       cTime = comments[i].time;
       if (pTime == cTime) {
-        /*caption.style.visibility = 'visible';*/
-        caption.innerHTML = comments[i].comment;
-        /*if (!comments[i + 1] || comments[i+1].time > (pTime + 4) ) {
-          hideCaption();
-        }*/
+        View.showCap(comments[i]);
       }
     }
   }
