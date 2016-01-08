@@ -77,7 +77,7 @@ var Controller = (function () {
 
     var comment = {
       time: id,
-      text: text
+      comment: text
     };
 
     Video.deleteComment(comment);
@@ -174,11 +174,12 @@ var Video = (function () {
   }
 
   function publicDeleteComment(comment) {
+    alert(comment.time + comment.comment);
     var i;
     var length = video.comments.length;
     for ( i = 0; i < length; i+=1 ) {
-      if (video.comments[i].time === comment.time &&
-          video.comments[i].comment == comment.text) {
+      if (video.comments[i].time == comment.time &&
+          video.comments[i].comment == comment.comment) {
         video.comments.splice(i, 1);
       }
     }
@@ -606,8 +607,9 @@ var View = (function () {
       deleteSpan = doc.createElement('span');
       deleteSpan.setAttribute('class', 'delete-link');
       deleteSpan.appendChild(deleteNode);
-      deleteSpan.addEventListener('mouseup', deleteClick);
-
+      deleteSpan.addEventListener('mouseup', function() {
+        deleteClick();
+      });
       item.appendChild(deleteSpan);
 
       list.appendChild(item);
@@ -664,10 +666,11 @@ var View = (function () {
   }
 
   function deleteClick() {
-    var id = this.parentNode.id;
+    console.log(this.parentElement);
+    /*var id = this.parentNode.id;
     var text = this.parentNode.childNodes[1].nodeValue;
 
-    Controller.deleteComment(id, text);
+    Controller.deleteComment(id, text);*/
   }
 
   function callback() {
@@ -796,12 +799,6 @@ var Player =(function () {
       }
     }
   }
-
-  /*function hideCaption() {
-    setTimeout( function() {
-      caption.style.visibility = 'hidden';
-    }, 3000);
-  }*/
 
   return {
 

@@ -39,12 +39,6 @@ h1 {
 }
 
 #caption {
-  /*margin: 0 auto;
-  position: relative;
-  text-align: center;
-  top: -70px;
-  max-width: 640px;
-  z-index: 10;*/
   height: 0;
   margin: auto;
   max-width: 640px;
@@ -61,10 +55,6 @@ h1 {
 #info {
   margin: 0 auto;
   max-width: 640px;
-}
-
-#title {
-
 }
 
 #title-form {
