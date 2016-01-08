@@ -234,6 +234,7 @@ var View = (function () {
 
   function publicRender(data) {
     showTitle(data.title);
+    showComments(data);
     if (data.title == '' || data.title == 'default') {
       updateTitle();
     } else {
@@ -607,9 +608,7 @@ var View = (function () {
       deleteSpan = doc.createElement('span');
       deleteSpan.setAttribute('class', 'delete-link');
       deleteSpan.appendChild(deleteNode);
-      deleteSpan.addEventListener('mouseup', function() {
-        deleteClick();
-      });
+      deleteSpan.onmouseup = deleteClick;
       item.appendChild(deleteSpan);
 
       list.appendChild(item);
@@ -617,7 +616,7 @@ var View = (function () {
     return list;
   }
 
-  function newShowComments(data) {
+  function showComments(data) {
     var list = new Comments(data);
 
     if ( commentsDiv.hasChildNodes() ) {
@@ -640,7 +639,6 @@ var View = (function () {
 
   function publicShowCap(data) {
     var span = new Caption(data);
-    console.log(span);
     caption.innerHTML = '';
     caption.appendChild(span);
     setTimeout(function(){capOut(span) }, 3000);
@@ -703,8 +701,6 @@ var View = (function () {
   return {
 
     render: publicRender,
-
-    showComments: newShowComments,
 
     showNew: publicShowNewLink,
 
@@ -789,13 +785,15 @@ var Player =(function () {
     var i;
     var length;
 
-    pTime = Math.round(player.getCurrentTime());
-    comments = Video.get().comments;
-    length = comments.length;
-    for ( i = 0; i < length; i+=1 ) {
-      cTime = comments[i].time;
-      if (pTime == cTime) {
-        View.showCap(comments[i]);
+    if (player.getPlayerState() === 1) {
+      pTime = Math.round(player.getCurrentTime());
+      comments = Video.get().comments;
+      length = comments.length;
+      for ( i = 0; i < length; i+=1 ) {
+        cTime = comments[i].time;
+        if (pTime == cTime) {
+          View.showCap(comments[i]);
+        }
       }
     }
   }
@@ -900,7 +898,6 @@ View.update = function(data) {
       break;
     default:
       View.render(data);
-      View.showComments(data);
   }
 };
 
