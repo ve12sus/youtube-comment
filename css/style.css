@@ -211,6 +211,7 @@ ul {
   font-size: 0.75em;
   margin: 0 0 0 5px;
   text-decoration: underline;
+  visibility: hidden;
 }
 
 #youtube-link {

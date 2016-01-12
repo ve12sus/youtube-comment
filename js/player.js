@@ -62,7 +62,7 @@ var Controller = (function () {
     var style; //not used yet
 
     var comment = {
-      time: Math.round(Player.time()),
+      time: Math.floor(Player.time()),
       comment: text,
       style: style
     };
@@ -339,7 +339,7 @@ var View = (function () {
         Player.pause();
         showCommentBar();
       }
-    }
+    };
 
     button.addEventListener('keyup', buttonAction);
 
@@ -365,7 +365,7 @@ var View = (function () {
   function CommentBar() {
     var commentBar = doc.createElement('div');
     var input = doc.createElement('div');
-    var buttons = doc.createElement('div');
+    var buttonsGroup = doc.createElement('div');
     var text;
     var save;
     var cancel;
@@ -378,10 +378,10 @@ var View = (function () {
     text.setAttribute('maxlength', '70');
     text.addEventListener('focus', showCommentSlot);
     text.addEventListener('keyup', function() {
-      var text = this.value;
+      var preview = this.value;
       save.setAttribute('id', 'comment-save');
       save.setAttribute('value', 'Save');
-      livePreview(text);
+      livePreview(preview);
     });
     text.addEventListener('keyup', function(e) {
       var key = e.which || e.KeyCode;
@@ -410,7 +410,7 @@ var View = (function () {
     });
 
     cancel = doc.createElement('input');
-    cancel.type = 'button'
+    cancel.type = 'button';
     cancel.setAttribute('id', 'comment-cancel');
     cancel.setAttribute('value', 'cancel');
     cancel.addEventListener('mouseup', function() {
@@ -427,12 +427,12 @@ var View = (function () {
     input.appendChild(text);
     input.appendChild(word);
 
-    buttons.setAttribute('id', 'comment-buttons');
-    buttons.appendChild(save);
-    buttons.appendChild(cancel);
+    buttonsGroup.setAttribute('id', 'comment-buttons');
+    buttonsGroup.appendChild(save);
+    buttonsGroup.appendChild(cancel);
 
     commentBar.appendChild(input);
-    commentBar.appendChild(buttons);
+    commentBar.appendChild(buttonsGroup);
     commentBar.setAttribute('id', 'comment-bar');
 
     return commentBar;
@@ -440,7 +440,12 @@ var View = (function () {
 
   function showCommentBar() {
     var bar = new CommentBar();
-    buttons.replaceChild(bar, buttons.childNodes[0]);
+
+    if (buttons.childNodes[0]) {
+      buttons.replaceChild(bar, buttons.childNodes[0]);
+    } else {
+      buttons.appendChild(bar);
+    }
     bar.firstChild.firstChild.focus();
   }
 
@@ -481,7 +486,7 @@ var View = (function () {
     var vidComments = Video.get().comments;
     var length = vidComments.length;
 
-    playerTime = Math.round(Player.time());
+    playerTime = Player.time().toFixed(2);
     slot = new CommentSlot(secondsToHms(playerTime));
 
     pslot = doc.getElementById('comment-slot');
@@ -610,6 +615,8 @@ var View = (function () {
       deleteSpan.appendChild(deleteNode);
       deleteSpan.onmouseup = deleteClick;
       item.appendChild(deleteSpan);
+      item.onmouseover = showDelete;
+      item.onmouseout = hideDelete;
 
       list.appendChild(item);
     }
@@ -619,12 +626,19 @@ var View = (function () {
   function showComments(data) {
     var list = new Comments(data);
 
-    if ( commentsDiv.hasChildNodes() ) {
-      commentsDiv.removeChild(commentsDiv.firstChild);
-      commentsDiv.appendChild(list);
+    if (commentsDiv.childNodes[0]) {
+      commentsDiv.replaceChild(list, commentsDiv.childNodes[0]);
     } else {
       commentsDiv.appendChild(list);
     }
+  }
+
+  function showDelete() {
+    this.lastChild.style.visibility = 'visible';
+  }
+
+  function hideDelete() {
+    this.lastChild.style.visibility = 'hidden';
   }
 
   function Caption(data) {
@@ -641,7 +655,7 @@ var View = (function () {
     var span = new Caption(data);
     caption.innerHTML = '';
     caption.appendChild(span);
-    setTimeout(function(){capOut(span) }, 3000);
+    setTimeout(function(){ capOut(span); }, 3000);
   }
 
   function capOut(span) {
@@ -739,8 +753,7 @@ var Player =(function () {
         showinfo: 0
       },
       events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
+        'onReady': onPlayerReady
       }
     });
 
@@ -757,9 +770,6 @@ var Player =(function () {
     event.target.playVideo();
 
     setInterval(commentLoad, 500);
-  }
-
-  function onPlayerStateChange(event) {
   }
 
   function publicGet() {
@@ -786,7 +796,8 @@ var Player =(function () {
     var length;
 
     if (player.getPlayerState() === 1) {
-      pTime = Math.round(player.getCurrentTime());
+      //change to math.floor to check accuracy
+      pTime = Math.floor(player.getCurrentTime());
       comments = Video.get().comments;
       length = comments.length;
       for ( i = 0; i < length; i+=1 ) {
