@@ -98,8 +98,9 @@ h1 {
 }
 
 #buttons {
+  border-bottom: 1px solid #d3d3d3;
   margin: 10px auto;
-  text-align: center;
+  height: 55px;
 }
 
 #comment-button {
@@ -107,7 +108,6 @@ h1 {
   border: none;
   border-radius: 5px;
   color: white;
-  display: inline-block;
   font-size: 1em;
   font-weight: bold;
   height: 2.5em;
@@ -115,20 +115,27 @@ h1 {
   width: 100%;
 }
 
+#comment-button:hover {
+  cursor: pointer;
+}
+
 #comment-bar {
   text-align: center;
-  height: 70px;
   width: 100%;
 }
 
 #comment-input {
   border: 1px solid #d3d3d3;
   display: inline-block;
-  height: 48px;
-  width: 85%;
+  vertical-align: top;
+  width: 80%;
 }
 
-#comment-text,
+#comment-buttons {
+  display: inline-block;
+  margin-left: 5px;
+}
+
 #comment-wordcount {
   display: inline;
 }
@@ -137,7 +144,6 @@ h1 {
   border: none;
   display: inline-block;
   font-size: 30px;
-  height: 36px;
   width: 90%;
 }
 
@@ -145,42 +151,40 @@ h1 {
   outline: 0;
 }
 
-#comment-buttons {
-  display: inline-block;
-  position: relative;
-  height: 48px;
-  width: 48px;
-  border: none;
-  vertical-align: bottom;
-}
-
 #comment-add {
   background-color: #383838;
-  color: white;
   border: none;
   border-radius: 5px;
+  color: white;
+  display: block;
   font-weight: bold;
   height: 36px;
   width: 75px;
-  position: relative;
 }
 
 #comment-save {
   background-color: #e52d27;
-  color: white;
   border: none;
   border-radius: 5px;
+  color: white;
+  display: block;
   font-weight: bold;
   height: 36px;
   width: 75px;
-  position: relative;
 }
 
 #comment-cancel {
   background-color: transparent;
-  color: #d3d3d3;
   border: none;
-  position: relative;
+  color: #d3d3d3;
+}
+
+#title-save:hover,
+#title-cancel:hover,
+#comment-add:hover,
+#comment-save:hover,
+#comment-cancel:hover {
+  cursor: pointer;
 }
 
 #comment-slot {
