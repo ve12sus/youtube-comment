@@ -354,6 +354,9 @@ var View = (function () {
 
     var commentButton = new CommentButton();
 
+    //there should be a better implementation later
+    buttons.style.height = '55px';
+
     if (buttons.childNodes[0]) {
       buttons.replaceChild(commentButton, buttons.childNodes[0]);
     } else {

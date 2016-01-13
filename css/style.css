@@ -56,9 +56,12 @@ h1 {
   max-width: 640px;
 }
 
-#title-form {
-  border: 1px solid black;
+#title {
   height: 48px;
+}
+
+#title-form {
+  border: 1px solid #d3d3d3;
   text-align: center;
 }
 
@@ -66,12 +69,12 @@ h1 {
   border: none;
   display: inline-block;
   font-size: 30px;
-  height: 36px;
   margin-top: 6px;
   width: 75%;
 }
 
-#title-text:focus {
+#title-text:focus,
+#comment-text:focus {
   outline: 0;
 }
 
@@ -82,11 +85,6 @@ h1 {
   height: 36px;
   position: relative;
   bottom: 6px;
-}
-
-#title-cancel {
-  background-color: transparent;
-  color: #d3d3d3;
 }
 
 #title-save {
@@ -100,7 +98,6 @@ h1 {
 #buttons {
   border-bottom: 1px solid #d3d3d3;
   margin: 10px auto;
-  height: 55px;
 }
 
 #comment-button {
@@ -115,10 +112,6 @@ h1 {
   width: 100%;
 }
 
-#comment-button:hover {
-  cursor: pointer;
-}
-
 #comment-bar {
   text-align: center;
   width: 100%;
@@ -128,7 +121,7 @@ h1 {
   border: 1px solid #d3d3d3;
   display: inline-block;
   vertical-align: top;
-  width: 80%;
+  width: 85%;
 }
 
 #comment-buttons {
@@ -147,40 +140,36 @@ h1 {
   width: 90%;
 }
 
-#comment-text:focus {
-  outline: 0;
+#comment-add,
+#comment-save {
+  border: none;
+  border-radius: 5px;
+  color: white;
+  display: block;
+  font-weight: bold;
+  height: 36px;
+  width: 75px;
 }
 
 #comment-add {
   background-color: #383838;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  display: block;
-  font-weight: bold;
-  height: 36px;
-  width: 75px;
 }
 
 #comment-save {
   background-color: #e52d27;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  display: block;
-  font-weight: bold;
-  height: 36px;
-  width: 75px;
 }
 
+#title-cancel,
 #comment-cancel {
   background-color: transparent;
   border: none;
   color: #d3d3d3;
+  font-weight: 600;
 }
 
 #title-save:hover,
 #title-cancel:hover,
+#comment-button:hover,
 #comment-add:hover,
 #comment-save:hover,
 #comment-cancel:hover {
