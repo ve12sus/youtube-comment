@@ -70,20 +70,23 @@ var Controller = (function () {
     Video.addComment(comment);
 
     var commentURL = url + '/comments';
-    sendRequest('POST', commentURL, JSON.stringify(comment));
+    sendRequest('POST', commentURL, JSON.stringify(comment)).done(
+      function(data) {
+        Video.set(data);
+      });
   }
 
-  function publicDeleteComment(id, text) {
+  function publicDeleteComment(time) {
 
     var comment = {
-      time: id,
-      comment: text
+      time: time,
     };
 
-    Video.deleteComment(comment);
-
     var commentURL = url + '/comments';
-    sendRequest('DELETE', commentURL, JSON.stringify(comment));
+    sendRequest('DELETE', commentURL, JSON.stringify(comment)).done(
+      function(data) {
+        Video.set(data);
+      });
   }
 
   function publicUpdateTitle(title) {
@@ -224,10 +227,9 @@ var Video = (function () {
 
 var View = (function () {
 
-  var mode = Controller.getMode();
   var doc = document;
+  var mode = Controller.getMode();
   var caption = doc.getElementById('caption');
-  var info = doc.getElementById('info');
   var title = doc.getElementById('title');
   var buttons = doc.getElementById('buttons');
   var commentsDiv = doc.getElementById('comments');
@@ -235,7 +237,7 @@ var View = (function () {
   function publicRender(data) {
     showTitle(data.title);
     showComments(data);
-    if (data.title == '' || data.title == 'default') {
+    if (data.title === '' || data.title === 'default') {
       updateTitle();
     } else {
       switch (mode) {
@@ -462,8 +464,9 @@ var View = (function () {
 
   function CommentSlot(time) {
     var slot;
-    var text;
     var div;
+    var span;
+    var text;
 
     slot = doc.createElement('li');
     slot.setAttribute('id', 'comment-slot');
@@ -498,7 +501,7 @@ var View = (function () {
       pslot.parentElement.removeChild(pslot);
     }
 
-    if (length == 0) {
+    if (length === 0) {
       list.appendChild(slot);
     } else {
       for ( i = 0; i < length; i+=1 ) {
@@ -589,6 +592,7 @@ var View = (function () {
     var length = data.comments.length;
     var list;
     var node;
+    var span;
     var comment;
     var deleteNode;
     var deleteSpan;
@@ -681,25 +685,16 @@ var View = (function () {
   }
 
   function deleteClick() {
-    console.log(this.parentElement);
-    /*var id = this.parentNode.id;
-    var text = this.parentNode.childNodes[1].nodeValue;
-
-    Controller.deleteComment(id, text);*/
+    var time = this.parentElement.id;
+    deletePrompt(time);
   }
 
-  function callback() {
-    var id = this.parentNode.id;
-    var text = this.parentNode.childNodes[1].nodeValue;
-    /*var comment = {
-      time: id,
-      text: text
-    };
-
-    return function() {
-      Controller.deleteComment(comment);
-    };*/
-    alert(id + text);
+  function deletePrompt(time) {
+    if (confirm("Delete this comment?") == true) {
+      Controller.deleteComment(time);
+    } else {
+      console.log("not confirmed!");
+    }
   }
 
   function secondsToHms(d) {
@@ -709,10 +704,6 @@ var View = (function () {
     var s = Math.floor(d % 3600 % 60);
     return ((h > 0 ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' +
       (s < 10 ? '0' : '') + s);
-  }
-
-  function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
   }
 
   return {
@@ -735,7 +726,6 @@ var View = (function () {
 
 var Player =(function () {
   var doc = document;
-  var caption = doc.getElementById('caption');
   var tag = doc.createElement('script');
 
   tag.src = '//www.youtube.com/iframe_api';
@@ -743,7 +733,6 @@ var Player =(function () {
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
   var player;
-  var hold = false;
 
   function publicCreate(video) {
     player = new YT.Player('player', {
