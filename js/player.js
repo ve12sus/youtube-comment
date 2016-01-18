@@ -253,7 +253,7 @@ var View = (function () {
     var textNode = doc.createTextNode(text);
     var heading = doc.createElement('h1');
     heading.appendChild(textNode);
-    heading.id = 'title-text';
+    //heading.id = 'title-text';
     heading.addEventListener('mouseup', function() {
       updateTitle();
     });
@@ -277,7 +277,8 @@ var View = (function () {
     var save;
 
     form = doc.createElement('div');
-    form.setAttribute('id', 'title-form');
+    form.id = 'title-form';
+    form.className = 'text-border';
 
     text = doc.createElement('input');
     text.type = 'text';
@@ -286,6 +287,7 @@ var View = (function () {
     text.setAttribute('placeholder', 'Enter a video title');
     text.addEventListener('keyup', function(e) {
       var key = e.which || e.KeyCode;
+      save.className = 'save enabled';
       if (key === 13 && text.value.length > 0) {
         Controller.updateTitle(text.value);
       }
@@ -296,7 +298,8 @@ var View = (function () {
 
     cancel = doc.createElement('input');
     cancel.type = 'button';
-    cancel.setAttribute('id', 'title-cancel');
+    //cancel.id = 'title-cancel';
+    cancel.className = 'cancel';
     cancel.value = 'Cancel';
     cancel.addEventListener('mouseup', function() {
       Controller.updateTitle(Video.get().title);
@@ -304,7 +307,8 @@ var View = (function () {
 
     save = doc.createElement('input');
     save.type = 'button';
-    save.setAttribute('id', 'title-save');
+    //save.id = 'title-save';
+    save.className = 'save disabled';
     save.value = 'Save';
     save.addEventListener('mouseup', function() {
       Controller.updateTitle(text.value);
@@ -332,8 +336,9 @@ var View = (function () {
   function CommentButton() {
     var button = doc.createElement('input');
     button.type = 'button';
-    button.setAttribute('id', 'comment-button');
-    button.setAttribute('value', '+ Add a comment');
+    button.id = 'comment-button';
+    button.className = 'save enabled';
+    button.value = '+ Add a comment';
 
     var buttonAction = function(e) {
       var key = e.which || e.KeyCode;
@@ -369,7 +374,7 @@ var View = (function () {
 
   function CommentBar() {
     var commentBar = doc.createElement('div');
-    var input = doc.createElement('div');
+    var form = doc.createElement('div');
     var buttonsGroup = doc.createElement('div');
     var text;
     var save;
@@ -379,13 +384,14 @@ var View = (function () {
     text = doc.createElement('input');
     text.type = 'text';
     text.setAttribute('id', 'comment-text');
-    text.setAttribute('placeholder', '<enter> to save');
+    text.setAttribute('placeholder', 'Press enter to save');
     text.setAttribute('maxlength', '70');
     text.addEventListener('focus', showCommentSlot);
     text.addEventListener('keyup', function() {
       var preview = this.value;
-      save.setAttribute('id', 'comment-save');
-      save.setAttribute('value', 'Save');
+      //save.setAttribute('id', 'comment-save');
+      //save.setAttribute('value', 'Save');
+      save.className = 'save enabled';
       livePreview(preview);
     });
     text.addEventListener('keyup', function(e) {
@@ -405,8 +411,9 @@ var View = (function () {
 
     save = doc.createElement('input');
     save.type = 'button';
-    save.setAttribute('id', 'comment-add');
-    save.setAttribute('value', 'Add');
+    save.id = 'comment-save';
+    save.value = 'Save';
+    save.className = 'save disabled';
     save.addEventListener('mouseup', function() {
       removeCommentSlot();
       Controller.createComment(text.value);
@@ -416,8 +423,9 @@ var View = (function () {
 
     cancel = doc.createElement('input');
     cancel.type = 'button';
-    cancel.setAttribute('id', 'comment-cancel');
-    cancel.setAttribute('value', 'cancel');
+    cancel.id = 'comment-cancel';
+    cancel.className = 'cancel';
+    cancel.value = 'cancel';
     cancel.addEventListener('mouseup', function() {
       removeCommentSlot();
       showButton();
@@ -428,15 +436,16 @@ var View = (function () {
     word.setAttribute('id', 'comment-wordcount');
     word.innerHTML = '0/70';
 
-    input.setAttribute('id', 'comment-input');
-    input.appendChild(text);
-    input.appendChild(word);
+    form.id = 'comment-input';
+    form.className = 'text-border';
+    form.appendChild(text);
+    form.appendChild(word);
 
     buttonsGroup.setAttribute('id', 'comment-buttons');
     buttonsGroup.appendChild(save);
     buttonsGroup.appendChild(cancel);
 
-    commentBar.appendChild(input);
+    commentBar.appendChild(form);
     commentBar.appendChild(buttonsGroup);
     commentBar.setAttribute('id', 'comment-bar');
 
@@ -523,42 +532,6 @@ var View = (function () {
     }
   }
 
-  function publicShowNewLink() {
-    var makelink;
-    var label;
-    var youtubeLink;
-    var youtubeLinkButton;
-
-    if (!doc.getElementById('youtube-link')) {
-      makelink = doc.getElementById('makelink');
-      label = doc.createElement('label');
-      label.setAttribute('for', 'youtube-link');
-      label.innerHTML = 'Make your own!';
-
-      youtubeLink = doc.createElement('input');
-      youtubeLink.type = 'text';
-      youtubeLink.setAttribute('id', 'youtube-link');
-      youtubeLink.setAttribute('placeholder', 'Paste YouTube link');
-      youtubeLink.setAttribute('size', '35');
-      youtubeLink.addEventListener('keyup', function(e) {
-        var key = e.which || e.KeyCode;
-        if (key === 13) {
-          Controller.createVideo(youtubeLink.value);
-        }
-      });
-      youtubeLinkButton = doc.createElement('input');
-      youtubeLinkButton.type = 'button';
-      youtubeLinkButton.setAttribute('id', 'youtube-link-button');
-      youtubeLinkButton.setAttribute('value', 'Go');
-      youtubeLinkButton.addEventListener('mouseup', function() {
-        Controller.createVideo(youtubeLink.value);
-      });
-      makelink.appendChild(label);
-      makelink.appendChild(youtubeLink);
-      makelink.appendChild(youtubeLinkButton);
-    }
-  }
-
   function MakeLink() {
     var words;
     var form;
@@ -566,7 +539,7 @@ var View = (function () {
     var button;
 
     words = doc.createElement('h1');
-    words.innerHTML = 'Comment and caption youtube videos:';
+    words.innerHTML = 'Comment and caption YouTube videos:';
 
     form = doc.createElement('div');
     form.setAttribute('id', 'new-link-form');
@@ -576,6 +549,7 @@ var View = (function () {
     link.setAttribute('placeholder', 'Paste YouTube link');
     link.setAttribute('id', 'new-link-text');
     link.addEventListener('keyup', function(e) {
+      button.className = 'save enabled';
       var key = e.which || e.KeyCode;
       if (key === 13) {
         Controller.createVideo(link.value);
@@ -584,8 +558,9 @@ var View = (function () {
 
     button = doc.createElement('input');
     button.type = 'button';
-    button.setAttribute('value', 'Go');
-    button.setAttribute('id', 'new-link-go');
+    button.value = 'Go';
+    button.id = 'new-link-go';
+    button.className = 'save disabled';
     button.addEventListener('mouseup', function() {
       Controller.createVideo(link.value);
     });
@@ -600,6 +575,7 @@ var View = (function () {
   function publicShowLink() {
     var form = new MakeLink;
 
+    title.style.height = 'auto';
     title.parentElement.insertBefore(form, title);
   }
 

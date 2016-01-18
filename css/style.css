@@ -5,29 +5,21 @@ body {
   padding: 0;
 }
 
-h1 {
-  margin: 0 0 0 0;
-}
-
-#logo {
-  text-align: center;
-  background-color: #ededed;
+#header {
+  background-color: yellow;
   margin: 0 0 10px 0;
   padding: 0.75em 0;
+  text-align: center;
 }
 
-#logo a {
-  text-decoration: none;
-  color: #414142;
-  position: relative;
-}
-
-#logo span {
-  vertical-align: middle;
+#header a {
+  color: #000;
   font-size: 1.5em;
+  font-weight: bold;
+  text-decoration: none;
 }
 
-#main-wrapper {
+#main {
   margin: 0 auto;
   max-width: 750px;
 }
@@ -49,8 +41,8 @@ h1 {
   background-color: yellow;
   color: #000;
   font-size: 1.5em;
-  padding: 4px 6px;
   font-weight: bold;
+  padding: 4px 6px;
 }
 
 #info {
@@ -62,53 +54,87 @@ h1 {
   height: 48px;
 }
 
-#title-form {
+#title h1 {
+  font-size: 30px;
+  margin: 0 0 0 0;
+  position: relative;
+  top: 8px;
+  left: 16px;
+}
+
+input[type=text] {
+  border: none;
+  display: inline-block;
+  font-size: 30px;
+}
+
+input[type=text]:focus {
+  outline: 0;
+}
+
+input[type=button]:hover {
+  cursor: pointer;
+}
+
+.enabled {
+  background-color: #e52d27;
+}
+
+.disabled {
+  background-color: #d3d3d3;
+}
+
+.enabled:hover {
+  background-color: red;
+}
+
+.cancel {
+  background-color: transparent;
+  border: none;
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+.cancel:hover {
+  color: #2a2a2a;
+}
+
+.save {
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  height: 36px;
+  width: 75px;
+}
+
+.text-border {
   border: 1px solid #d3d3d3;
+}
+
+#title-form {
   text-align: center;
 }
 
 #title-text {
-  border: none;
-  display: inline-block;
-  font-size: 30px;
+  font-weight: bold;
   margin-top: 6px;
   width: 75%;
 }
 
-#title-text:focus,
-#comment-text:focus {
-  outline: 0;
-}
-
-#title-cancel,
-#title-save {
-  border: none;
-  display: inline-block;
-  height: 36px;
-  position: relative;
+#title input[type=button] {
   bottom: 6px;
-}
-
-#title-save {
-  background-color: #383838;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  width: 75px;
+  display: inline-block;
+  position: relative;
 }
 
 #buttons {
   border-bottom: 1px solid #d3d3d3;
-  margin: 10px auto;
+  margin: 5px auto;
 }
 
 #comment-button {
-  background-color: #e52d27;
-  border: none;
-  border-radius: 5px;
-  color: white;
   font-size: 1em;
-  font-weight: bold;
   height: 2.5em;
   margin: 0 auto;
   width: 100%;
@@ -120,7 +146,6 @@ h1 {
 }
 
 #comment-input {
-  border: 1px solid #d3d3d3;
   display: inline-block;
   vertical-align: top;
   width: 85%;
@@ -136,51 +161,17 @@ h1 {
 }
 
 #comment-text {
-  border: none;
-  display: inline-block;
-  font-size: 30px;
   width: 90%;
 }
 
 #comment-add,
 #comment-save {
-  border: none;
-  border-radius: 5px;
-  color: white;
   display: block;
-  font-weight: bold;
-  height: 36px;
-  width: 75px;
-}
-
-#comment-add {
-  background-color: #383838;
-}
-
-#comment-save {
-  background-color: #e52d27;
-}
-
-#title-cancel,
-#comment-cancel {
-  background-color: transparent;
-  border: none;
-  color: #d3d3d3;
-  font-weight: 600;
-}
-
-#title-save:hover,
-#title-cancel:hover,
-#comment-button:hover,
-#comment-add:hover,
-#comment-save:hover,
-#comment-cancel:hover {
-  cursor: pointer;
 }
 
 #comment-slot {
+  background-color: yellow;
   display: inline;
-  background-color: #fff001;
 }
 
 #live-comment {
@@ -214,29 +205,18 @@ ul {
 }
 
 #new-link-text {
-  display: inline-block;
+  border: 1px solid #d3d3d3;
   font-size: 2.5em;
   width: 75%
 }
 
 #new-link-go {
-  background-color: #e52d27;
-  border: none;
-  border-radius: 5px;
   bottom: 10px;
-  color: white;
   display: inline-block;
-  font-weight: bold;
-  height: 36px;
   left: 10px;
   position: relative;
-  width: 75px;
 }
 
 #new-link-form h1 {
   margin: auto;
-}
-
-#youtube-link {
-  margin: 0 0 0 5px;
 }
