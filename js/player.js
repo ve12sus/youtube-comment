@@ -283,7 +283,7 @@ var View = (function () {
     text.type = 'text';
     text.setAttribute('id', 'title-text');
     text.setAttribute('maxlength', '30');
-    text.setAttribute('placeholder', 'Press enter to save');
+    text.setAttribute('placeholder', 'Enter a video title');
     text.addEventListener('keyup', function(e) {
       var key = e.which || e.KeyCode;
       if (key === 13 && text.value.length > 0) {
@@ -559,29 +559,89 @@ var View = (function () {
     }
   }
 
-  function publicShowCollection(collection) {
-    var videoList = doc.createElement('ul');
+  function MakeLink() {
+    var words;
+    var form;
+    var link;
+    var button;
+
+    words = doc.createElement('h1');
+    words.innerHTML = 'Comment and caption youtube videos:';
+
+    form = doc.createElement('div');
+    form.setAttribute('id', 'new-link-form');
+
+    link = doc.createElement('input');
+    link.type = 'text';
+    link.setAttribute('placeholder', 'Paste YouTube link');
+    link.setAttribute('id', 'new-link-text');
+    link.addEventListener('keyup', function(e) {
+      var key = e.which || e.KeyCode;
+      if (key === 13) {
+        Controller.createVideo(link.value);
+      }
+    });
+
+    button = doc.createElement('input');
+    button.type = 'button';
+    button.setAttribute('value', 'Go');
+    button.setAttribute('id', 'new-link-go');
+    button.addEventListener('mouseup', function() {
+      Controller.createVideo(link.value);
+    });
+
+    form.appendChild(words);
+    form.appendChild(link);
+    form.appendChild(button);
+
+    return form;
+  }
+
+  function publicShowLink() {
+    var form = new MakeLink;
+
+    title.parentElement.insertBefore(form, title);
+  }
+
+  function Collection(data) {
+    var list = doc.createElement('ul');
     var i;
-    var length = collection.length;
-    var titleText;
+    var length = data.length;
+    var thumb;
+    var title;
     var link;
     var url;
-    var listItem;
+    var image;
+    var item;
 
-    for ( i = 0; i < length; i+=1 ) {
-      titleText = doc.createTextNode(collection[i].title);
+    for ( i = 0; i < length; i += 1 ) {
+      title = doc.createTextNode(data[i].title);
       link = doc.createElement('a');
-      url = '/~jeff/ytcserver/' + collection[i].id;
-      listItem = doc.createElement('li');
+      url = '/~jeff/ytcserver/' + data[i].id;
+      thumb = 'http://img.youtube.com/vi/' + data[i].youtubeId + '/1.jpg';
 
-      link.appendChild(titleText);
+      image = doc.createElement('img');
+      image.src = thumb;
+
+      item = doc.createElement('li');
+      link.appendChild(title);
       link.setAttribute('class', 'time-link');
       link.setAttribute('href', url);
-      listItem.appendChild(link);
-      videoList.appendChild(listItem);
+      item.appendChild(image);
+      item.appendChild(link);
+      list.appendChild(item);
     }
-    title.innerHTML = 'Video List';
-    commentsDiv.appendChild(videoList);
+
+    return list;
+  }
+
+  function newShowCollection(data) {
+    var list = new Collection(data);
+    var text = doc.createElement('h1');
+    text.innerHTML = 'Latest Videos';
+
+    commentsDiv.appendChild(text);
+    commentsDiv.appendChild(list);
   }
 
   function Comments(data) {
@@ -710,9 +770,9 @@ var View = (function () {
 
     render: publicRender,
 
-    showNew: publicShowNewLink,
+    showNew: publicShowLink,
 
-    showCollection: publicShowCollection,
+    showCollection: newShowCollection,
 
     showCap: publicShowCap,
 

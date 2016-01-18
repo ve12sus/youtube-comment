@@ -46,9 +46,11 @@ h1 {
 }
 
 #caption span {
-  background-color: black;
-  color: #ffffff;
-  font-size: 1.25em;
+  background-color: yellow;
+  color: #000;
+  font-size: 1.5em;
+  padding: 4px 6px;
+  font-weight: bold;
 }
 
 #info {
@@ -205,6 +207,34 @@ ul {
   margin: 0 0 0 5px;
   text-decoration: underline;
   visibility: hidden;
+}
+
+#new-link-form {
+  text-align: center;
+}
+
+#new-link-text {
+  display: inline-block;
+  font-size: 2.5em;
+  width: 75%
+}
+
+#new-link-go {
+  background-color: #e52d27;
+  border: none;
+  border-radius: 5px;
+  bottom: 10px;
+  color: white;
+  display: inline-block;
+  font-weight: bold;
+  height: 36px;
+  left: 10px;
+  position: relative;
+  width: 75px;
+}
+
+#new-link-form h1 {
+  margin: auto;
 }
 
 #youtube-link {
