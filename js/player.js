@@ -253,7 +253,6 @@ var View = (function () {
     var textNode = doc.createTextNode(text);
     var heading = doc.createElement('h1');
     heading.appendChild(textNode);
-    //heading.id = 'title-text';
     heading.addEventListener('mouseup', function() {
       updateTitle();
     });
@@ -282,7 +281,7 @@ var View = (function () {
 
     text = doc.createElement('input');
     text.type = 'text';
-    text.setAttribute('id', 'title-text');
+    text.id = 'title-text';
     text.setAttribute('maxlength', '30');
     text.setAttribute('placeholder', 'Enter a video title');
     text.addEventListener('keyup', function(e) {
