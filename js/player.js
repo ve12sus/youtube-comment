@@ -253,7 +253,6 @@ var View = (function () {
     var textNode = doc.createTextNode(text);
     var heading = doc.createElement('h1');
     heading.appendChild(textNode);
-    //heading.id = 'title-text';
     heading.addEventListener('mouseup', function() {
       updateTitle();
     });
@@ -282,9 +281,9 @@ var View = (function () {
 
     text = doc.createElement('input');
     text.type = 'text';
-    text.setAttribute('id', 'title-text');
-    text.setAttribute('maxlength', '30');
-    text.setAttribute('placeholder', 'Enter a video title');
+    text.id = 'title-text';
+    text.maxLength = '30';
+    text.placeholder = 'Enter a video title';
     text.addEventListener('keyup', function(e) {
       var key = e.which || e.KeyCode;
       save.className = 'save enabled';
@@ -298,7 +297,6 @@ var View = (function () {
 
     cancel = doc.createElement('input');
     cancel.type = 'button';
-    //cancel.id = 'title-cancel';
     cancel.className = 'cancel';
     cancel.value = 'Cancel';
     cancel.addEventListener('mouseup', function() {
@@ -307,7 +305,6 @@ var View = (function () {
 
     save = doc.createElement('input');
     save.type = 'button';
-    //save.id = 'title-save';
     save.className = 'save disabled';
     save.value = 'Save';
     save.addEventListener('mouseup', function() {
@@ -383,14 +380,12 @@ var View = (function () {
 
     text = doc.createElement('input');
     text.type = 'text';
-    text.setAttribute('id', 'comment-text');
-    text.setAttribute('placeholder', 'Press enter to save');
-    text.setAttribute('maxlength', '70');
+    text.id = 'comment-text';
+    text.placeholder = 'Press enter to save';
+    text.maxLength = '70';
     text.addEventListener('focus', showCommentSlot);
     text.addEventListener('keyup', function() {
       var preview = this.value;
-      //save.setAttribute('id', 'comment-save');
-      //save.setAttribute('value', 'Save');
       save.className = 'save enabled';
       livePreview(preview);
     });
@@ -478,10 +473,12 @@ var View = (function () {
     var text;
 
     slot = doc.createElement('li');
-    slot.setAttribute('id', 'comment-slot');
+    slot.id = 'comment-slot';
+
     div = doc.createElement('div');
-    div.setAttribute('id', 'live-comment');
+    div.id = 'live-comment';
     div.innerHTML = 'adding comment...';
+
     span = doc.createElement('span');
     text = doc.createTextNode(time);
     span.appendChild(text);
@@ -542,12 +539,12 @@ var View = (function () {
     words.innerHTML = 'Comment and caption YouTube videos:';
 
     form = doc.createElement('div');
-    form.setAttribute('id', 'new-link-form');
+    form.id = 'new-link-form';
 
     link = doc.createElement('input');
     link.type = 'text';
-    link.setAttribute('placeholder', 'Paste YouTube link');
-    link.setAttribute('id', 'new-link-text');
+    link.placeholder = 'Paste YouTube link';
+    link.id = 'new-link-text';
     link.addEventListener('keyup', function(e) {
       button.className = 'save enabled';
       var key = e.which || e.KeyCode;
@@ -601,8 +598,9 @@ var View = (function () {
 
       item = doc.createElement('li');
       link.appendChild(title);
-      link.setAttribute('class', 'time-link');
-      link.setAttribute('href', url);
+      link.className = 'time-link';
+      link.href = url;
+
       item.appendChild(image);
       item.appendChild(link);
       list.appendChild(item);
@@ -634,17 +632,17 @@ var View = (function () {
     var deleteSpan;
 
     list = doc.createElement('ul');
-    list.setAttribute('id', 'comment-list');
+    list.id = 'comment-list';
 
     for ( i = 0; i < length; i += 1 ) {
       item = doc.createElement('li');
       id = data.comments[i].time;
-      item.setAttribute('id', id);
+      item.id = id;
 
       node = doc.createTextNode(secondsToHms(id));
 
       span = doc.createElement('span');
-      span.setAttribute('class', 'time-link');
+      span.className = 'time-link';
       span.appendChild(node);
       span.onclick = skipToComment;
 
@@ -654,9 +652,10 @@ var View = (function () {
 
       deleteNode = doc.createTextNode('delete');
       deleteSpan = doc.createElement('span');
-      deleteSpan.setAttribute('class', 'delete-link');
+      deleteSpan.className = 'delete-link';
       deleteSpan.appendChild(deleteNode);
       deleteSpan.onmouseup = deleteClick;
+
       item.appendChild(deleteSpan);
       item.onmouseover = showDelete;
       item.onmouseout = hideDelete;
@@ -688,7 +687,8 @@ var View = (function () {
     var text = doc.createTextNode(data.comment);
     var span = doc.createElement('span');
     var id = 'cap-' + data.time;
-    span.setAttribute('id', id);
+
+    span.id = id;
     span.appendChild(text);
 
     return span;
@@ -696,6 +696,7 @@ var View = (function () {
 
   function publicShowCap(data) {
     var span = new Caption(data);
+
     caption.innerHTML = '';
     caption.appendChild(span);
     setTimeout(function(){ capOut(span); }, 3000);
