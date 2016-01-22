@@ -282,13 +282,10 @@ var View = (function () {
     text = doc.createElement('input');
     text.type = 'text';
     text.id = 'title-text';
-<<<<<<< HEAD
     text.setAttribute('maxlength', '30');
     text.setAttribute('placeholder', 'Enter a video title');
-=======
     text.maxLength = '30';
     text.placeholder = 'Enter a video title';
->>>>>>> refactor/js
     text.addEventListener('keyup', function(e) {
       var key = e.which || e.KeyCode;
       save.className = 'save enabled';
