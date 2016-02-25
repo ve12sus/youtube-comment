@@ -179,9 +179,15 @@ input[type=text]:focus {
   cursor: pointer;
 }
 
+.comments {
+  background-color: white;
+  margin-top: 10px;
+  padding: 10px 0 10px 0;
+}
+
 .comment {
   margin-left: 10px;
-  width: 550px;
+  width: 580px;
   word-wrap: break-word;
 }
 
@@ -191,6 +197,29 @@ input[type=text]:focus {
 
 .delete:hover {
   cursor: pointer;
+}
+
+/* Share */
+
+.share-panel {
+  background-color: white;
+  margin-top: 10px;
+  padding: 10px 0 15px 0;
+}
+
+.share-panel span {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.share-panel input[type=text] {
+  color: #666;
+  margin-left: 10px;
+  margin-top: 2px;
+  padding: 2px 0 2px 2px;
+  width: 400px;
 }
 
 /* Front page */

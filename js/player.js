@@ -493,6 +493,23 @@ var View = (function () {
     }
   }
 
+  function Share() {
+    var div = doc.createElement('div');
+    var link = doc.createElement('input');
+    var text = doc.createTextNode('Share');
+    var span = doc.createElement('span');
+
+    span.appendChild(text);
+
+    link.type = 'text';
+    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.get().id;
+
+    div.className = 'share-panel';
+    div.appendChild(span);
+    div.appendChild(link);
+    return div;
+  }
+
   function ShareButton() {
     var button;
 
@@ -504,8 +521,8 @@ var View = (function () {
   }
 
   function showShareButton() {
-    var share = new ShareButton;
-    var button = doc.getElementsByClassName('share')[0];
+    var share = new Share;
+    var button = doc.getElementsByClassName('share-panel')[0];
     var length = Video.get().comments.length;
 
     if ( length === 0 && button ) {
