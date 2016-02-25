@@ -112,11 +112,12 @@ input[type=button]:hover {
   border: 1px solid #d3d3d3;
 }
 
-#title-form {
+.title-form {
   text-align: center;
 }
 
-#title-text {
+.title-form-text {
+  border: 1px solid #d3d3d3;
   font-weight: bold;
   margin-top: 6px;
   width: 75%;

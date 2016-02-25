@@ -283,6 +283,7 @@ var View = (function () {
     text = doc.createElement('input');
     text.type = 'text';
     //text.id = 'title-text';
+    text.className = 'title-form-text';
     text.maxLength = '30';
     text.placeholder = 'Enter a video title';
     text.addEventListener('keyup', function(e) {
@@ -298,7 +299,7 @@ var View = (function () {
 
     cancel = doc.createElement('input');
     cancel.type = 'button';
-    //cancel.className = 'cancel';
+    cancel.className = 'cancel';
     cancel.value = 'Cancel';
     cancel.addEventListener('mouseup', function() {
       Controller.updateTitle(Video.get().title);
@@ -306,7 +307,7 @@ var View = (function () {
 
     save = doc.createElement('input');
     save.type = 'button';
-    //save.className = 'save disabled';
+    save.className = 'save disabled';
     save.value = 'Save';
     save.addEventListener('mouseup', function() {
       Controller.updateTitle(text.value);
