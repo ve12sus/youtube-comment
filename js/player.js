@@ -144,6 +144,7 @@ var Video = (function () {
     id: null,
     title: '',
     youtubeId: '',
+    created: '',
     comments: []
   };
 
@@ -165,6 +166,7 @@ var Video = (function () {
     video.id = data.id;
     video.title = data.title;
     video.youtubeId = data.youtubeId;
+    video.created = data.created;
     video.comments = data.comments;
     commentSort();
     this.notify(video);
@@ -581,6 +583,7 @@ var View = (function () {
     var span;
     var views;
     var viewText;
+    var createDate;
 
     form = new CreateLink;
 
@@ -621,12 +624,13 @@ var View = (function () {
       info.appendChild(heading);
 
       /* placeholder for actual feature */
+      createDate = data[i].created;
+
       views = doc.createElement('span');
       views.className = 'views';
-      viewText = doc.createTextNode('55 views');
+      viewText = doc.createTextNode('55 views' + ' created on ' + createDate);
       views.appendChild(viewText);
       info.appendChild(views);
-
 
       item = doc.createElement('div');
       item.className = 'item';
