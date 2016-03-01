@@ -416,7 +416,7 @@ class Database
 
         while ($stmt->fetch())
         {
-            $video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id);
+            $video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id, "created"=>$created);
             $video = new Video($video_row);
             $videos[] = $video->getVidObj();
         }
@@ -433,7 +433,7 @@ class Database
 
         while ($stmt->fetch())
         {
-            $video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id);
+            $video_row = array("id"=>$vid_id, "title"=>$title, "youtubeId"=>$youtube_id, "created"=>$created);
         }
         if ($video_row == null)
         {
@@ -547,6 +547,7 @@ class Video
     private $id;
     private $title;
     private $youtubeId;
+    private $created;
     private $comments;
 
     public function __construct($video_row)
@@ -554,6 +555,7 @@ class Video
         $this->id = $video_row['id'];
         $this->title = $video_row['title'];
         $this->youtubeId = $video_row['youtubeId'];
+        $this->created = $video_row['created'];
     }
 
     public function addComments($comments)
@@ -566,6 +568,7 @@ class Video
         $video['id'] = $this->id;
         $video['title'] = $this->title;
         $video['youtubeId'] = $this->youtubeId;
+        $video['created'] = $this->created;
         $video['comments'] = $this->comments;
 
         return $video;
