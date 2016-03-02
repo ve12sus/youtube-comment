@@ -259,9 +259,11 @@ var View = (function () {
 
     heading.className = "title text";
     heading.appendChild(node);
-    heading.addEventListener('mouseup', function() {
-      showTitleForm();
-    });
+    if ( mode === 'create' ) {
+      heading.addEventListener('mouseup', function() {
+        showTitleForm();
+      });
+    }
     return heading;
   }
 
@@ -695,15 +697,17 @@ var View = (function () {
       cell2.className = 'comment';
       cell2.appendChild(text);
 
-      del = doc.createTextNode('x');
-      cell3 = doc.createElement('TD');
-      cell3.className = 'delete';
-      cell3.appendChild(del);
-      cell3.onmouseup = deleteClick;
-
       row.appendChild(cell1);
       row.appendChild(cell2);
-      row.appendChild(cell3);
+
+      if ( mode === 'create' ) {
+        del = doc.createTextNode('x');
+        cell3 = doc.createElement('TD');
+        cell3.className = 'delete';
+        cell3.appendChild(del);
+        cell3.onmouseup = deleteClick;
+        row.appendChild(cell3);
+      }
 
       table.appendChild(row);
     }
