@@ -2,7 +2,7 @@ var Controller = (function () {
 
   var doc = document;
   var resources = new Resources();
-  var id = resources.id;
+  var id = atob(resources.id);
   var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
@@ -113,7 +113,7 @@ var Controller = (function () {
 
         var data = JSON.stringify(obj);
         sendRequest('POST', createURL, data).done(function(data) {
-          window.location = '/~jeff/ytcserver/' + data.id + '/create';
+          window.location = '/~jeff/ytcserver/' + btoa(data.id) + '/create';
         });
       }
     }
@@ -506,7 +506,7 @@ var View = (function () {
     span.appendChild(text);
 
     link.type = 'text';
-    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.get().id;
+    link.value = 'http:/localhost/~jeff/ytcserver/' + btoa(Video.get().id);
 
     div.className = 'share-panel';
     div.appendChild(span);
@@ -596,7 +596,7 @@ var View = (function () {
     length = data.length;
     for ( i = 0; i < length; i += 1 ) {
 
-      url = '/~jeff/ytcserver/' + data[i].id;
+      url = '/~jeff/ytcserver/' + btoa(data[i].id);
       thumb = 'http://img.youtube.com/vi/' + data[i].youtubeId + '/mqdefault.jpg';
 
       image = doc.createElement('img');
