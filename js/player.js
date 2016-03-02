@@ -605,7 +605,11 @@ var View = (function () {
       a.appendChild(image);
 
       /* placeholder for actual feature */
-      cap = doc.createTextNode('show comment');
+      if (data[i].comments[0]) {
+        cap = doc.createTextNode(data[i].comments[0].comment);
+      } else {
+        cap = doc.createTextNode('check out this video');
+      }
       span = doc.createElement('span');
       span.className = 'thumb-cap';
       span.appendChild(cap);
@@ -628,7 +632,7 @@ var View = (function () {
 
       views = doc.createElement('span');
       views.className = 'views';
-      viewText = doc.createTextNode('55 views' + ' created on ' + createDate);
+      viewText = doc.createTextNode('Created on ' + createDate);
       views.appendChild(viewText);
       info.appendChild(views);
 

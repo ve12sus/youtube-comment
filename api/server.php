@@ -420,6 +420,24 @@ class Database
             $video = new Video($video_row);
             $videos[] = $video->getVidObj();
         }
+        $vidlength = count($videos);
+        for ($i = 0; $i < $vidlength; $i ++ )
+        {
+          $id = $videos[$i]['id'];
+          $stmt2 = $this->connection->prepare(
+              "SELECT time, comments, style FROM comments WHERE id = ?");
+          $stmt2->bind_param('i', $id);
+          $stmt2->execute();
+          $stmt2->bind_result($time, $comment, $style);
+
+          $comments = array();
+          while ($stmt2->fetch())
+          {
+            $comment_row = array("time"=>$time, "comment"=>$comment, "style"=>$style);
+            $comments[] = $comment_row;
+          }
+          $videos[$i]['comments'] = $comments;
+        }
         return $videos;
     }
 
