@@ -514,9 +514,14 @@ class Database
     {
         $id = $request->getId();
         $video = $this->getVideo($request);
-        $stmt = $this->connection->prepare("DELETE FROM videos WHERE string_id = ?");
+        $stmt = $this->connection->prepare("
+            DELETE FROM videos WHERE string_id = ?");
         $stmt->bind_param('s', $id);
         $stmt->execute();
+        $stmt2 = $this->connection->prepare("
+            DELETE FROM comments WHERE string_id = ?");
+        $stmt2->bind_param('s', $id);
+        $stmt2->execute();
         return $video;
     }
 
