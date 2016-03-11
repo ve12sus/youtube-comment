@@ -581,6 +581,7 @@ var View = (function () {
     var views;
     var viewText;
     var createDate;
+    var reverseData;
 
     form = new CreateLink();
 
@@ -588,11 +589,12 @@ var View = (function () {
     collection.className = 'collection';
     collection.appendChild(form);
 
+    rdata = data.reverse();
     length = data.length;
     for ( i = 0; i < length; i += 1 ) {
 
-      url = '/~jeff/ytcserver/' + data[i].string_id;
-      thumb = 'http://img.youtube.com/vi/' + data[i].youtubeId + '/mqdefault.jpg';
+      url = '/~jeff/ytcserver/' + rdata[i].string_id;
+      thumb = 'http://img.youtube.com/vi/' + rdata[i].youtubeId + '/mqdefault.jpg';
 
       image = doc.createElement('img');
       image.src = thumb;
@@ -603,7 +605,7 @@ var View = (function () {
 
       /* placeholder for actual feature */
       if (data[i].comments[0]) {
-        cap = doc.createTextNode(data[i].comments[0].comment);
+        cap = doc.createTextNode(rdata[i].comments[0].comment);
       } else {
         cap = doc.createTextNode('check out this video');
       }
@@ -614,7 +616,7 @@ var View = (function () {
       comment.className = 'thumb-comment';
       comment.appendChild(span);
 
-      title = doc.createTextNode(data[i].title);
+      title = doc.createTextNode(rdata[i].title);
       b = doc.createElement('a');
       b.href = url;
       b.appendChild(title);
@@ -625,12 +627,11 @@ var View = (function () {
       info = doc.createElement('div');
       info.appendChild(heading);
 
-      /* placeholder for actual feature */
-      createDate = data[i].created;
+      createDate = rdata[i].created;
 
       views = doc.createElement('span');
       views.className = 'views';
-      viewText = doc.createTextNode('Created on ' + createDate);
+      viewText = doc.createTextNode(timeSince(createDate) + ' ago');
       views.appendChild(viewText);
       info.appendChild(views);
 
@@ -656,6 +657,39 @@ var View = (function () {
     var collection = new Collection(data);
 
     info.appendChild(collection);
+  }
+
+  function timeSince(date) {
+
+    var dateParts = date.split("-");
+    var jsDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0,2));
+
+    console.log(new Date() - jsDate);
+
+    var seconds = Math.floor((new Date() - jsDate) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval > 1) {
+        return interval + " years";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hours";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
   }
 
   function showHeader() {
