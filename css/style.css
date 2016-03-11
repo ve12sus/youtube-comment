@@ -240,7 +240,6 @@ input[type=text]:focus {
 
 .collection a {
   color: blue;
-  text-decoration: none;
 }
 
 .thumb-cap {
@@ -254,6 +253,14 @@ input[type=text]:focus {
   margin-bottom: 40px;
 }
 
+.item-title {
+  text-decoration: none;
+}
+
+.item-title-hover {
+  text-decoration: underline;
+}
+
 .thumb-comment {
   bottom: 50px;
   position: absolute;
@@ -261,6 +268,10 @@ input[type=text]:focus {
   left: 0;
   right: 0;
   text-align: center;
+}
+
+.underline {
+  text-decoration: underline;
 }
 
 .views {

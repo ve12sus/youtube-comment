@@ -618,6 +618,7 @@ var View = (function () {
       b = doc.createElement('a');
       b.href = url;
       b.appendChild(title);
+      b.className = 'item-title';
 
       heading = doc.createElement('h3');
       heading.appendChild(b);
@@ -638,6 +639,12 @@ var View = (function () {
       item.appendChild(a);
       item.appendChild(comment);
       item.appendChild(info);
+      item.addEventListener('mouseover', function() {
+        this.childNodes[2].firstChild.firstChild.className = 'item-title-hover';
+      });
+      item.addEventListener('mouseout', function() {
+        this.childNodes[2].firstChild.firstChild.className = 'item-title';
+      });
 
       collection.appendChild(item);
     }
