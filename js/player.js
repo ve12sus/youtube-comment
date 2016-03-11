@@ -103,7 +103,7 @@ var Controller = (function () {
       var youtubeId = youtube_parser(youtubeLink);
 
       if (youtubeId === undefined) {
-        errorDisplay.innerHTML = 'Not a valid YouTube link';
+        alert('Not a valid YouTube link');
       } else {
         var createURL = '/~jeff/ytcserver/api/videos';
 
@@ -119,7 +119,7 @@ var Controller = (function () {
       }
     }
     catch(err) {
-      errorDisplay.innerHTML = err.message;
+      alert(err.message);
     }
   }
 
@@ -538,7 +538,7 @@ var View = (function () {
 
     text = doc.createElement('input');
     text.type = 'text';
-    text.placeholder = 'Enter YouTube URL';
+    text.placeholder = 'Paste YouTube link to get started';
     text.addEventListener('keyup', function(e) {
       var key;
       key = e.which || e.KeyCode;
