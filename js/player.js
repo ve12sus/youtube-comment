@@ -76,11 +76,11 @@ var Controller = (function () {
       });
   }
 
-  function publicDeleteComment(time, comment) {
+  function publicDeleteComment(time, text) {
 
     var comment = {
       time: time,
-      comment: comment
+      comment: text
     };
 
     var commentURL = url + '/comments';
@@ -249,7 +249,7 @@ var View = (function () {
       switch (mode) {
         case 'create':
           showCommentForm();
-          showShareButton();
+          showShare();
           break;
         default:
       }
@@ -349,6 +349,7 @@ var View = (function () {
     var text;
     var cancel;
     var save;
+    var span;
 
     form = doc.createElement('div');
     form.className = 'comment-form';
@@ -517,18 +518,8 @@ var View = (function () {
     return div;
   }
 
-  function ShareButton() {
-    var button;
-
-    button = doc.createElement('input');
-    button.type = 'button';
-    button.value = 'Share';
-    button.className = 'share';
-    return button;
-  }
-
-  function showShareButton() {
-    var share = new Share;
+  function showShare() {
+    var share = new Share();
     var button = doc.getElementsByClassName('share-panel')[0];
     var length = Video.get().comments.length;
 
@@ -549,7 +540,8 @@ var View = (function () {
     text.type = 'text';
     text.placeholder = 'Enter YouTube URL';
     text.addEventListener('keyup', function(e) {
-      var key = e.which || e.KeyCode;
+      var key;
+      key = e.which || e.KeyCode;
       if (key === 13) {
         Controller.createVideo(text.value);
       }
@@ -561,7 +553,7 @@ var View = (function () {
       Controller.createVideo(text.value);
     });
 
-    form = doc.createElement('form');
+    form = doc.createElement('div');
     form.className = 'create';
     form.appendChild(text);
     form.appendChild(button);
@@ -571,7 +563,7 @@ var View = (function () {
 
   function Collection(data) {
     var form;
-    var collection
+    var collection;
     var i;
     var length;
     var title;
@@ -590,7 +582,7 @@ var View = (function () {
     var viewText;
     var createDate;
 
-    form = new CreateLink;
+    form = new CreateLink();
 
     collection = doc.createElement('div');
     collection.className = 'collection';
@@ -679,8 +671,10 @@ var View = (function () {
     var cell2;
     var cell3;
     var text;
+    var td;
     var time;
     var del;
+    var i;
 
     table.className = 'comments';
 
@@ -746,7 +740,7 @@ var View = (function () {
     caption.innerHTML = '';
     caption.appendChild(span);
 
-    setTimeout(function() {checkCap(span) }, 3000);
+    setTimeout(function() {checkCap(span); }, 3000);
   }
 
   function checkCap(cap) {
@@ -835,15 +829,16 @@ var Player =(function () {
     }
 
     function startComments() {
-      comments = Video.get().comments;;
+      comments = Video.get().comments;
       intervalId = setInterval(loadComment, 100);
     }
 
     function loadComment() {
       var pTime;
+      var i;
 
       pTime = Math.floor(player.getCurrentTime());
-      for ( var i = 0; i < comments.length; i+=1 ) {
+      for ( i = 0; i < comments.length; i+=1 ) {
         if ( comments[i].time == pTime ) {
           View.showCap( comments[i] );
         }
