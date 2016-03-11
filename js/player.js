@@ -58,22 +58,26 @@ var Controller = (function () {
   }
 
   function publicCreateComment(text) {
+    if (text == '') {
+      alert('Please ener a comment');
+    } else {
 
-    var style; //not used yet
+      var style; //not used yet
 
-    var comment = {
+      var comment = {
       time: Math.floor(Player.time()),
       comment: text,
       style: style
-    };
+      };
 
-    //Video.addComment(comment);
+      Video.addComment(comment);
 
-    var commentURL = url + '/comments';
-    sendRequest('POST', commentURL, JSON.stringify(comment)).done(
-      function(data) {
-        Video.set(data);
-      });
+      var commentURL = url + '/comments';
+      sendRequest('POST', commentURL, JSON.stringify(comment)).done(
+        function(data) {
+          Video.set(data);
+        });
+    }
   }
 
   function publicDeleteComment(time, text) {
@@ -82,6 +86,8 @@ var Controller = (function () {
       time: time,
       comment: text
     };
+
+    Video.deleteComment(comment);
 
     var commentURL = url + '/comments';
     sendRequest('DELETE', commentURL, JSON.stringify(comment)).done(
@@ -181,18 +187,18 @@ var Video = (function () {
     this.notify(video);
   }
 
-  /*function publicDeleteComment(comment) {
-    alert(comment.time + comment.comment);
+  function publicDeleteComment(comment) {
     var i;
     var length = video.comments.length;
+
     for ( i = 0; i < length; i+=1 ) {
       if (video.comments[i].time == comment.time &&
-          video.comments[i].comment == comment.comment) {
+          video.comments[i].comment == comment.text) {
         video.comments.splice(i, 1);
       }
     }
     this.notify(video);
-  }*/
+  }
 
   function publicUpdateTitle(title) {
     video.title = title;
@@ -220,7 +226,7 @@ var Video = (function () {
 
     addComment: publicAddComment,
 
-    //deleteComment: publicDeleteComment,
+    deleteComment: publicDeleteComment,
 
     updateTitle: publicUpdateTitle,
 
@@ -243,6 +249,7 @@ var View = (function () {
   function publicRender(data) {
     showTitle(data.title);
     showComments(data);
+    showFooter();
     if (data.title === '' || data.title === 'default') {
       showTitleForm();
     } else {
@@ -427,8 +434,9 @@ var View = (function () {
 
   function livePreview(text) {
     var span = doc.getElementById('live-comment');
-
-    span.innerHTML = text;
+    if ( span ) {
+      span.innerHTML = text;
+    }
   }
 
   function CommentSlot(time) {
@@ -559,6 +567,61 @@ var View = (function () {
     form.appendChild(button);
 
     return form;
+  }
+
+  function CreateFooter() {
+    var outer;
+    var form;
+    var text;
+    var button;
+    var span;
+    var title;
+    var logo;
+
+    logo = doc.createElement('div');
+    logo.id = 'footer-logo';
+    span = doc.createElement('span');
+    title = doc.createTextNode('YouTube Commentator');
+    span.appendChild(title);
+    logo.appendChild(span);
+
+    text = doc.createElement('input');
+    text.type = 'text';
+    text.placeholder = 'Paste YouTube link to get started';
+    text.addEventListener('keyup', function(e) {
+      var key;
+      key = e.which || e.KeyCode;
+      if (key === 13) {
+        Controller.createVideo(text.value);
+      }
+    });
+    button = doc.createElement('input');
+    button.type = 'button';
+    button.value = 'Create';
+    button.addEventListener('mouseup', function() {
+      Controller.createVideo(text.value);
+    });
+
+    form = doc.createElement('div');
+    form.className = 'foot-create';
+    form.appendChild(text);
+    form.appendChild(button);
+
+    outer = doc.createElement('div');
+    outer.className = 'foot-pane';
+    outer.appendChild(logo);
+    outer.appendChild(form);
+
+    return outer;;
+  }
+
+  function showFooter() {
+    var footlink;
+    var footer;
+
+    footlink = new CreateFooter();
+    footer = doc.getElementsByTagName('footer')[0];
+    footer.appendChild(footlink);
   }
 
   function Collection(data) {
