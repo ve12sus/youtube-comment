@@ -658,6 +658,19 @@ var View = (function () {
     info.appendChild(collection);
   }
 
+  function showHeader() {
+    var header;
+    var h1;
+    var span;
+    var text;
+
+    header = doc.getElementsByTagName('header')[0];
+    text = doc.createTextNode('YouTube Commentator');
+    span = doc.createElement('span');
+    span.appendChild(text);
+    header.appendChild(span);
+  }
+
   function publicRenderFront(data) {
     var nav = doc.getElementsByTagName('nav')[0];
     var aside = doc.getElementsByTagName('aside')[0];
@@ -666,6 +679,7 @@ var View = (function () {
     nav.className = 'frontpage';
     aside.className = 'frontpage';
 
+    showHeader();
     showCollection(data);
   }
 
