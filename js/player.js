@@ -2,7 +2,7 @@ var Controller = (function () {
 
   var doc = document;
   var resources = new Resources();
-  var id = atob(resources.id);
+  var id = resources.id;
   var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
   var errorDisplay = doc.getElementById('error');
@@ -67,7 +67,7 @@ var Controller = (function () {
       style: style
     };
 
-    Video.addComment(comment);
+    //Video.addComment(comment);
 
     var commentURL = url + '/comments';
     sendRequest('POST', commentURL, JSON.stringify(comment)).done(
@@ -76,10 +76,11 @@ var Controller = (function () {
       });
   }
 
-  function publicDeleteComment(time) {
+  function publicDeleteComment(time, comment) {
 
     var comment = {
       time: time,
+      comment: comment
     };
 
     var commentURL = url + '/comments';
@@ -113,7 +114,7 @@ var Controller = (function () {
 
         var data = JSON.stringify(obj);
         sendRequest('POST', createURL, data).done(function(data) {
-          window.location = '/~jeff/ytcserver/' + btoa(data.id) + '/create';
+          window.location = '/~jeff/ytcserver/' + data.string_id + '/create';
         });
       }
     }
@@ -145,6 +146,7 @@ var Video = (function () {
     title: '',
     youtubeId: '',
     created: '',
+    string_id: '',
     comments: []
   };
 
@@ -167,6 +169,7 @@ var Video = (function () {
     video.title = data.title;
     video.youtubeId = data.youtubeId;
     video.created = data.created;
+    video.string_id = data.string_id;
     video.comments = data.comments;
     commentSort();
     this.notify(video);
@@ -178,7 +181,7 @@ var Video = (function () {
     this.notify(video);
   }
 
-  function publicDeleteComment(comment) {
+  /*function publicDeleteComment(comment) {
     alert(comment.time + comment.comment);
     var i;
     var length = video.comments.length;
@@ -189,7 +192,7 @@ var Video = (function () {
       }
     }
     this.notify(video);
-  }
+  }*/
 
   function publicUpdateTitle(title) {
     video.title = title;
@@ -217,7 +220,7 @@ var Video = (function () {
 
     addComment: publicAddComment,
 
-    deleteComment: publicDeleteComment,
+    //deleteComment: publicDeleteComment,
 
     updateTitle: publicUpdateTitle,
 
@@ -506,7 +509,7 @@ var View = (function () {
     span.appendChild(text);
 
     link.type = 'text';
-    link.value = 'http:/localhost/~jeff/ytcserver/' + btoa(Video.get().id);
+    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.get().string_id;
 
     div.className = 'share-panel';
     div.appendChild(span);
@@ -596,7 +599,7 @@ var View = (function () {
     length = data.length;
     for ( i = 0; i < length; i += 1 ) {
 
-      url = '/~jeff/ytcserver/' + btoa(data[i].id);
+      url = '/~jeff/ytcserver/' + data[i].string_id;
       thumb = 'http://img.youtube.com/vi/' + data[i].youtubeId + '/mqdefault.jpg';
 
       image = doc.createElement('img');
@@ -742,20 +745,30 @@ var View = (function () {
 
     caption.innerHTML = '';
     caption.appendChild(span);
+
+    setTimeout(function() {checkCap(span) }, 3000);
+  }
+
+  function checkCap(cap) {
+    if ( doc.getElementById(cap.id) ) {
+      caption.innerHTML = '';
+    }
   }
 
   function skipToComment() {
-    Player.get().seekTo(this.id);
+      Player.get().seekTo(this.id - 1);
   }
 
   function deleteClick() {
     var time = this.parentElement.firstChild.id;
-    deletePrompt(time);
+    var comment = this.parentElement.childNodes[1].innerHTML;
+
+    deletePrompt(time, comment);
   }
 
-  function deletePrompt(time) {
+  function deletePrompt(time, comment) {
     if (confirm("Delete this comment?") === true) {
-      Controller.deleteComment(time);
+      Controller.deleteComment(time, comment);
     } else {
       console.log("not confirmed!");
     }
@@ -782,14 +795,15 @@ var View = (function () {
 })();
 
 var Player =(function () {
-  var doc = document;
-  var tag = doc.createElement('script');
-
+  var tag = document.createElement('script');
   tag.src = '//www.youtube.com/iframe_api';
-  var firstScriptTag = doc.getElementsByTagName('script')[0];
+
+  var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
   var player;
+  var intervalId;
+  var comments;
 
   function publicCreate(video) {
     player = new YT.Player('player', {
@@ -802,15 +816,43 @@ var Player =(function () {
         showinfo: 0
       },
       events: {
-        'onReady': onPlayerReady
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
       }
     });
   }
 
   function onPlayerReady(event) {
     event.target.playVideo();
+  }
 
-    setInterval(commentLoad, 500);
+  function onPlayerStateChange(event) {
+
+    if (  event.data == YT.PlayerState.PLAYING ) {
+      startComments();
+    } else {
+      stopComments();
+    }
+
+    function startComments() {
+      comments = Video.get().comments;;
+      intervalId = setInterval(loadComment, 100);
+    }
+
+    function loadComment() {
+      var pTime;
+
+      pTime = Math.floor(player.getCurrentTime());
+      for ( var i = 0; i < comments.length; i+=1 ) {
+        if ( comments[i].time == pTime ) {
+          View.showCap( comments[i] );
+        }
+      }
+    }
+
+    function stopComments() {
+      clearInterval(intervalId);
+    }
   }
 
   function publicGet() {
@@ -827,27 +869,6 @@ var Player =(function () {
 
   function publicTime() {
     return player.getCurrentTime();
-  }
-
-  function commentLoad() {
-    var cTime;
-    var pTime;
-    var comments;
-    var i;
-    var length;
-
-    if (player.getPlayerState() === 1) {
-      //change to math.floor to check accuracy
-      pTime = Math.floor(player.getCurrentTime());
-      comments = Video.get().comments;
-      length = comments.length;
-      for ( i = 0; i < length; i+=1 ) {
-        cTime = comments[i].time;
-        if (pTime == cTime) {
-          View.showCap(comments[i]);
-        }
-      }
-    }
   }
 
   return {
