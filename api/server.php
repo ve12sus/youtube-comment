@@ -425,10 +425,10 @@ class Database
         $vidlength = count($videos);
         for ($i = 0; $i < $vidlength; $i ++ )
         {
-          $id = $videos[$i]['id'];
+          $id = $videos[$i]['string_id'];
           $stmt2 = $this->connection->prepare(
-              "SELECT time, comments, style FROM comments WHERE id = ?");
-          $stmt2->bind_param('i', $id);
+              "SELECT time, comments, style FROM comments WHERE string_id = ?");
+          $stmt2->bind_param('s', $id);
           $stmt2->execute();
           $stmt2->bind_result($time, $comment, $style);
 

@@ -618,10 +618,17 @@ var View = (function () {
   function showFooter() {
     var footlink;
     var footer;
+    var footPane;
 
-    footlink = new CreateFooter();
     footer = doc.getElementsByTagName('footer')[0];
+    footPane = doc.getElementsByClassName('foot-pane')[0];
+    footlink = new CreateFooter();
+
+    if (footPane) {
+      footer.replaceChild(footlink, footPane);
+    } else {
     footer.appendChild(footlink);
+    }
   }
 
   function Collection(data) {
@@ -645,12 +652,20 @@ var View = (function () {
     var viewText;
     var createDate;
     var reverseData;
+    var browse;
+    var browseText;
 
     form = new CreateLink();
 
     collection = doc.createElement('div');
     collection.className = 'collection';
     collection.appendChild(form);
+
+    browse = doc.createElement('h2');
+    browseText = doc.createTextNode('Recent Videos');
+    browse.appendChild(browseText);
+
+    collection.appendChild(browse);
 
     rdata = data.reverse();
     length = data.length;
@@ -667,7 +682,7 @@ var View = (function () {
       a.appendChild(image);
 
       /* placeholder for actual feature */
-      if (data[i].comments[0]) {
+      if (rdata[i].comments[0]) {
         cap = doc.createTextNode(rdata[i].comments[0].comment);
       } else {
         cap = doc.createTextNode('check out this video');
@@ -694,7 +709,7 @@ var View = (function () {
 
       views = doc.createElement('span');
       views.className = 'views';
-      viewText = doc.createTextNode(timeSince(createDate) + ' ago');
+      viewText = doc.createTextNode(prettyDate(createDate));
       views.appendChild(viewText);
       info.appendChild(views);
 
@@ -722,37 +737,23 @@ var View = (function () {
     info.appendChild(collection);
   }
 
-  function timeSince(date) {
+  function prettyDate(time){
+    var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
+      diff = (((new Date()).getTime() - date.getTime()) / 1000),
+      day_diff = Math.floor(diff / 86400);
 
-    var dateParts = date.split("-");
-    var jsDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2].substr(0,2));
+    if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+      return;
 
-    console.log(new Date() - jsDate);
-
-    var seconds = Math.floor((new Date() - jsDate) / 1000);
-
-    var interval = Math.floor(seconds / 31536000);
-
-    if (interval > 1) {
-        return interval + " years";
-    }
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
-        return interval + " months";
-    }
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
-        return interval + " days";
-    }
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
-        return interval + " hours";
-    }
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) {
-        return interval + " minutes";
-    }
-    return Math.floor(seconds) + " seconds";
+    return day_diff == 0 && (
+      diff < 60 && "just now" ||
+      diff < 120 && "1 minute ago" ||
+      diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+      diff < 7200 && "1 hour ago" ||
+      diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+      day_diff == 1 && "Yesterday" ||
+      day_diff < 7 && day_diff + " days ago" ||
+      day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
   }
 
   function showHeader() {
