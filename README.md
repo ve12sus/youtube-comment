@@ -94,33 +94,30 @@ front end from scratch to just produce the essentials.
 
 # API documentation
 
-### api/videos
+* api/videos
+  *GET - get videos
+  *POST - create video
 
-GET - get videos
-POST - create video
+* api/videos/id
 
-### api/videos/id
+  *GET - get video
+  *PUT - update video
+  *DELETE - delete video
 
-GET - get video
-PUT - update video
-DELETE - delete video
+* api/videos/id/comments
 
-### api/videos/id/comments
+  *GET - get video with comments
+  *POST - create comment
+  *DELETE - delete comment
 
-GET - get video with comments
-POST - create comment
-DELETE - delete comment
+* request
 
-### request
+  *request header: "Content-Type: application/json"
 
-request header is:
-"Content-Type: application/json"
+  *request body (videos/id): {"title":"video title", "youtubeId": "youtube id"}
 
-request body (videos/id) is:
-{"title":"video title", "youtubeId": "youtube id"}
-
-request body (videos/id/comments) is:
-{"id":"video id", "time":"timestamp", "comment": "comment", "style": "styling"}
+  *request body (videos/id/comments):
+  {"id":"video id", "time":"timestamp", "comment": "comment", "style": "styling"}
 
 
 
