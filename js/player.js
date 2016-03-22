@@ -1,11 +1,9 @@
 var Controller = (function () {
 
-  var doc = document;
   var resources = new Resources();
   var id = resources.id;
   var mode = resources.mode;
   var url = '/~jeff/ytcserver/api/videos/' + id;
-  var errorDisplay = doc.getElementById('error');
 
   window.onYouTubeIframeAPIReady = function() {
     sendRequest('GET', url).done(function(data) {
@@ -53,8 +51,17 @@ var Controller = (function () {
     }
   }
 
-  function publicGetMode() {
-    return mode;
+  function Comment(time, text) {
+    this.time = time;
+    this.text = text;
+  }
+
+  function publicCreateComment2(comment, url) {
+    if (comment.text === '') {
+      alert('Please enter a comment');
+    } else {
+      alert(comment.length);
+    }
   }
 
   function publicCreateComment(text) {
@@ -96,6 +103,10 @@ var Controller = (function () {
       });
   }
 
+  function publicGetMode() {
+    return mode;
+  }
+
   function publicUpdateTitle(title) {
 
     Video.updateTitle(title);
@@ -132,6 +143,8 @@ var Controller = (function () {
   return {
 
     getMode: publicGetMode,
+
+    createTest: publicCreateComment2,
 
     createComment: publicCreateComment,
 
