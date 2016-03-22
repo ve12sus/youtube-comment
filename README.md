@@ -2,28 +2,27 @@
 
 I wanted an easier way to point out things in a YouTube video.
 
-It was also my first time programming, and my first software project.
+This is my first time programming, and my first software project.
 I concentrated on making everything on my own, to learn the full process.
 
 # Technical Specs
 
-This is a full-stack solution that includes both front-end and back-end.
+YTC is a full-stack solution that includes both front-end and back-end.
 
-The idea I worked off of is a website that has a YouTube video embedded,
-but you can add your own timestamps and captions and share the link.
+The idea I have is a website that has a YouTube video embedded, but you can add
+your own timestamps and captions and share the link.
 
 Before this project I only knew a little HTML, but I have been using computers
 all my life. I knew I needed a server, a database, and a 'website' that sees and
-shows the database information.
+shows the information.
 
-I read a few books on logical gates and how CPU sees instructions to get an
-overview, then off I went.
+I read a few books on logical gates and how CPUs work to get an overview, then
+off I went.
 
 # Back-end
 
 My idea would not materialize without a foundation so I started here. It was
-also the most 'codey' place to start without dealing with visual design which
-was daunting at the time.
+also the most 'codey' place to start without dealing with visual design yet.
 
 Originally I naively thought I just need to store .json files individually
 'on a server' somewhere. After research I found the concept of a RESTful API.
@@ -39,8 +38,8 @@ back a (at the time hardcoded) response.
 
 ## The Database
 
-I chose MySQL because it is one of the standards, and PHP has built-in
-functions to interact with it.
+I used MySQL because it is one of the standards, and PHP has built-in functions
+to interact with it.
 
 The next thing to do was to connect a database with the API, so MySQL syntax
 and messing with tables and such was on the agenda. I survived the ordeal
@@ -61,7 +60,7 @@ JavaScript is the focus here. I knew it was how to manipulate client-side
 inputs and the responses from the API.
 
 With the exception of the AJAX functions (which uses jQuery) it was important
-to me to use vanilla javascript so I can really understand what was going on.
+to me to use vanilla javascript so I can really learn what was going on.
 
 ## JavaScript
 
@@ -69,8 +68,8 @@ I wrote my own lightweight MVC for this project.
 
 I spent the longest time in this portion. I was using both the YouTube API and
 my own to have a MVC that models both, the Controller that took URL and user
-input and rendered a view. They constantly update each other and I wrestled
-with it to produce the script to do that.
+input and rendered a view. They constantly update each other and I learned to
+produce the script to do that.
 
 After I got it to work I spent time really cleaning it up and refactoring it
 down.
@@ -95,16 +94,24 @@ front end from scratch to just produce the essentials.
 
 # API documentation
 
-GET api/videos - get videos
-POST api/videos - create video
+### api/videos
 
-GET api/videos/id - get video
-PUT api/videos/id - update video
-DELETE api/videos/id - delete video
+GET - get videos
+POST - create video
 
-GET api/videos/id/comments - get video
-POST api/videos/id/comments - create comment
-DELETE api/videos/id/comments - delete comment
+### api/videos/id
+
+GET - get video
+PUT - update video
+DELETE - delete video
+
+### api/videos/id/comments
+
+GET - get video with comments
+POST - create comment
+DELETE - delete comment
+
+### request
 
 request header is:
 "Content-Type: application/json"
