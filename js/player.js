@@ -1,13 +1,12 @@
 var Controller = (function () {
 
   var resources = new Resources();
-  var id = resources.id;
   var mode = resources.mode;
-  var url = '/~jeff/ytcserver/api/videos/' + id;
+  var urls = new Urls();
 
   window.onYouTubeIframeAPIReady = function() {
-    sendRequest('GET', url).done(function(data) {
-      if (id) {
+    sendRequest('GET', urls.id).done(function(data) {
+      if ( resources.videoId ) {
         Video.set(data);
       } else {
         Video.setCollection(data);
@@ -15,17 +14,24 @@ var Controller = (function () {
     });
   };
 
+  function Urls () {
+    this.frontEnd = '/~jeff/ytcserver/';
+    this.apiLocation = '/~jeff/ytcserver/api/videos/';
+    this.id = this.apiLocation + resources.videoId;
+    this.comments = this.apiLocation + resources.videoId + '/comments';
+  }
+
   function Resources() {
     var paths = window.location.pathname.split('/');
     var index = paths.indexOf('ytcserver');
 
     if (index) {
-      this.id = paths[index + 1];
-      if (this.id) {
+      this.videoId = paths[index + 1];
+      if (this.videoId) {
         this.mode = paths[index + 2];
       }
     } else {
-      this.id = null;
+      this.videoId = null;
       this.mode = null;
     }
   }
@@ -42,8 +48,11 @@ var Controller = (function () {
   }
 
   function youtube_parser(url){
-    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
+    var regExp;
+    var match;
+
+    regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    match = url.match(regExp);
     if (match && match[2].length == 11) {
       return match[2];
     } else {
@@ -52,35 +61,26 @@ var Controller = (function () {
   }
 
   function Comment(time, text) {
-    this.time = time;
-    this.text = text;
-  }
-
-  function publicCreateComment2(comment, url) {
-    if (comment.text === '') {
-      alert('Please enter a comment');
-    } else {
-      alert(comment.length);
-    }
+    var comment = {
+      time: time,
+      comment: text
+    };
+    return comment;
   }
 
   function publicCreateComment(text) {
-    if (text == '') {
-      alert('Please ener a comment');
+    var time;
+    var comment;
+
+    if ( text === '' ) {
+      alert('Please enter a comment');
     } else {
-
-      var style; //not used yet
-
-      var comment = {
-      time: Math.floor(Player.time()),
-      comment: text,
-      style: style
-      };
+      time = Math.floor(Player.time());
+      comment = new Comment(time, text);
 
       Video.addComment(comment);
 
-      var commentURL = url + '/comments';
-      sendRequest('POST', commentURL, JSON.stringify(comment)).done(
+      sendRequest('POST', urls.comments, JSON.stringify(comment)).done(
         function(data) {
           Video.set(data);
         });
@@ -88,16 +88,11 @@ var Controller = (function () {
   }
 
   function publicDeleteComment(time, text) {
+    var comment;
 
-    var comment = {
-      time: time,
-      comment: text
-    };
-
+    comment = new Comment(time, text);
     Video.deleteComment(comment);
-
-    var commentURL = url + '/comments';
-    sendRequest('DELETE', commentURL, JSON.stringify(comment)).done(
+    sendRequest('DELETE', urls.comments, JSON.stringify(comment)).done(
       function(data) {
         Video.set(data);
       });
@@ -108,30 +103,32 @@ var Controller = (function () {
   }
 
   function publicUpdateTitle(title) {
+    var data;
 
     Video.updateTitle(title);
-
-    var data = Video.get();
-    sendRequest('PUT', url, JSON.stringify(data));
+    data = Video.get();
+    sendRequest('PUT', urls.id, JSON.stringify(data));
   }
 
   function publicCreateVideo(youtubeLink) {
-    try {
-      var youtubeId = youtube_parser(youtubeLink);
+    var data;
+    var youtubeId;
+    var obj;
 
-      if (youtubeId === undefined) {
+    try {
+      youtubeId = youtube_parser(youtubeLink);
+
+      if ( youtubeId === undefined ) {
         alert('Not a valid YouTube link');
       } else {
-        var createURL = '/~jeff/ytcserver/api/videos';
-
-        var obj = {
+        obj = {
           title: '',
           youtubeId: youtubeId
         };
 
-        var data = JSON.stringify(obj);
-        sendRequest('POST', createURL, data).done(function(data) {
-          window.location = '/~jeff/ytcserver/' + data.string_id + '/create';
+        data = JSON.stringify(obj);
+        sendRequest('POST', urls.apiLocation, data).done(function(data) {
+          window.location = urls.frontEnd + data.string_id + '/create';
         });
       }
     }
@@ -143,8 +140,6 @@ var Controller = (function () {
   return {
 
     getMode: publicGetMode,
-
-    createTest: publicCreateComment2,
 
     createComment: publicCreateComment,
 
@@ -237,6 +232,8 @@ var Video = (function () {
 
     get: publicGet,
 
+    getV: video,
+
     addComment: publicAddComment,
 
     deleteComment: publicDeleteComment,
@@ -259,8 +256,8 @@ var View = (function () {
   var caption = doc.getElementById('caption');
   var info = main.getElementsByClassName('info')[0];
 
-  function publicRender(data) {
-    showTitle(data.title);
+  /*function publicRender(data) {
+    showTitle(Video.getV.title);
     showComments(data);
     showFooter();
     if (data.title === '' || data.title === 'default') {
@@ -274,9 +271,26 @@ var View = (function () {
         default:
       }
     }
+  }*/
+
+  function publicRender(data) {
+    if (data.title === '' || data.title === 'default') {
+      showTitleForm();
+    } else {
+      showTitle(data.title);
+    }
+    if ( mode === 'create' ) {
+      showCommentForm();
+    }
+    showComments(data);
+    if ( mode === 'create') {
+      showShare();
+    }
+    showFooter();
   }
 
-  function Title(text) {
+
+  /*function Title(text) {
     var node = doc.createTextNode(text);
     var heading = doc.createElement('h1');
 
@@ -288,10 +302,39 @@ var View = (function () {
       });
     }
     return heading;
+  }*/
+
+  var elementGuide = {
+    title: 'info',
+    commentForm: 'info'
+  };
+
+  function showElement(element) {
+    var oldElement = doc.getElementById(element.id);
+    var parentElement = doc.getElementsByClassName(elementGuide[element.id])[0];
+
+    if ( oldElement ) {
+      parentElement.replaceChild(element, oldElement);
+    } else {
+      parentElement.appendChild(element);
+    }
   }
 
-  function showTitle(text) {
-    var heading = new Title(text);
+  function newTitle(text) {
+    var title;
+
+    title = doc.createElement('h1');
+    title.className = 'title text';
+    title.id = 'title';
+    title.innerHTML = text;
+    if ( mode === 'create' ) {
+      title.addEventListener('mouseup', showTitleForm);
+    }
+    return title;
+  }
+
+  /*function showTitle(text) {
+    var heading = new newTitle(text);
     var title = main.getElementsByClassName('title')[0];
 
     if (title) {
@@ -299,6 +342,14 @@ var View = (function () {
     } else {
       info.appendChild(heading);
     }
+    console.log(heading.className);
+  }*/
+
+  function showTitle(text) {
+    var title = new newTitle(text);
+
+    showElement(title);
+    console.log(Video.getV.title);
   }
 
   function TitleForm() {
@@ -309,6 +360,7 @@ var View = (function () {
 
     form = doc.createElement('div');
     form.className = 'title form';
+    form.id = 'title';
 
     text = doc.createElement('input');
     text.type = 'text';
@@ -352,6 +404,15 @@ var View = (function () {
 
   function showTitleForm() {
     var form = new TitleForm();
+    var oldTitle = Video.getV.title;
+
+    form.firstChild.value = oldTitle;
+    showElement(form);
+    form.firstChild.focus();
+  }
+
+  /*function showTitleForm() {
+    var form = new TitleForm();
     var old = Video.get().title;
     var title = main.getElementsByClassName('title')[0];
 
@@ -362,7 +423,7 @@ var View = (function () {
       info.appendChild(form);
     }
     form.firstChild.focus();
-  }
+  }*/
 
   function CommentForm() {
     var form;
@@ -373,6 +434,7 @@ var View = (function () {
 
     form = doc.createElement('div');
     form.className = 'comment-form';
+    form.id = 'commentForm';
 
     text = doc.createElement('input');
     text.type = 'text';
@@ -432,7 +494,7 @@ var View = (function () {
     return form;
   }
 
-  function showCommentForm() {
+  /*function showCommentForm() {
     var form = new CommentForm();
     var old = doc.getElementsByClassName('comment-form')[0];
     var comments;
@@ -443,6 +505,12 @@ var View = (function () {
       comments = doc.getElementsByClassName('comments')[0];
       info.insertBefore(form, comments);
     }
+  }*/
+
+  function showCommentForm() {
+    var form = new CommentForm();
+
+    showElement(form);
   }
 
   function livePreview(text) {
@@ -531,7 +599,7 @@ var View = (function () {
     span.appendChild(text);
 
     link.type = 'text';
-    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.get().string_id;
+    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.getV.string_id;
 
     div.className = 'share-panel';
     div.appendChild(span);
@@ -625,7 +693,7 @@ var View = (function () {
     outer.appendChild(logo);
     outer.appendChild(form);
 
-    return outer;;
+    return outer;
   }
 
   function showFooter() {
@@ -664,7 +732,7 @@ var View = (function () {
     var views;
     var viewText;
     var createDate;
-    var reverseData;
+    var rdata;
     var browse;
     var browseText;
 
@@ -685,7 +753,8 @@ var View = (function () {
     for ( i = 0; i < length; i += 1 ) {
 
       url = '/~jeff/ytcserver/' + rdata[i].string_id;
-      thumb = 'http://img.youtube.com/vi/' + rdata[i].youtubeId + '/mqdefault.jpg';
+      thumb = 'http://img.youtube.com/vi/' + rdata[i].youtubeId +
+        '/mqdefault.jpg';
 
       image = doc.createElement('img');
       image.src = thumb;
@@ -771,7 +840,6 @@ var View = (function () {
 
   function showHeader() {
     var header;
-    var h1;
     var span;
     var text;
 
