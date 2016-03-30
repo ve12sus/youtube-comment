@@ -607,6 +607,27 @@ var View = (function () {
     return div;
   }
 
+  function ShareBox() {
+    var div;
+    var link;
+    var span;
+    var url;
+
+    url = '//localhost/~jeff/ytcserver/' + Video.getV.string_id;
+
+    div = doc.createElement('div');
+    link = doc.createElement('input');
+    span = doc.createElement('span');
+
+    link.type = 'text';
+    link.value = url;
+    div.className = 'share-panel';
+    div.id = 'share';
+    div.appendChild(span);
+    div.appendChild(link);
+    return div;
+  }
+
   function showShare() {
     var share = new Share();
     var button = doc.getElementsByClassName('share-panel')[0];
