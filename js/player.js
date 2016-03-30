@@ -308,7 +308,8 @@ var View = (function () {
 
   var elementGuide = {
     title: 'info',
-    commentForm: 'info'
+    commentForm: 'info',
+    share: 'info'
   };
 
   function showElement(element) {
@@ -591,7 +592,7 @@ var View = (function () {
     }
   }
 
-  function Share() {
+  /*function Share() {
     var div = doc.createElement('div');
     var link = doc.createElement('input');
     var text = doc.createTextNode('Share');
@@ -606,7 +607,7 @@ var View = (function () {
     div.appendChild(span);
     div.appendChild(link);
     return div;
-  }
+  }*/
 
   function ShareBox() {
     var div;
@@ -614,12 +615,12 @@ var View = (function () {
     var span;
     var url;
 
-    url = '//localhost/~jeff/ytcserver/' + Video.getV.string_id;
+    url = 'http://localhost/~jeff/ytcserver/' + Video.getV.string_id;
 
     div = doc.createElement('div');
     link = doc.createElement('input');
     span = doc.createElement('span');
-
+    span.innerHTML = 'Share';
     link.type = 'text';
     link.value = url;
     div.className = 'share-panel';
@@ -630,6 +631,18 @@ var View = (function () {
   }
 
   function showShare() {
+    var shareBox;
+    var length;
+
+    shareBox = new ShareBox();
+    length = Video.getV.comments.length;
+
+    if ( length > 0 ) {
+      showElement(shareBox);
+    }
+  }
+
+  /*function showShare() {
     var share = new Share();
     var button = doc.getElementsByClassName('share-panel')[0];
     var length = Video.get().comments.length;
@@ -640,7 +653,7 @@ var View = (function () {
     if ( length > 0 && !button ) {
       info.appendChild(share);
     }
-  }
+  }*/
 
   function CreateLink() {
     var form;
