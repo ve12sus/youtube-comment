@@ -1,7 +1,7 @@
 var Controller = (function () {
 
   var resources = new Resources();
-  var mode = resources.mode;
+  //var mode = resources.mode;
   var urls = new Urls();
 
   window.onYouTubeIframeAPIReady = function() {
@@ -98,9 +98,9 @@ var Controller = (function () {
       });
   }
 
-  function publicGetMode() {
+  /*function publicGetMode() {
     return mode;
-  }
+  }*/
 
   function publicUpdateTitle(title) {
     var data;
@@ -139,7 +139,9 @@ var Controller = (function () {
 
   return {
 
-    getMode: publicGetMode,
+    //getMode: publicGetMode,
+
+    mode: resources.mode,
 
     createComment: publicCreateComment,
 
@@ -249,7 +251,7 @@ var Video = (function () {
 var View = (function () {
 
   var doc = document;
-  var mode = Controller.getMode();
+  var mode = Controller.mode;
 
   var main = doc.getElementById('main');
   var article = main.getElementsByTagName('article')[0];
@@ -349,7 +351,6 @@ var View = (function () {
     var title = new newTitle(text);
 
     showElement(title);
-    console.log(Video.getV.title);
   }
 
   function TitleForm() {
