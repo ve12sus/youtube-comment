@@ -242,7 +242,7 @@ input[type=text]:focus {
   margin-left: 10px;
 }
 
-.collection > div {
+.collection > a {
   display: inline-block;
   margin-left: 10px;
 }

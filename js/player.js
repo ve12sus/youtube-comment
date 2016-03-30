@@ -149,7 +149,9 @@ var Controller = (function () {
 
     updateTitle: publicUpdateTitle,
 
-    createVideo: publicCreateVideo
+    createVideo: publicCreateVideo,
+
+    urls: urls
 
   };
 
@@ -309,12 +311,15 @@ var View = (function () {
   var elementGuide = {
     title: 'info',
     commentForm: 'info',
-    share: 'info'
+    share: 'info',
+    footer: 'footer'
   };
 
   function showElement(element) {
     var oldElement = doc.getElementById(element.id);
-    var parentElement = doc.getElementsByClassName(elementGuide[element.id])[0];
+    var parentElement =
+      doc.getElementsByClassName(elementGuide[element.id])[0] ||
+      doc.getElementsByTagName(elementGuide[element.id])[0];
 
     if ( oldElement ) {
       parentElement.replaceChild(element, oldElement);
@@ -685,20 +690,18 @@ var View = (function () {
     return form;
   }
 
-  function CreateFooter() {
-    var outer;
+  function Footer() {
+    var footer;
     var form;
     var text;
     var button;
     var span;
-    var title;
     var logo;
 
+    span = doc.createElement('span');
+    span.innerHTML = 'YouTube Commentator';
     logo = doc.createElement('div');
     logo.id = 'footer-logo';
-    span = doc.createElement('span');
-    title = doc.createTextNode('YouTube Commentator');
-    span.appendChild(title);
     logo.appendChild(span);
 
     text = doc.createElement('input');
@@ -723,28 +726,113 @@ var View = (function () {
     form.appendChild(text);
     form.appendChild(button);
 
-    outer = doc.createElement('div');
-    outer.className = 'foot-pane';
-    outer.appendChild(logo);
-    outer.appendChild(form);
+    footer = doc.createElement('div');
+    footer.className = 'foot-pane';
+    footer.id = 'footer';
+    footer.appendChild(logo);
+    footer.appendChild(form);
 
-    return outer;
+    return footer;
   }
 
   function showFooter() {
+    var footer;
+
+    footer = new Footer();
+    showElement(footer);
+  }
+
+  /*function showFooter() {
     var footlink;
     var footer;
     var footPane;
 
     footer = doc.getElementsByTagName('footer')[0];
     footPane = doc.getElementsByClassName('foot-pane')[0];
-    footlink = new CreateFooter();
+    footlink = new Footer();
 
     if (footPane) {
       footer.replaceChild(footlink, footPane);
     } else {
     footer.appendChild(footlink);
     }
+  }*/
+
+  function Thumb(data) {
+    var a;
+    var captext;
+    var tinycap;
+    var image;
+    var linkURL;
+    var thumbURL;
+    var span;
+    var tinycap;
+    var heading;
+    var info;
+    var views;
+
+    linkURL = Controller.urls.frontEnd + data.string_id;
+    thumbURL = 'http://img.youtube.com/vi/' + data.youtubeId + '/mqdefault.jpg';
+
+    image = doc.createElement('img');
+    image.src = thumbURL;
+
+    a = doc.createElement('a');
+    a.href = linkURL;
+
+    if (data.comments[0]) {
+      captext = doc.createTextNode(data.comments[0].comment);
+    } else {
+      captext = doc.createTextNode('check out this video');
+    }
+    span = doc.createElement('span');
+    span.className = 'thumb-cap';
+    span.appendChild(captext);
+
+    tinycap = doc.createElement('div');
+    tinycap.className = 'thumb-comment';
+    tinycap.appendChild(span);
+
+    heading = doc.createElement('h3');
+    heading.innerHTML = data.title;
+
+    views = doc.createElement('span');
+    views.className = 'views';
+    views.innerHTML = (prettyDate(data.created));
+
+    info = doc.createElement('div');
+    info.appendChild(heading);
+    info.appendChild(views);
+
+    item = doc.createElement('div');
+    item.className = 'item';
+    item.appendChild(image);
+    item.appendChild(tinycap);
+    item.appendChild(info);
+    item.addEventListener('mouseover', function() {
+      this.childNodes[2].firstChild.firstChild.className = 'item-title-hover';
+    });
+    item.addEventListener('mouseout', function() {
+      this.childNodes[2].firstChild.firstChild.className = 'item-title';
+    });
+    a.appendChild(item);
+    return a;
+  }
+
+  function newCollection(data) {
+    var collection;
+    var thumb;
+
+    collection = doc.createElement('div');
+    collection.className = 'collection';
+
+    rdata = data.reverse();
+    length = data.length;
+    for ( i = 0; i < length; i += 1 ) {
+      thumb = new Thumb(data[i]);
+      collection.appendChild(thumb);
+    }
+    return collection;
   }
 
   function Collection(data) {
@@ -849,7 +937,7 @@ var View = (function () {
   }
 
   function showCollection(data) {
-    var collection = new Collection(data);
+    var collection = new newCollection(data);
 
     info.appendChild(collection);
   }
