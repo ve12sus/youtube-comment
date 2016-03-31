@@ -980,7 +980,6 @@ var View = (function () {
     article.className = 'frontpage';
     nav.className = 'frontpage';
     aside.className = 'frontpage';
-
     showHeader();
     showCollection(data);
   }
