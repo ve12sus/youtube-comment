@@ -759,17 +759,17 @@ var View = (function () {
   }*/
 
   function Thumb(data) {
-    var a;
-    var captext;
-    var tinycap;
-    var image;
     var linkURL;
     var thumbURL;
+    var image;
+    var a;
+    var captext;
     var span;
     var tinycap;
     var heading;
-    var info;
     var views;
+    var info;
+    var item;
 
     linkURL = Controller.urls.frontEnd + data.string_id;
     thumbURL = 'http://img.youtube.com/vi/' + data.youtubeId + '/mqdefault.jpg';
@@ -821,6 +821,8 @@ var View = (function () {
 
   function newCollection(data) {
     var collection;
+    var rdata;
+    var i;
     var thumb;
 
     collection = doc.createElement('div');
@@ -835,7 +837,7 @@ var View = (function () {
     return collection;
   }
 
-  function Collection(data) {
+  /*function Collection(data) {
     var form;
     var collection;
     var i;
@@ -886,7 +888,6 @@ var View = (function () {
       a.href = url;
       a.appendChild(image);
 
-      /* placeholder for actual feature */
       if (rdata[i].comments[0]) {
         cap = doc.createTextNode(rdata[i].comments[0].comment);
       } else {
@@ -934,7 +935,7 @@ var View = (function () {
     }
 
     return collection;
-  }
+  }*/
 
   function showCollection(data) {
     var collection = new newCollection(data);
