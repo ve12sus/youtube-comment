@@ -1,7 +1,6 @@
 var Controller = (function () {
 
   var resources = new Resources();
-  //var mode = resources.mode;
   var urls = new Urls();
 
   window.onYouTubeIframeAPIReady = function() {
@@ -98,10 +97,6 @@ var Controller = (function () {
       });
   }
 
-  /*function publicGetMode() {
-    return mode;
-  }*/
-
   function publicUpdateTitle(title) {
     var data;
 
@@ -138,8 +133,6 @@ var Controller = (function () {
   }
 
   return {
-
-    //getMode: publicGetMode,
 
     mode: resources.mode,
 
@@ -217,10 +210,6 @@ var Video = (function () {
     this.notify(video);
   }
 
-  /*function publicGet() {
-    return video;
-  }*/
-
   function publicSetCollection(data) {
     var i;
     var length = data.length;
@@ -233,8 +222,6 @@ var Video = (function () {
   return {
 
     set: publicSet,
-
-    //get: publicGet,
 
     get: video,
 
@@ -260,22 +247,6 @@ var View = (function () {
   var caption = doc.getElementById('caption');
   var info = main.getElementsByClassName('info')[0];
 
-  /*function publicRender(data) {
-    showTitle(Video.getV.title);
-    showComments(data);
-    showFooter();
-    if (data.title === '' || data.title === 'default') {
-      showTitleForm();
-    } else {
-      switch (mode) {
-        case 'create':
-          showCommentForm();
-          showShare();
-          break;
-        default:
-      }
-    }
-  }*/
 
   function publicRender(data) {
     if (data.title === '' || data.title === 'default') {
@@ -293,21 +264,6 @@ var View = (function () {
     showFooter();
   }
 
-
-  /*function Title(text) {
-    var node = doc.createTextNode(text);
-    var heading = doc.createElement('h1');
-
-    heading.className = "title text";
-    heading.appendChild(node);
-    if ( mode === 'create' ) {
-      heading.addEventListener('mouseup', function() {
-        showTitleForm();
-      });
-    }
-    return heading;
-  }*/
-
   var elementGuide = {
     title: 'info',
     commentForm: 'info',
@@ -315,7 +271,8 @@ var View = (function () {
     footer: 'footer',
     collection: 'info',
     create: 'info',
-    comments: 'info'
+    comments: 'info',
+    headerLogo: 'header'
   };
 
   function showElement(element) {
@@ -343,18 +300,6 @@ var View = (function () {
     }
     return title;
   }
-
-  /*function showTitle(text) {
-    var heading = new newTitle(text);
-    var title = main.getElementsByClassName('title')[0];
-
-    if (title) {
-      info.replaceChild(heading, title);
-    } else {
-      info.appendChild(heading);
-    }
-    console.log(heading.className);
-  }*/
 
   function showTitle(text) {
     var title = new newTitle(text);
@@ -420,20 +365,6 @@ var View = (function () {
     showElement(form);
     form.firstChild.focus();
   }
-
-  /*function showTitleForm() {
-    var form = new TitleForm();
-    var old = Video.get().title;
-    var title = main.getElementsByClassName('title')[0];
-
-    form.firstChild.value = old;
-    if (title) {
-      info.replaceChild(form, title);
-    } else {
-      info.appendChild(form);
-    }
-    form.firstChild.focus();
-  }*/
 
   function CommentForm() {
     var form;
@@ -503,19 +434,6 @@ var View = (function () {
 
     return form;
   }
-
-  /*function showCommentForm() {
-    var form = new CommentForm();
-    var old = doc.getElementsByClassName('comment-form')[0];
-    var comments;
-
-    if (old) {
-      info.replaceChild(form, old);
-    } else {
-      comments = doc.getElementsByClassName('comments')[0];
-      info.insertBefore(form, comments);
-    }
-  }*/
 
   function showCommentForm() {
     var form = new CommentForm();
@@ -600,23 +518,6 @@ var View = (function () {
     }
   }
 
-  /*function Share() {
-    var div = doc.createElement('div');
-    var link = doc.createElement('input');
-    var text = doc.createTextNode('Share');
-    var span = doc.createElement('span');
-
-    span.appendChild(text);
-
-    link.type = 'text';
-    link.value = 'http:/localhost/~jeff/ytcserver/' + Video.getV.string_id;
-
-    div.className = 'share-panel';
-    div.appendChild(span);
-    div.appendChild(link);
-    return div;
-  }*/
-
   function ShareBox() {
     var div;
     var link;
@@ -649,19 +550,6 @@ var View = (function () {
       showElement(shareBox);
     }
   }
-
-  /*function showShare() {
-    var share = new Share();
-    var button = doc.getElementsByClassName('share-panel')[0];
-    var length = Video.get().comments.length;
-
-    if ( length === 0 && button ) {
-      info.removeChild(button);
-    }
-    if ( length > 0 && !button ) {
-      info.appendChild(share);
-    }
-  }*/
 
   function CreateLink() {
     var form;
@@ -753,22 +641,6 @@ var View = (function () {
     showElement(footer);
   }
 
-  /*function showFooter() {
-    var footlink;
-    var footer;
-    var footPane;
-
-    footer = doc.getElementsByTagName('footer')[0];
-    footPane = doc.getElementsByClassName('foot-pane')[0];
-    footlink = new Footer();
-
-    if (footPane) {
-      footer.replaceChild(footlink, footPane);
-    } else {
-    footer.appendChild(footlink);
-    }
-  }*/
-
   function Thumb(data) {
     var linkURL;
     var thumbURL;
@@ -849,106 +721,6 @@ var View = (function () {
     return collection;
   }
 
-  /*function Collection(data) {
-    var form;
-    var collection;
-    var i;
-    var length;
-    var title;
-    var thumb;
-    var url;
-    var a;
-    var b;
-    var image;
-    var item;
-    var heading;
-    var info;
-    var cap;
-    var comment;
-    var span;
-    var views;
-    var viewText;
-    var createDate;
-    var rdata;
-    var browse;
-    var browseText;
-
-    form = new CreateLink();
-
-    collection = doc.createElement('div');
-    collection.className = 'collection';
-    collection.appendChild(form);
-
-    browse = doc.createElement('h2');
-    browseText = doc.createTextNode('Recent Videos');
-    browse.appendChild(browseText);
-
-    collection.appendChild(browse);
-
-    rdata = data.reverse();
-    length = data.length;
-    for ( i = 0; i < length; i += 1 ) {
-
-      url = '/~jeff/ytcserver/' + rdata[i].string_id;
-      thumb = 'http://img.youtube.com/vi/' + rdata[i].youtubeId +
-        '/mqdefault.jpg';
-
-      image = doc.createElement('img');
-      image.src = thumb;
-
-      a = doc.createElement('a');
-      a.href = url;
-      a.appendChild(image);
-
-      if (rdata[i].comments[0]) {
-        cap = doc.createTextNode(rdata[i].comments[0].comment);
-      } else {
-        cap = doc.createTextNode('check out this video');
-      }
-      span = doc.createElement('span');
-      span.className = 'thumb-cap';
-      span.appendChild(cap);
-      comment = doc.createElement('div');
-      comment.className = 'thumb-comment';
-      comment.appendChild(span);
-
-      title = doc.createTextNode(rdata[i].title);
-      b = doc.createElement('a');
-      b.href = url;
-      b.appendChild(title);
-      b.className = 'item-title';
-
-      heading = doc.createElement('h3');
-      heading.appendChild(b);
-      info = doc.createElement('div');
-      info.appendChild(heading);
-
-      createDate = rdata[i].created;
-
-      views = doc.createElement('span');
-      views.className = 'views';
-      viewText = doc.createTextNode(prettyDate(createDate));
-      views.appendChild(viewText);
-      info.appendChild(views);
-
-      item = doc.createElement('div');
-      item.className = 'item';
-      item.appendChild(a);
-      item.appendChild(comment);
-      item.appendChild(info);
-      item.addEventListener('mouseover', function() {
-        this.childNodes[2].firstChild.firstChild.className = 'item-title-hover';
-      });
-      item.addEventListener('mouseout', function() {
-        this.childNodes[2].firstChild.firstChild.className = 'item-title';
-      });
-
-      collection.appendChild(item);
-    }
-
-    return collection;
-  }*/
-
   function showCollection(data) {
     var collection = new newCollection(data);
 
@@ -974,16 +746,20 @@ var View = (function () {
       day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
   }
 
+  function Header() {
+    var span;
+
+    span = doc.createElement('span');
+    span.innerHTML = 'YouTube Commander';
+    span.id = 'headerLogo';
+    return span;
+  }
+
   function showHeader() {
     var header;
-    var span;
-    var text;
 
-    header = doc.getElementsByTagName('header')[0];
-    text = doc.createTextNode('YouTube Commentator');
-    span = doc.createElement('span');
-    span.appendChild(text);
-    header.appendChild(span);
+    header = new Header();
+    showElement(header);
   }
 
   function publicRenderFront(data) {
@@ -999,7 +775,6 @@ var View = (function () {
   }
 
   function Comments(data) {
-
     var length = data.comments.length;
     var table = doc.createElement('TABLE');
     var row;
@@ -1054,17 +829,6 @@ var View = (function () {
 
     showElement(list);
   }
-
-  /*function showComments(data) {
-    var list = new Comments(data);
-    var comments = main.getElementsByClassName('comments')[0];
-
-    if (comments) {
-      info.replaceChild(list, comments);
-    } else {
-      info.appendChild(list);
-    }
-  }*/
 
   function Caption(data) {
     var text = doc.createTextNode(data.comment);
@@ -1291,7 +1055,6 @@ function extend(obj, extension) {
 // The Observer
 function Observer() {
   this.update = function(context) {
-    //to be updated later
   };
 }
 
