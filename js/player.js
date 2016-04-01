@@ -106,7 +106,7 @@ var Controller = (function () {
     var data;
 
     Video.updateTitle(title);
-    data = Video.get();
+    data = Video.getV;
     sendRequest('PUT', urls.id, JSON.stringify(data));
   }
 
@@ -382,7 +382,7 @@ var View = (function () {
         Controller.updateTitle(text.value);
       }
       if (key === 27) {
-        Controller.updateTitle(Video.get().title);
+        Controller.updateTitle(Video.getV.title);
       }
     });
 
@@ -391,7 +391,7 @@ var View = (function () {
     cancel.className = 'cancel';
     cancel.value = 'Cancel';
     cancel.addEventListener('mouseup', function() {
-      Controller.updateTitle(Video.get().title);
+      Controller.updateTitle(Video.getV.title);
     });
 
     save = doc.createElement('input');
@@ -569,7 +569,7 @@ var View = (function () {
 
     playerTime = Player.time().toFixed(2);
     slot = new CommentSlot(secondsToHms(playerTime));
-    videoComments = Video.get().comments;
+    videoComments = Video.getV.comments;
     table = info.getElementsByClassName('comments')[0];
 
     if (length === 0) {
@@ -1152,7 +1152,7 @@ var Player =(function () {
     }
 
     function startComments() {
-      comments = Video.get().comments;
+      comments = Video.getV.comments;
       intervalId = setInterval(loadComment, 100);
     }
 
