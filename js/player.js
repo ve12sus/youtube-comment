@@ -312,7 +312,10 @@ var View = (function () {
     title: 'info',
     commentForm: 'info',
     share: 'info',
-    footer: 'footer'
+    footer: 'footer',
+    collection: 'info',
+    create: 'info',
+    comments: 'info'
   };
 
   function showElement(element) {
@@ -684,10 +687,18 @@ var View = (function () {
 
     form = doc.createElement('div');
     form.className = 'create';
+    form.id = 'create';
     form.appendChild(text);
     form.appendChild(button);
 
     return form;
+  }
+
+  function showCreate() {
+    var form;
+
+    form = new CreateLink();
+    showElement(form);
   }
 
   function Footer() {
@@ -827,6 +838,7 @@ var View = (function () {
 
     collection = doc.createElement('div');
     collection.className = 'collection';
+    collection.id = 'collection';
 
     rdata = data.reverse();
     length = data.length;
@@ -940,7 +952,7 @@ var View = (function () {
   function showCollection(data) {
     var collection = new newCollection(data);
 
-    info.appendChild(collection);
+    showElement(collection);
   }
 
   function prettyDate(time){
@@ -982,6 +994,7 @@ var View = (function () {
     nav.className = 'frontpage';
     aside.className = 'frontpage';
     showHeader();
+    showCreate();
     showCollection(data);
   }
 
@@ -1000,6 +1013,7 @@ var View = (function () {
     var i;
 
     table.className = 'comments';
+    table.id = 'comments';
 
     for ( i = 0; i < length; i += 1 ) {
       row = doc.createElement('TR');
@@ -1037,6 +1051,12 @@ var View = (function () {
 
   function showComments(data) {
     var list = new Comments(data);
+
+    showElement(list);
+  }
+
+  /*function showComments(data) {
+    var list = new Comments(data);
     var comments = main.getElementsByClassName('comments')[0];
 
     if (comments) {
@@ -1044,7 +1064,7 @@ var View = (function () {
     } else {
       info.appendChild(list);
     }
-  }
+  }*/
 
   function Caption(data) {
     var text = doc.createTextNode(data.comment);
