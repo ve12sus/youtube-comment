@@ -106,7 +106,7 @@ var Controller = (function () {
     var data;
 
     Video.updateTitle(title);
-    data = Video.getV;
+    data = Video.get;
     sendRequest('PUT', urls.id, JSON.stringify(data));
   }
 
@@ -217,9 +217,9 @@ var Video = (function () {
     this.notify(video);
   }
 
-  function publicGet() {
+  /*function publicGet() {
     return video;
-  }
+  }*/
 
   function publicSetCollection(data) {
     var i;
@@ -234,9 +234,9 @@ var Video = (function () {
 
     set: publicSet,
 
-    get: publicGet,
+    //get: publicGet,
 
-    getV: video,
+    get: video,
 
     addComment: publicAddComment,
 
@@ -382,7 +382,7 @@ var View = (function () {
         Controller.updateTitle(text.value);
       }
       if (key === 27) {
-        Controller.updateTitle(Video.getV.title);
+        Controller.updateTitle(Video.get.title);
       }
     });
 
@@ -391,7 +391,7 @@ var View = (function () {
     cancel.className = 'cancel';
     cancel.value = 'Cancel';
     cancel.addEventListener('mouseup', function() {
-      Controller.updateTitle(Video.getV.title);
+      Controller.updateTitle(Video.get.title);
     });
 
     save = doc.createElement('input');
@@ -411,7 +411,7 @@ var View = (function () {
 
   function showTitleForm() {
     var form = new TitleForm();
-    var oldTitle = Video.getV.title;
+    var oldTitle = Video.get.title;
 
     form.firstChild.value = oldTitle;
     showElement(form);
@@ -569,7 +569,7 @@ var View = (function () {
 
     playerTime = Player.time().toFixed(2);
     slot = new CommentSlot(secondsToHms(playerTime));
-    videoComments = Video.getV.comments;
+    videoComments = Video.get.comments;
     table = info.getElementsByClassName('comments')[0];
 
     if (length === 0) {
@@ -620,7 +620,7 @@ var View = (function () {
     var span;
     var url;
 
-    url = 'http://localhost/~jeff/ytcserver/' + Video.getV.string_id;
+    url = 'http://localhost/~jeff/ytcserver/' + Video.get.string_id;
 
     div = doc.createElement('div');
     link = doc.createElement('input');
@@ -640,7 +640,7 @@ var View = (function () {
     var length;
 
     shareBox = new ShareBox();
-    length = Video.getV.comments.length;
+    length = Video.get.comments.length;
 
     if ( length > 0 ) {
       showElement(shareBox);
@@ -1152,7 +1152,7 @@ var Player =(function () {
     }
 
     function startComments() {
-      comments = Video.getV.comments;
+      comments = Video.get.comments;
       intervalId = setInterval(loadComment, 100);
     }
 
