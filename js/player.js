@@ -36,7 +36,7 @@ var Controller = (function () {
   }
 
   function sendRequest(method, url, data) {
-
+    var $;
     return $.ajax({
       url: url,
       contentType: "application/json",
@@ -264,6 +264,18 @@ var View = (function () {
     showFooter();
   }
 
+  function publicRenderFront(data) {
+    var nav = doc.getElementsByTagName('nav')[0];
+    var aside = doc.getElementsByTagName('aside')[0];
+
+    article.className = 'frontpage';
+    nav.className = 'frontpage';
+    aside.className = 'frontpage';
+    showHeader();
+    showCreate();
+    showCollection(data);
+  }
+
   var elementGuide = {
     title: 'info',
     commentForm: 'info',
@@ -288,7 +300,7 @@ var View = (function () {
     }
   }
 
-  function newTitle(text) {
+  function Title(text) {
     var title;
 
     title = doc.createElement('h1');
@@ -302,7 +314,7 @@ var View = (function () {
   }
 
   function showTitle(text) {
-    var title = new newTitle(text);
+    var title = new Title(text);
 
     showElement(title);
   }
@@ -707,6 +719,7 @@ var View = (function () {
     var rdata;
     var i;
     var thumb;
+    var length;
 
     collection = doc.createElement('div');
     collection.className = 'collection';
@@ -760,18 +773,6 @@ var View = (function () {
 
     header = new Header();
     showElement(header);
-  }
-
-  function publicRenderFront(data) {
-    var nav = doc.getElementsByTagName('nav')[0];
-    var aside = doc.getElementsByTagName('aside')[0];
-
-    article.className = 'frontpage';
-    nav.className = 'frontpage';
-    aside.className = 'frontpage';
-    showHeader();
-    showCreate();
-    showCollection(data);
   }
 
   function Comments(data) {
@@ -905,6 +906,7 @@ var Player =(function () {
   var player;
   var intervalId;
   var comments;
+  var YT;
 
   function publicCreate(video) {
     player = new YT.Player('player', {
