@@ -625,12 +625,18 @@ var View = (function () {
     var button;
     var span;
     var logo;
+    var a;
+
+    a = doc.createElement('a');
+    a.href = Controller.urls.frontEnd;
 
     span = doc.createElement('span');
     span.innerHTML = 'YouTube Commentator';
+    a.appendChild(span);
+
     logo = doc.createElement('div');
     logo.id = 'footer-logo';
-    logo.appendChild(span);
+    logo.appendChild(a);
 
     text = doc.createElement('input');
     text.type = 'text';
@@ -923,7 +929,6 @@ var Player =(function () {
   var player;
   var intervalId;
   var comments;
-  var YT;
 
   function publicCreate(video) {
     player = new YT.Player('player', {

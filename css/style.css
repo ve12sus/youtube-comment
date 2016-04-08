@@ -344,6 +344,11 @@ footer {
   padding: 2px 4px 2px 4px;
 }
 
+.foot-pane a {
+  color: black;
+  text-decoration: none;
+}
+
 .foot-create {
   position: relative;
 }
