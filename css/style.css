@@ -280,6 +280,10 @@ input[type=text]:focus {
   font-size: 12px;
 }
 
+#videoSort {
+  margin-left: 10px;
+}
+
 .create {
   height: 60px;
   margin-left: 10px;

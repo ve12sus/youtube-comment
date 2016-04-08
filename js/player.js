@@ -272,6 +272,7 @@ var View = (function () {
     aside.className = 'frontpage';
     showHeader();
     showCreate();
+    showSort('Recent');
     showCollection(data);
   }
 
@@ -281,6 +282,7 @@ var View = (function () {
     share: 'info',
     footer: 'footer',
     collection: 'info',
+    videoSort: 'info',
     create: 'info',
     comments: 'info',
     headerLogo: 'header'
@@ -600,6 +602,22 @@ var View = (function () {
     showElement(form);
   }
 
+  function SortOrder(type) {
+    var order;
+
+    order = doc.createElement('h2');
+    order.id = 'videoSort';
+    order.innerHTML = type + ' Videos';
+
+    return order;
+  }
+
+  function showSort(type) {
+    var sort = new SortOrder(type);
+
+    showElement(sort);
+  }
+
   function Footer() {
     var footer;
     var form;
@@ -713,7 +731,7 @@ var View = (function () {
     return a;
   }
 
-  function newCollection(data) {
+  function Collection(data) {
     var collection;
     var rdata;
     var i;
@@ -734,7 +752,7 @@ var View = (function () {
   }
 
   function showCollection(data) {
-    var collection = new newCollection(data);
+    var collection = new Collection(data);
 
     showElement(collection);
   }
@@ -745,7 +763,7 @@ var View = (function () {
       day_diff = Math.floor(diff / 86400);
 
     if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
-      return;
+      return 'over a month ago';
 
     return day_diff == 0 && (
       diff < 60 && "just now" ||
