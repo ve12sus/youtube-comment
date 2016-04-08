@@ -703,6 +703,12 @@ var View = (function () {
     item.appendChild(image);
     item.appendChild(tinycap);
     item.appendChild(info);
+    item.addEventListener('mouseover', function() {
+      heading.className = 'underline';
+    });
+    item.addEventListener('mouseout', function() {
+      heading.className = '';
+    });
     a.appendChild(item);
     return a;
   }

@@ -252,7 +252,7 @@ input[type=text]:focus {
   text-decoration: none;
 }
 
-.collection a:hover {
+.underline {
   text-decoration: underline;
 }
 
