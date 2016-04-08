@@ -36,7 +36,6 @@ var Controller = (function () {
   }
 
   function sendRequest(method, url, data) {
-    var $;
     return $.ajax({
       url: url,
       contentType: "application/json",
@@ -704,12 +703,6 @@ var View = (function () {
     item.appendChild(image);
     item.appendChild(tinycap);
     item.appendChild(info);
-    item.addEventListener('mouseover', function() {
-      this.childNodes[2].firstChild.firstChild.className = 'item-title-hover';
-    });
-    item.addEventListener('mouseout', function() {
-      this.childNodes[2].firstChild.firstChild.className = 'item-title';
-    });
     a.appendChild(item);
     return a;
   }
