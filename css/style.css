@@ -258,6 +258,7 @@ input[type=text]:focus {
 
 .thumb-cap {
   background-color: yellow;
+  color: black;
   padding: 0 2px 0 2px;
   font-weight: bold;
 }
@@ -277,6 +278,7 @@ input[type=text]:focus {
 }
 
 .views {
+  color: black;
   font-size: 12px;
 }
 
