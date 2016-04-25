@@ -360,7 +360,7 @@ class Request {
         $this->data = $data;
     }
 
-    public function getData($data)
+    public function getData()
     {
         return $this->data;
     }
