@@ -277,7 +277,8 @@ class Controller
         $status = $response->getStatus();
         $video = $response->getBody();
 
-        $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->getStatusMsg($status);
+        $status_header = 'HTTP/1.1 ' . $status . ' ' .
+            $this->getStatusMsg($status);
         header($status_header);
         header('Content-Type: application/json');
         if (gettype($video) == 'object')
@@ -435,7 +436,8 @@ class Database
           $comments = array();
           while ($stmt2->fetch())
           {
-            $comment_row = array("time"=>$time, "comment"=>$comment, "style"=>$style);
+            $comment_row = array(
+                "time"=>$time, "comment"=>$comment, "style"=>$style);
             $comments[] = $comment_row;
           }
           $videos[$i]['comments'] = $comments;
@@ -446,15 +448,18 @@ class Database
     public function getVideo($request)
     {
         $id = $request->getId();
-        $stmt = $this->connection->prepare("SELECT * FROM videos WHERE string_id = ?");
+        $stmt = $this->connection->prepare(
+            "SELECT * FROM videos WHERE string_id = ?");
         $stmt->bind_param('s', $id);
         $stmt->execute();
         $stmt->bind_result($vid_id, $title, $youtube_id, $created, $string_id);
 
         while ($stmt->fetch())
         {
-            $video_row = array("id"=>$vid_id, "title"=>$title,
-              "youtubeId"=>$youtube_id, "created"=>$created, "string_id"=>$string_id);
+            $video_row = array(
+                "id"=>$vid_id, "title"=>$title,
+                "youtubeId"=>$youtube_id, "created"=>$created,
+                "string_id"=>$string_id);
         }
         if ($video_row == null)
         {
@@ -470,8 +475,8 @@ class Database
     {
         $title = $request->getData()['title'];
         $youtubeId = $request->getData()['youtubeId'];
-        $stmt = $this->connection->prepare("INSERT INTO videos (title, youtubeId)
-            VALUES (?, ?)");
+        $stmt = $this->connection->prepare(
+          "INSERT INTO videos (title, youtubeId) VALUES (?, ?)");
         $stmt->bind_param('ss', $title, $youtubeId);
 
         if ($stmt->execute())
@@ -537,7 +542,8 @@ class Database
 
         while ($stmt->fetch())
         {
-            $comment_row = array("time"=>$time, "comment"=>$comment, "style"=>$style);
+            $comment_row = array(
+                "time"=>$time, "comment"=>$comment, "style"=>$style);
             $comments[] = $comment_row;
         }
         return $comments;
@@ -564,8 +570,9 @@ class Database
         $time = $data['time'];
         $comment = $data['comment'];
         $style = $data['style'];
-        $stmt = $this->connection->prepare("UPDATE comments SET comments = ?, style = ?
-                WHERE time = ? and string_id = ?");
+        $stmt = $this->connection->prepare(
+            "UPDATE comments SET comments = ?, style = ?
+            WHERE time = ? and string_id = ?");
         $stmt->bind_param('ssis', $comment, $style, $time, $string_id);
         $stmt->execute();
         return $this->getVideo($request);
@@ -577,8 +584,9 @@ class Database
         $string_id = $request->getId();
         $time = $data['time'];
         $comment = $data['comment'];
-        $stmt = $this->connection->prepare("DELETE FROM comments WHERE time =
-                ? and comments = ? and string_id = ?");
+        $stmt = $this->connection->prepare(
+            "DELETE FROM comments WHERE time = ? and comments = ?
+            and string_id = ?");
         $stmt->bind_param('iss', $time, $comment, $string_id);
         $stmt->execute();
         return $this->getVideo($request);
