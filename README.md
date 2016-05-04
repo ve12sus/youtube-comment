@@ -103,8 +103,9 @@ anticipate actions to do, and how to use that information to build it
 better and easier to use.
 * How simple hover, click,and similar animations can effect the user
 experience.
+
 ---
-##Database and hosting
+## Database and hosting
 The next step was to hook up a database to the API, and also move it to
 a hosting. 
 
