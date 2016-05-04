@@ -7,8 +7,9 @@ recording their own gameplay. I felt a simple way to comment
 and timestamp these videos would benefit the community.
 
 This solution is full-stack. I made this as I was learning how to
-program so I focused on making everything 'from scratch' (no frameworks)
-in an effort to understand.
+program so I focused on making everything without frameworks in an
+effort to understand the logic underneath, so I can use that to work
+with more technology down the line.
 
 ### What it does:
 * Enter a YouTube URL to comment on that video.
@@ -32,7 +33,7 @@ PHP at the time.
 * A response is given with a server message and a JSON object representing
 the requested resource.
 * The API is stateless and has URIs pointing to specific resources.
-* API [documentation](#apidoc).
+* [documentation](#apidoc).
 
 ### What I learned:
 
@@ -50,18 +51,18 @@ Code to JavaScript [here](https://github.com/ve12sus/youtube-comment/blob/master
 I wrote the JS portion next. I felt like if I can take some time to write
 my own lightweight MVC I would be able to eventually use and understand
 JavaScript (thus most JS frameworks), as opposed to learning one framework
-ridigly.
+at the beginning.
 
 ### Features and details:
 * Models from 2 APIs. My own from above and YouTube's API.
 * Uses a auto-updating observer pattern. The models get updated through
 user actions then the view gets rendered through model updates.
 * The controller controls many UI functions from creating a video to
-alterating the contents.
-* Uses AJAX from Jquery and Resig's PrettyDate function as only 'outside'
-code.
-* The view function renders all of the page on the fly.
-* refactored many times to be light weight. 
+altering the contents.
+* Uses AJAX from JQuery and John Resig's PrettyDate function as only
+'outside' code.
+* The view function renders all of the page using anchors in the HTML.
+* Refactored many times to be light and only has what the site needs. 
 
 ### What I learned:
 
@@ -71,10 +72,10 @@ purpose and power of object-oriented programming so I went that direction.
 Eventually I discovered functional programming and been refactoring it
 down with that principle.
 * I learned how to keep the entire process in 'the right order' since JS
-is not multi-threaded, different tricks like callbacks and were learned
-and used.
-* How a single-page application works using all the newest paradigms
-and technologies.
+is not multi-threaded, different tricks like using callback and keeping
+the script stateless.
+* How a single-page application works because it does not mutate the
+data.
 * Ajax and it's many different varied interactions with it.
 * How to use an API like YouTube's.
 	
@@ -84,7 +85,7 @@ Code to [HTML](https://github.com/ve12sus/youtube-comment/blob/master/index.html
 Code to [CSS](https://github.com/ve12sus/youtube-comment/blob/master/css/style.css)
 
 I am not a graphic designer so I kept things simple. The HTML is very
-minimal and most of the website is rendered by the MVC.
+minimal and most of the DOM is rendered by the MVC.
 
 ## Features and details:
 * Uses HTML5 tags.
@@ -96,17 +97,19 @@ minimal and most of the website is rendered by the MVC.
 ### What I learned:
 * Graphic design is hard, making something that 'looks' okay was a new
 territory.
-* Sizing things with CSS.
 * How to arrange pieces of a website using CSS.
 * UI principles like what draws the eye, what users look at, what they
 anticipate actions to do, and how to use that information to build it
 better and easier to use.
 * How simple hover, click,and similar animations can effect the user
 experience.
+* Since the front end was ongoing and reflected that state of the project
+I learned things like shipping a product and getting testing and feedback
+on it and how to use that information.
 
 ---
 ## Database and hosting
-The next step was to hook up a database to the API, and also move it to
+I had to hook up a database to the API, and also move it to
 a hosting. 
 
 ### Features and details:
@@ -121,8 +124,10 @@ URL is representational of a resource stored in the database.
 * How to deploy things onto hosting, the steps to get permissions all in
 working order, and how each piece relates to the rest.
 * How to set up a database, the syntax used, and things you can do to it.
+Hosting Admin duties.
 * How to use prepared statments in PHP to interact with MySQL.
 * How to use CURL/Browser to test hosted APIs.
+* How to move from production to deployment.
 
 ---
 ## What's next?
@@ -132,8 +137,8 @@ product and all the big and small steps involved, but I have a lot to
 learn still.
 
 The next few things to do are to fix bugs, implement new features,
-introduce automatic testing, and security/authentication when
-features such as user accounts are made.
+introduce automatic testing, and security/authentication when I introduce
+more features to more users.
 
 ---
 
