@@ -16,6 +16,7 @@ in an effort to understand.
 * Add a title of your commented video.
 * Share them with your friends with the comments displayed as subtitles.
 * Browse and watch captioned videos.
+
 ---
 ##API
 Code [here](https://github.com/ve12sus/youtube-comment/blob/master/api/server.php)
@@ -75,7 +76,8 @@ and used.
 * How a single-page application works using all the newest paradigms
 and technologies.
 * Ajax and it's many different varied interactions with it.
-* How to use an API like YouTube's. 	
+* How to use an API like YouTube's.
+	
 ---
 ## HTML and CSS
 Code to [HTML](https://github.com/ve12sus/youtube-comment/blob/master/index.html)
@@ -151,7 +153,7 @@ features such as user accounts are made.
 * DELETE - delete comment
 
 ### request header:
-'"Content-Type: application/json"'
+`"Content-Type: application/json"`
 
 ### request body (videos/id):
 `{"title":"video title", "youtubeId": "youtube id"}`
