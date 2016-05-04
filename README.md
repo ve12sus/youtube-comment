@@ -139,25 +139,25 @@ features such as user accounts are made.
 
 ## <a name="apidoc">API Documentation</a>
 
-### api/videos
+#### api/videos
 * GET - get videos
 * POST - create video
 
-### api/videos/id
+#### api/videos/id
 * GET - get video
 * PUT - update video
 * DELETE - delete video
 
-### api/videos/id/comments
+#### api/videos/id/comments
 * GET - get video comments
 * POST - create comment
 * DELETE - delete comment
 
-### request header:
+#### request header:
 `"Content-Type: application/json"`
 
-### request body (videos/id):
+#### request body (videos/id):
 `{"title":"video title", "youtubeId": "youtube id"}`
 
-### request body (videos/id/comments):
+#### request body (videos/id/comments):
 `{"id":"video id", "time":"timestamp", "comment": "comment", "style": "styling"}`
