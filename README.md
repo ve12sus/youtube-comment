@@ -1,4 +1,4 @@
-#YouTube Commentator
+# <a name="ytc">YouTube Commentator</a>
 This project currently lives [here](http://ve12sus.com/ytc).
 
 I like video games, and like to make videos showing gameplay and
@@ -19,7 +19,7 @@ with more technology down the line.
 * Browse and watch captioned videos.
 
 ---
-##API
+## <a name="api">API</a>
 Code [here](https://github.com/ve12sus/youtube-comment/blob/master/api/server.php)
 
 I started from here because I knew the front end would need a backbone to
@@ -45,7 +45,7 @@ response object.
 patterns.
 
 ---
-## JavaScript MVC
+## <a name="mvc">JavaScript MVC</a>
 Code to JavaScript [here](https://github.com/ve12sus/youtube-comment/blob/master/js/player.js)
 
 I wrote the JS portion next. I felt like if I can take some time to write
@@ -62,7 +62,7 @@ altering the contents.
 * Uses AJAX from JQuery and John Resig's PrettyDate function as only
 'outside' code.
 * The view function renders all of the page using anchors in the HTML.
-* Refactored many times to be light and only has what the site needs. 
+* Refactored many times to be light and only has what the site needs.
 
 ### What I learned:
 
@@ -78,7 +78,7 @@ the script stateless.
 data.
 * Ajax and it's many different varied interactions with it.
 * How to use an API like YouTube's.
-	
+
 ---
 ## HTML and CSS
 Code to [HTML](https://github.com/ve12sus/youtube-comment/blob/master/index.html)
@@ -110,7 +110,7 @@ on it and how to use that information.
 ---
 ## Database and hosting
 I had to hook up a database to the API, and also move it to
-a hosting. 
+a hosting.
 
 ### Features and details:
 * Uses MySQL, the tables store video title, comment, and other data as
