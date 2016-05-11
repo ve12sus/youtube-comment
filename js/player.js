@@ -786,7 +786,7 @@ var View = (function () {
     var span;
 
     span = doc.createElement('span');
-    span.innerHTML = 'YouTube Commander';
+    span.innerHTML = 'YouTube Commentator';
     span.id = 'headerLogo';
     return span;
   }
