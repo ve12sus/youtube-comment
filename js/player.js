@@ -14,7 +14,7 @@ var Controller = (function () {
   };
 
   function Urls () {
-    this.frontEnd = '/~jeff/ytc';
+    this.frontEnd = '/~jeff/ytc/';
     this.apiLocation = '/~jeff/ytc/api/videos/';
     this.id = this.apiLocation + resources.videoId;
     this.comments = this.apiLocation + resources.videoId + '/comments';
@@ -921,7 +921,7 @@ var View = (function () {
 
 var Player =(function () {
   var tag = document.createElement('script');
-  tag.src = '//www.youtube.com/iframe_api';
+  tag.src = 'https://www.youtube.com/iframe_api';
 
   var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
