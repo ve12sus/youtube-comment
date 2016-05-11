@@ -14,15 +14,15 @@ var Controller = (function () {
   };
 
   function Urls () {
-    this.frontEnd = '/~jeff/ytcserver/';
-    this.apiLocation = '/~jeff/ytcserver/api/videos/';
+    this.frontEnd = '/~jeff/ytc';
+    this.apiLocation = '/~jeff/ytc/api/videos/';
     this.id = this.apiLocation + resources.videoId;
     this.comments = this.apiLocation + resources.videoId + '/comments';
   }
 
   function Resources() {
     var paths = window.location.pathname.split('/');
-    var index = paths.indexOf('ytcserver');
+    var index = paths.indexOf('ytc');
 
     if (index) {
       this.videoId = paths[index + 1];
@@ -537,7 +537,7 @@ var View = (function () {
     var span;
     var url;
 
-    url = 'http://localhost/~jeff/ytcserver/' + Video.get.string_id;
+    url = 'http://localhost/~jeff/ytc/' + Video.get.string_id;
 
     div = doc.createElement('div');
     link = doc.createElement('input');
