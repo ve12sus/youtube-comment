@@ -311,8 +311,8 @@ class Controller
     }
 }
 
-class Request {
-
+class Request
+{
     private $method;
     private $collection;
     private $id;
