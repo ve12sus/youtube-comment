@@ -1,15 +1,13 @@
 # <a name="ytc">YouTube Commentator</a>
 This project currently lives [here](http://ve12sus.com/ytc).
 
-I like video games, and like to make videos showing gameplay and
-strategy. There exists a culture of players who likes watching and
-recording their own gameplay. I felt a simple way to comment
-and timestamp these videos would benefit the community.
+YouTube Commentator is a single-page web application I originally made for
+my Overwatch teammates, so we can commentate and share match videos with
+each other.
 
-This solution is full-stack. I made this as I was learning how to
+I made this as I was learning how to
 program so I focused on making everything without frameworks in an
-effort to understand the logic underneath, so I can use that to work
-with more technology down the line.
+effort to understand the basics.
 
 ### What it does:
 * Enter a YouTube URL to comment on that video.
